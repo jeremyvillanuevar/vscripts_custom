@@ -1,1 +1,2 @@
-IncludeScript ("blendermode.nut");
+IncludeScript ("showplayers.nut");
+//IncludeScript ("blendermode.nut");

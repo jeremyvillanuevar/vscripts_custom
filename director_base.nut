@@ -57,7 +57,7 @@ DirectorOptions.finaleStageList.insert( FINALE_GAUNTLET_ESCAPE, "" );
 
 function GetDirectorOptions()
 {
-	local result  <- null;
+	local result;
 	if ( "DirectorOptions" in DirectorScript )
 	{
 		result = DirectorScript.DirectorOptions;

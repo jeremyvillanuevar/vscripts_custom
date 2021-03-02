@@ -412,8 +412,6 @@ function VSLib::EasyLogic::Update::DateUpDate()
 {
 //	Msg("DateUpDate \n");
 
-	Msg("DirectorOptions.cm_CommonLimit "+DirectorOptions.GetDirectorOptions().cm_CommonLimit);
-	Msg("DirectorOptions.CommonLimit "+DirectorOptions.GetDirectorOptions().CommonLimit);
 	if(NoZombie)
 	{
 		// Los zombis errantes normales son 0//普通徘徊僵尸为0

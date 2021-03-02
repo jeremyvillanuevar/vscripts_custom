@@ -153,6 +153,8 @@ getconsttable()["SPECTATORS"] <- 1;
 getconsttable()["SURVIVORS"] <- 2;
 getconsttable()["INFECTED"] <- 3;
 getconsttable()["L4D1_SURVIVORS"] <- 4;
+::SURVIVORS <- 2;
+::INFECTED <- 3;
 
 // "Gender" types, to be used with GetGender()
 getconsttable()["MALE"] <- 1;
@@ -172,6 +174,8 @@ getconsttable()["Z_TANK"] <- 8;
 getconsttable()["Z_SURVIVOR"] <- 9;
 getconsttable()["Z_MOB"] <- 10;
 getconsttable()["Z_WITCH_BRIDE"] <- 11;
+::Z_TANK<- 8;
+::Z_SURVIVOR <- 9;
 
 // "Uncommon" types, to be used with GetUncommonInfected()
 getconsttable()["Z_CEDA"] <- 11;
