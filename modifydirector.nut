@@ -1,32 +1,12 @@
-printf( "\n\n\n\n==============Loaded MODIFYDIRECTOR =============== %f\n\n\n\n", __COOP_VERSION__);
+printl( "\n\n\n\n==============Loaded MODIFYDIRECTOR ===============\n\n\n\n");
 
 //-----------------------------------------------------
 
 // Include the VScript Library
 
-/*
-Skyboxes <- [
-   "0",
-   "2"
-]
 
-worldspawn <- Entities.FindByClassname( null, "worldspawn" );
-local i = RandomInt( 0, Skyboxes.len()-1 );
-printl("Skyboxe is "+Skyboxes[i]);
-printl( worldspawn.__KeyValueFromString( "timeofday", Skyboxes[i] ) );
-*/
-//g_MapScript <- getroottable().DirectorScript.MapScript
-//g_ModeScript <- getroottable().DirectorScript.MapScript.ChallengeScript
-//SessionOptions <- g_ModeScript.DirectorOptions
-
-::SpawnTank <- function ( args )
-{
-	Msg("Spawning Tank!\n");
-	Utils.SpawnZombie( Z_TANK );
-}
-
-//function Notifications::OnSurvivorsLeftStartArea::CreateTankTimer()
-function Notifications::FirstSurvLeftStartArea::YourFunctionName ( player, params )
+function Notifications::OnSurvivorsLeftStartArea::Inicio()
+//function Notifications::OnPlayerJoined::BalanceDirectorOptions (client, name, ipAddress, steamID, params)
 {
 	local Client_Count = 0;
 	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )
@@ -40,8 +20,8 @@ function Notifications::FirstSurvLeftStartArea::YourFunctionName ( player, param
 	}	
 	//30 en facil para 4 personas, entonces si hay 5 30/4*5, si hay 1 30/4*1,si hay 2 30/4*2
 	if ( "cm_MaxSpecials" in DirectorScript.GetDirectorOptions() )
-		DirectorScript.GetDirectorOptions().cm_MaxSpecials <-  DirectorScript.GetDirectorOptions().cm_MaxSpecials*Client_Count/4;
-	if ( "cm_DominatorLimit" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().cm_MaxSpecials <-  1*Client_Count;
+	if ( DirectorScript.GetDirectorOptions().rawin("cm_DominatorLimit") )
 		DirectorScript.GetDirectorOptions().cm_DominatorLimit <- DirectorScript.GetDirectorOptions().cm_DominatorLimit*Client_Count/4;
 	if ( "cm_SpecialRespawnInterval" in DirectorScript.GetDirectorOptions() )
 		DirectorScript.GetDirectorOptions().cm_SpecialRespawnInterval <- 30;
@@ -117,9 +97,8 @@ function Notifications::FirstSurvLeftStartArea::YourFunctionName ( player, param
 	//When an area becomes visible to any Survivor
 	//When the Director is in Relax mode
 	//Wanderers	
-	//AN ERROR HAS OCCURED [the index 'WanderingZombieDensityModifier' does not exist]
 	if ( "WanderingZombieDensityModifier" in DirectorScript.GetDirectorOptions() )
-		DirectorScript.GetDirectorOptions().WanderingZombieDensityModifier  <- DirectorScript.GetDirectorOptions().cm_DominatorLimit*Client_Count/4 //float
+		DirectorScript.GetDirectorOptions().WanderingZombieDensityModifier  <- DirectorScript.GetDirectorOptions().WanderingZombieDensityModifier*Client_Count/4 //float
 	else 
 		DirectorScript.GetDirectorOptions().WanderingZombieDensityModifier<-  1*Client_Count/4
 	if ( "AlwaysAllowWanderers" in DirectorScript.GetDirectorOptions() )

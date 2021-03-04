@@ -1,5 +1,116 @@
+//Enables Scripted Mode: Scope and VScript Hooks and Callbacks
 IncludeScript ("config.nut");
 IncludeScript("VSLib");
 IncludeScript ("showplayers.nut");
 //CONSIDER STRIPPER RUNS AFTER VSCRIPT
 //IncludeScript ("blendermode.nut");
+/*
+Default
+
+    SpawnSetRule = 1
+    SpawnDirectionCount = 0
+    ScriptedStageType = 9
+    ScriptedStageValue = 1000
+    SpawnDirectionMask = 0
+	cm_MaxSpecials = 2
+	cm_DominatorLimit = 2
+	cm_SpecialRespawnInterval = 30
+	if ( "SpecialInitialSpawnDelayMin" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().SpecialInitialSpawnDelayMin <- 5;
+	if ( "SpecialInitialSpawnDelayMax" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().SpecialInitialSpawnDelayMax <- 10;
+	if ( "SmokerLimit" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().SmokerLimit <- DirectorScript.GetDirectorOptions().SmokerLimit*Client_Count/4;
+	if ( "BoomerLimit" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().BoomerLimit <- DirectorScript.GetDirectorOptions().BoomerLimit*Client_Count/4;
+	if ( "HunterLimit" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().HunterLimit <- DirectorScript.GetDirectorOptions().HunterLimit*Client_Count/4;
+	if ( "SpitterLimit" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().SpitterLimit <- DirectorScript.GetDirectorOptions().SpitterLimit*Client_Count/4;
+	if ( "JockeyLimit" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().JockeyLimit <- DirectorScript.GetDirectorOptions().JockeyLimit*Client_Count/4;
+	if ( "ChargerLimit" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().ChargerLimit <- DirectorScript.GetDirectorOptions().ChargerLimit*Client_Count/4;
+	if ( "WitchLimit" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().WitchLimit <- DirectorScript.GetDirectorOptions().WitchLimit*Client_Count/4;
+	if ( "cm_WitchLimit" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().cm_WitchLimit <- DirectorScript.GetDirectorOptions().cm_WitchLimit*Client_Count/4;
+	
+	local maxIncap = 6;	
+	if ( "SurvivorMaxIncapacitatedCount" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().SurvivorMaxIncapacitatedCount <- maxIncap;
+	
+	//30 en facil para 4 personas, entonces si hay 5 30/4*5, si hay 1 30/4*1,si hay 2 30/4*2
+	if ( "cm_CommonLimit" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().cm_CommonLimit <- DirectorScript.GetDirectorOptions().cm_CommonLimit*Client_Count/4;
+	//The horde spawning pacing consists of: 
+	//BUILD_UP -> spawn horde -> SUSTAIN_PEAK -> RELAX -> BUILD_UP again.
+	//	Setting LockTempo = true removes the 
+	//"SUSTAIN_PEAK -> RELAX -> BUILD_UP" bit making your hordes spawn constantly without a delay.
+	if ( "LockTempo" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().LockTempo <-  0
+	//All survivors must be below this intensity before a Peak is allowed to switch to Relax (in addition to the normal peak timer)
+	if ( "IntensityRelaxThreshold" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().IntensityRelaxThreshold <-  0.99
+	// Modifies the length of the SUSTAIN_PEAK and RELAX states to shorten the time between mob spawns.
+	//Continuous peak//持续高峰
+	if ( "SustainPeakMinTime" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().SustainPeakMinTime <- 25
+	if ( "SustainPeakMaxTime" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().SustainPeakMaxTime  <- 30
+	//Relaxation stage//放松阶段
+	if ( "RelaxMinInterval" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().RelaxMinInterval <- 2
+	if ( "RelaxMaxInterval" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().RelaxMaxInterval <- 4
+	if ( "RelaxMaxFlowTravel" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().RelaxMaxFlowTravel <- 50
+	
+	//BuildUpMinInterval
+	// Sets the time between mob spawns. Mobs can only spawn when the pacing is in the BUILD_UP state.
+	//The mob refresh time-parameters are modified in real time//尸潮刷新时间 -参数被实时修改
+	if ( "MobSpawnMinTime" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().MobSpawnMinTime <- 1
+	if ( "MobSpawnMaxTime" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().MobSpawnMaxTime <- 3
+	// How many zombies are in each mob.
+	//The size of the mob-parameters are modified in real time//尸潮大小		-参数被实时修改
+	if ( "MobMinSize" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().MobMinSize <- 30
+	if ( "MobMaxSize" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().MobMaxSize <- 45	
+	//Reserved number of zombies-parameters are modified in real time//预留僵尸数量 -参数被实时修改
+	if ( "MobMaxPending" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().MobMaxPending  <- 10
+	
+	//Wanderer count (N) is zeroed:
+	//When an area becomes visible to any Survivor
+	//When the Director is in Relax mode
+	//Wanderers	
+	if ( "WanderingZombieDensityModifier" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().WanderingZombieDensityModifier  <- DirectorScript.GetDirectorOptions().WanderingZombieDensityModifier*Client_Count/4 //float
+	else 
+		DirectorScript.GetDirectorOptions().WanderingZombieDensityModifier<-  1*Client_Count/4
+	if ( "AlwaysAllowWanderers" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().AlwaysAllowWanderers <- true//bool
+	if ( "ClearedWandererRespawnChance" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().ClearedWandererRespawnChance <- 33//percent int
+	if ( "NumReservedWanderers" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().NumReservedWanderers<-  DirectorScript.GetDirectorOptions().NumReservedWanderers*Client_Count/4//infected additional from mobs
+	else 
+		DirectorScript.GetDirectorOptions().NumReservedWanderers<-  1*Client_Count/4
+	//All survivors must be below this intensity before a Wanderer is allowed to switch to Relax (in addition to the normal peak timer)
+	if ( "IntensityRelaxAllowWanderersThreshold" in DirectorScript.GetDirectorOptions() )
+		DirectorScript.GetDirectorOptions().IntensityRelaxAllowWanderersThreshold <-  1
+	
+	
+	local Difficulty = Convars.GetStr( "z_difficulty" ).tolower();
+	if (Client_Count>2)
+	{
+		if ( "ProhibitBosses" in DirectorScript.GetDirectorOptions() )
+			DirectorScript.GetDirectorOptions().ProhibitBosses <- false
+	}
+	else
+		if ( "ProhibitBosses" in DirectorScript.GetDirectorOptions() )
+			DirectorScript.GetDirectorOptions().ProhibitBosses <- true
+*/

@@ -86,70 +86,9 @@
 	RoundVars =
 	{
 		function _newslot(key,value)
-					  
-					   
-				  
-					 
-					
-  
-						 
-					 
-					 
-					  
-  
-				   
-			 
-  
-				   
-			   
-  
-						 
-			   
-  
-						
-			   
-				   
-  
-							  
-					  
-  
-								 
-			  
-			  
-			  
-  
-			   
-			 
-  
-				   
-				 
-  
-					   
-					
-  
-										  
-			 
-  
-									
-					
-					   
-  
-								
-					  
-				 
-				 
-				   
-					
-				 
-  
-					
-			 
 		{
-							   
-	
 			::VSLib.EasyLogic.OrigRoundVars[key] <- value;
 			return value;
-	
 		}
 	}
 	
@@ -158,12 +97,6 @@
 	// Session variables that remain through map transitions
 	SessionVars = {}
 	SessionVarsBackup = {}
-	
-									
-			
-  
-								  
-				
   
 	// Used to determine if the next map is a continuation of the same campaign
 	NextMapContinues = false
@@ -209,9 +142,6 @@
 	SpawnL4D1Francis = false
 	SpawnL4D1Louis = false
 	SpawnL4D1Bot = null
-	
-							
-						  
   
 	// Used for Utils.SpawnLeaker()
 	LeakerChance = 0
@@ -236,9 +166,7 @@
 // Game event wrapper.
 // Just add any events that you want here. The actual event information follows this table.
 ::VSLib.EasyLogic.Notifications <-
-{
-								   
-  
+{ 
 	// General events
 	OnAchievementEarned = {}
 	OnAchievementEvent = {}
@@ -584,18 +512,8 @@
 	OnExplainDLC3Barrels = {}
 	OnExplainDLC3Radio = {}
 	OnExplainDLC3Door = {}
-	OnExplainOnslaught = {}
+	OnExplainOnslaught = {} 
 	
-								   
-								   
-									 
-									
-							 
-								
-							
-							 
-							  
-  
 	// OnScriptEvent_ functions
 	OnHoldoutStart = {}
 	OnResourcesChanged = {}
@@ -850,12 +768,7 @@ g_MapScript.ScriptMode_OnActivate <- function (modename, mapname)
 // called as the mutation shuts down
 //=========================================================
 g_MapScript.ScriptMode_OnShutdown <- function (reason, nextmap)
-{
-														  
-						
-					
-						  
- 
+{ 
 	if ( reason > 0 && reason < 4 )
 	{
 		if ( reason == 1 )
@@ -894,9 +807,6 @@ g_MapScript.ScriptMode_OnShutdown <- function (reason, nextmap)
 	foreach (func in ::VSLib.EasyLogic.OnShutdown)
 		func(reason, nextmap);
 	g_ModeScript = null;
- 
-													   
-				
 }
 
 //=========================================================
@@ -1447,8 +1357,7 @@ g_MapScript.ScriptMode_AddCriteria <- function ( )
 				::VSLib.EasyLogic.Cache[_id]._botClosestInCombatFriend <- query.botclosestincombatfriend;
 			if ( "botisavailable" in query )
 				::VSLib.EasyLogic.Cache[_id]._botIsAvailable <- query.botisavailable;
-		}
-		
+		}		
 		return false;
 	}
 	
