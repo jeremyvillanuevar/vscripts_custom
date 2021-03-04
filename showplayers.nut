@@ -1,7 +1,4 @@
-IncludeScript ("config.nut");
-IncludeScript("VSLib");
 printf( "\n\n\n\n==============Loaded SHOWPLAYERS =============== %f\n\n\n\n", __COOP_VERSION__);
-
 
 //============================Clasificación de cálculo=计算排行=======================================//
 ::PlayerKillCout <- {}; 
@@ -17,12 +14,14 @@ printf( "\n\n\n\n==============Loaded SHOWPLAYERS =============== %f\n\n\n\n", _
 for(local i=0;i < 32;i++)
 {
 	PlayerRankLine[i] <- "";
+	
 }
 
 ::removed_common_spawns <- false;
 ::ClearEdicts<- false;
 ::TimeTick <- 0;
-
+::Client_Count <- 0;
+::GameDifficulty <- 0;
 //Ejecutado a cada rato
 function VSLib::EasyLogic::Update::DateUpDate()
 {
@@ -51,8 +50,8 @@ function VSLib::EasyLogic::Update::DateUpDate()
 
 	// Usado para clasificar//用于排序
 	local KillNum = [];
-	// Obtenga el número real de personas//获取实际人数
-	local Client_Count = 0;
+	// Obtenga el número real de personas con Client_Count//获取实际人数
+	local clientcount =0; 
 	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )
 	{
 		if(!::AllowShowBotSurvivor)
@@ -61,15 +60,15 @@ function VSLib::EasyLogic::Update::DateUpDate()
 				continue;	
 		}
 
-
-		KillNum.insert(Client_Count++,survivor.GetIndex());
+		
+		KillNum.insert(clientcount++,survivor.GetIndex());
 		if(!PlayerKillCout.rawin(survivor.GetIndex()))
 		{
 			PlayerKillCout[survivor.GetIndex()] <- 0;	
 			PlayerRandCout[survivor.GetIndex()] <- RandomInt(0,9);	
 		}
 	}	
-	//printl ("Número real de personas:" + Client_Count + "\n");
+	//printl ("Número real de personas:" + clientcount + "\n");
 	// Actualiza los caracteres de visualización realmente necesarios. Evite quedarse
 	// Si la condición es i <KillNum.len () cuando el bot es expulsado. O si el jugador se va, es posible que el elemento de la pantalla no se borre.
 	// Por ejemplo, cuando hay 4 personas, cuando se elimina un bot, KillNum se convierte en 3 y el elemento de visualización en el cuarto salto no se borrará. Se borrará la entrada del jugador con el mismo nombre.
@@ -118,7 +117,7 @@ function VSLib::EasyLogic::Update::DateUpDate()
 	//KillsCout = killcout;
 
 	//Msg("killcout "+killcout+"\n");
-
+	Client_Count=clientcount;
 	
 }
 
@@ -137,31 +136,42 @@ function VSLib::EasyLogic::Update::DateUpDate()
 } 
 
 
+
 function Notifications::OnModeStart::GameStart(gamemode)
 {			
 	Msg("ShowRank"+"\n");
 	ShowRank();
+	GameDifficulty = ::VSLib.Utils.GetDifficulty();
+}
+
+function Notifications::OnDifficultyChanged::DifficultyChanged(diff, olddiff)
+{			
+	GameDifficulty = diff
 }
 
 
 //==================================RankingTop3=======排行显示前4名玩家==============================================//
 ::ShowRank <- function()
 {	
-	local hudtip1 = HUD.Item("{rank01}\n{rank02}\n{rank03}");//\n{rank04}\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+	local hudtip1 = HUD.Item("{rank01}\n{rank02}\n{rank03}\nde {clientcount} amigos | D:{difficulty}");//\n{rank04}\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
 	hudtip1.SetValue("rank01", rank01);
 	hudtip1.SetValue("rank02", rank02);
-	hudtip1.SetValue("rank03", rank03);/*
+	hudtip1.SetValue("rank03", rank03);
+	hudtip1.SetValue("clientcount", fnclientcount);
+	hudtip1.SetValue("difficulty", fndifficulty);
+	/*
 	hudtip1.SetValue("rank04", rank04);
 	hudtip1.SetValue("rank05", rank05);
 	hudtip1.SetValue("rank06", rank06);
 	hudtip1.SetValue("rank07", rank07);
-	hudtip1.SetValue("rank08", rank08);*/
+	hudtip1.SetValue("rank08", rank08);
+	*/
 	hudtip1.AttachTo(HUD_FAR_LEFT);
 	hudtip1.ChangeHUDNative(0, 0, 380, 110, 1280, 720);//(x, y, width, height, resx, resy)
 	hudtip1.SetTextPosition(TextAlign.Left);
 	hudtip1.AddFlag(g_ModeScript.HUD_FLAG_NOBG|HUD_FLAG_BLINK); 
 	local hudtip2 = HUD.Item("33 B: {killcout}");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
-	hudtip2.SetValue("killcout", killcout);
+	hudtip2.SetValue("killcout", fnkillcout);
 	hudtip2.AttachTo(HUD_FAR_RIGHT);
 	hudtip2.ChangeHUDNative(1100, 0, 180, 20, 1280, 720);//(x, y, width, height, resx, resy)
 	hudtip2.SetTextPosition(TextAlign.Left);
@@ -206,11 +216,19 @@ function Notifications::OnModeStart::GameStart(gamemode)
 	return PlayerRankLine[2];
 }
 
-::killcout <- function ()
+::fnkillcout <- function ()
 {
 	return KillsCout;
 }
- 
+
+::fnclientcount <- function ()
+{
+	return Client_Count;
+}
+::fndifficulty <- function ()
+{
+	return GameDifficulty;
+} 
 ::rank05 <- function ()
 {
 	return PlayerRankLine[4];

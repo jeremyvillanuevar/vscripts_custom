@@ -34,7 +34,6 @@ if (!("VSLib" in getroottable()))
 	__VSLIB_NOTIFY_VERSION__ = true;
 }
 
-
 /*
  * Include sub-files
  */

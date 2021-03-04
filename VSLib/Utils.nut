@@ -44,6 +44,7 @@ getconsttable()["DEATH_TOLL"] <- 10;
 getconsttable()["DEAD_AIR"] <- 11;
 getconsttable()["BLOOD_HARVEST"] <- 12;
 getconsttable()["COLD_STREAM"] <- 13;
+getconsttable()["LAST_STAND"] <- 14;
 
 // Stages to be used with GetNextStage() or Utils.TriggerStage().
 getconsttable()["STAGE_PANIC"] <- 0;
@@ -587,6 +588,9 @@ function VSLib::Utils::CreateEntity(_classname, pos = Vector(0,0,0), ang = QAngl
 	kvs.angles <- ang;
 	
 	local ent = g_ModeScript.CreateSingleSimpleEntityFromTable(kvs);
+	if ( !ent )
+		return null;
+	
 	ent.ValidateScriptScope();
 	
 	return ::VSLib.Entity(ent);
@@ -610,6 +614,9 @@ function VSLib::Utils::SpawnEntity(_classname, _targetname = "", pos = Vector(0,
 	kvs.angles <- angvec;
 	
 	local ent = SpawnEntityFromTable(_classname, kvs);
+	if ( !ent )
+		return null;
+	
 	ent.ValidateScriptScope();
 	
 	return ::VSLib.Entity(ent);
@@ -688,7 +695,16 @@ function VSLib::Utils::SpawnSurvivor(survivor = null, pos = null, ang = QAngle(0
 			::VSLib.EasyLogic.SpawnL4D1Louis = true;
 		
 		if ( survType != null )
-			::VSLib.EasyLogic.SpawnL4D1Bot = survType;
+		{
+			if ( survivor == 4 )
+				::VSLib.EasyLogic.SpawnL4D1BotBill = survType;
+			else if ( survivor == 5 )
+				::VSLib.EasyLogic.SpawnL4D1BotZoey = survType;
+			else if ( survivor == 6 )
+				::VSLib.EasyLogic.SpawnL4D1BotFrancis = survType;
+			else if ( survivor == 7 )
+				::VSLib.EasyLogic.SpawnL4D1BotLouis = survType;
+		}
 		
 		::VSLib.Utils.SpawnL4D1Survivor(survivor, pos, ang);
 	}
@@ -1137,8 +1153,17 @@ function VSLib::Utils::GetPlayerFromName( name )
 	if ( typeof name != "string" )
 		return null;
 	
+	foreach (player in ::VSLib.EasyLogic.Players.Survivors())
+	{
+		if ( player.GetNetPropInt( "m_survivorCharacter" ) < 4 )
+			continue;
+		if ( (player.GetName() == name) || (player.GetName().tolower() == name.tolower()) || (player.IsSurvivor() && player.GetCharacterName().tolower() == name.tolower()) || (player.IsSurvivor() && player.GetBaseCharacterName().tolower() == name.tolower()) || (player.GetName().tolower().find(name.tolower()) != null) )
+			return player;
+	}
 	foreach (player in ::VSLib.EasyLogic.Players.All())
 	{
+		if ( player.IsSurvivor() && player.GetNetPropInt( "m_survivorCharacter" ) > 3 )
+			continue;
 		if ( (player.GetName() == name) || (player.GetName().tolower() == name.tolower()) || (player.IsSurvivor() && player.GetCharacterName().tolower() == name.tolower()) || (player.IsSurvivor() && player.GetBaseCharacterName().tolower() == name.tolower()) || (player.GetName().tolower().find(name.tolower()) != null) )
 			return player;
 	}
@@ -1165,13 +1190,12 @@ function VSLib::Utils::GetPlayerFromSteamID( id )
  */
 function VSLib::Utils::GetHostPlayer()
 {
-	foreach( player in ::VSLib.EasyLogic.Players.All() )
-	{
-		if ( player.IsServerHost() )
-			return player;
-	}
+	local player = GetListenServerHost();
 	
-	return null;
+	if ( player )
+		return ::VSLib.Player(player);
+	else
+		return null;
 }
 
 /**
@@ -1203,41 +1227,6 @@ function VSLib::Utils::ForcePanicEvent( )
 		ent.Input("Kill");
 	}
 }
-
-function VSLib::Utils::DirectorBeginScript(scirpt)
-{
-
-	local ent = null;
-	if (ent = Entities.FindByClassname(ent, "info_director"))
-	{
-		local vsent = ::VSLib.Entity(ent);
-		vsent.Input("beginscript",scirpt);
-	}
-	else
-	{
-		ent = ::VSLib.Utils.CreateEntity("info_director");
-		ent.Input("beginscript",scirpt);
-		ent.Input("Kill");
-	}
-}
-
-function VSLib::Utils::DirectorEndScript()
-{
-
-	local ent = null;
-	if (ent = Entities.FindByClassname(ent, "info_director"))
-	{
-		local vsent = ::VSLib.Entity(ent);
-		vsent.Input("EndScript");
-	}
-	else
-	{
-		ent = ::VSLib.Utils.CreateEntity("info_director");
-		ent.Input("EndScript");
-		ent.Input("Kill");
-	}
-}
-
 
 /**
  * Triggers a stage type
@@ -1274,7 +1263,7 @@ function VSLib::Utils::StartFinale( )
 		
 		local finale_nav = ::VSLib.Utils.CreateEntity("point_nav_attribute_region", ::VSLib.EasyLogic.Players.AnyAliveSurvivor().GetLocation(), QAngle(0,0,0), { maxs = "999999 999999 999999", mins = "-999999 -999999 -999999", spawnflags = "64" });
 		
-		if ( SessionState.MapName == "c2m5_concert" )
+		if ( Director.GetMapName() == "c2m5_concert" )
 			EntFire( "stadium_entrance_door_relay", "Kill" );
 		EntFire( "info_game_event_proxy", "Kill" );
 		vsent.Input("ForceFinaleStart");
@@ -1433,12 +1422,10 @@ function VSLib::Utils::BroadcastClientCommand(command)
  */
 function VSLib::Utils::PrecacheModel( mdl )
 {
-	local Model = { classname = "prop_dynamic", model = mdl }
-	if ( !(mdl in ::EasyLogic.PrecachedModels) )
+	if ( !IsModelPrecached( mdl ) )
 	{
 		printf("VSLib: Precaching: %s", mdl);
-		PrecacheEntityFromTable( Model );
-		::EasyLogic.PrecachedModels[mdl] <- 1;
+		::PrecacheModel( mdl );
 	}
 }
 
@@ -1588,6 +1575,9 @@ function VSLib::Utils::SpawnWeapon( weapon, Count = 5, Ammo = 999, pos = Vector(
 		SpawnFlags = 10;
 		Count = 1;
 	}
+	
+	if ( "spawnflags" in keyvalues )
+		SpawnFlags = keyvalues.spawnflags;
 	
 	if ( weapon == "weapon_smg_mp5_spawn" )
 	{
@@ -1833,7 +1823,7 @@ function VSLib::Utils::ShowHintAll( text, duration = 5, icon = "icon_tip", bindi
  *
  * @return The actual hint object's VSLib::Entity
  */
-function VSLib::Utils::SetEntityHint( entity, hinttext, icon = "icon_info", range = 0, parentEnt = false, duration = 0.0, noOffScreen = 1,hintcolor = "155 255 10")
+function VSLib::Utils::SetEntityHint( entity, hinttext, icon = "icon_info", range = 0, parentEnt = false, duration = 0.0, noOffScreen = 1 )
 {
 	local HintSpawnInfo =
 	{
@@ -1843,11 +1833,10 @@ function VSLib::Utils::SetEntityHint( entity, hinttext, icon = "icon_info", rang
 		hint_nooffscreen = noOffScreen.tostring()
 		hint_forcecaption = "1"
 		hint_icon_onscreen = icon
-		hint_color = hintcolor.tostring()
 	}
 	
 	local hintTargetName = "vslib_hint_" + UniqueString();
-	local hintTarget = g_MapScript.CreateHintTarget( hintTargetName, entity.GetLocation(), null, g_MapScript.TrainingHintTargetCB );
+	g_MapScript.CreateHintTarget( hintTargetName, entity.GetLocation(), null, g_MapScript.TrainingHintTargetCB );
 	g_MapScript.CreateHintOn( SessionState.TrainingHintTargetNextName, entity.GetLocation(), hinttext, HintSpawnInfo, g_MapScript.TrainingHintCB );
 	
 	local hintObject = ::VSLib.Entity(SessionState.TrainingHintTargetNextName);
@@ -1995,7 +1984,7 @@ function VSLib::Utils::IsValidWeapon(classname)
  */
 function VSLib::Utils::IsIntro()
 {
-	if ( Entities.FindByName( null, "lcs_intro" ) || Entities.FindByName( null, "fade_intro" ) )
+	if ( Entities.FindByName( null, "lcs_intro" ) || Entities.FindByName( null, "fade_intro" ) || Entities.FindByName( null, "intro_lr" ) )
 		return true;
 	
 	return false;
@@ -2006,7 +1995,7 @@ function VSLib::Utils::IsIntro()
  */
 function VSLib::Utils::IsFinale()
 {
-	if ( Entities.FindByClassname( null, "trigger_finale" ) || Entities.FindByClassname( null, "env_outtro_stats" ) )
+	if ( (Entities.FindByClassname( null, "trigger_finale" ) || Entities.FindByClassname( null, "env_outtro_stats" )) && (::VSLib.Utils.GetNextMap() == "") )
 		return true;
 	
 	return false;
@@ -2127,13 +2116,7 @@ function VSLib::Utils::GetRandValueFromArray(arr, removeValue = false)
  */
 function VSLib::Utils::GetSurvivorSet()
 {
-	foreach( survivor in ::VSLib.EasyLogic.Players.AllSurvivors() )
-	{
-		if ( survivor.GetCharacterName() == "Nick" || survivor.GetCharacterName() == "Rochelle" || survivor.GetCharacterName() == "Coach" || survivor.GetCharacterName() == "Ellis" )
-			return 2;
-	}
-	
-	return 1;
+	return Director.GetSurvivorSet();
 }
 
 /**
@@ -2141,7 +2124,7 @@ function VSLib::Utils::GetSurvivorSet()
  */
 function VSLib::Utils::GetBaseMode()
 {
-	return ::VSLib.EasyLogic.BaseModeName;
+	return Director.GetGameModeBase();
 }
 
 /**
@@ -2157,7 +2140,7 @@ function VSLib::Utils::GetDifficulty()
  */
 function VSLib::Utils::GetCampaign()
 {
-	local mapname = SessionState.MapName.tolower();
+	local mapname = Director.GetMapName().tolower();
 	
 	if ( mapname.find("c1m") != null )
 		return DEAD_CENTER;
@@ -2185,6 +2168,8 @@ function VSLib::Utils::GetCampaign()
 		return BLOOD_HARVEST;
 	else if ( mapname.find("c13m") != null )
 		return COLD_STREAM;
+	else if ( mapname.find("c14m") != null )
+		return LAST_STAND;
 	else
 		return CUSTOM;
 }
@@ -2343,8 +2328,8 @@ function VSLib::Utils::MountedGunFix()
 	{
 		if ( player.IsUsingMountedGun() && !(player.GetIndex() in playerIndexes) )
 		{
-			player.SetNetProp( "m_UsingMountedGun", 0 );
-			player.SetNetProp( "m_UsingMountedWeapon", 0 );
+			player.SetNetProp( "m_usingMountedGun", 0 );
+			player.SetNetProp( "m_usingMountedWeapon", 0 );
 		}
 	}
 }
@@ -2513,7 +2498,7 @@ function VSLib::Utils::IsTankPresent()
  */
 function VSLib::Utils::GetSaferoomLocation()
 {
-	local mapname = SessionState.MapName.tolower();
+	local mapname = Director.GetMapName().tolower();
 	
 	if ( mapname == "c1m1_hotel" )
 		return Vector( 2031.436035, 4465.583984, 1184.031250 );
@@ -3104,24 +3089,27 @@ function VSLib::Utils::DisableCarAlarms()
 	EntFire( "instructor_impound", "Kill" );
 }
 
+/**
+ * Returns a table with the local time (second, minute, hour, day, month, year, dayofweek, dayofyear, daylightsavings).
+ */
+function VSLib::Utils::GetLocalTime()
+{
+	local tbl = {};
+	LocalTime( tbl );
+	return tbl;
+}
 
-
-
-//
-//  END OF REGULAR FUNCTIONS.
-//
-//	Below are functions related to query context data retrieved from ResponseRules.
-//
 
 /**
  * Gets the number of survivors currently inside a safe spot.
  */
 function VSLib::Utils::GetNumberInSafeSpot()
 {
-	if ("NumberInSafeSpot" in ::VSLib.EasyLogic.QueryContextData)
-		return ::VSLib.EasyLogic.QueryContextData.NumberInSafeSpot;
+	local survivor = ::VSLib.EasyLogic.Players.AnySurvivor();
+	if ( !survivor )
+		return;
 	
-	return;
+	return ResponseCriteria.GetValue( survivor.GetBaseEntity(), "numberinsafespot" ).tointeger();
 }
 
 /**
@@ -3129,10 +3117,11 @@ function VSLib::Utils::GetNumberInSafeSpot()
  */
 function VSLib::Utils::GetNumberOutsideSafeSpot()
 {
-	if ("NumberOutsideSafeSpot" in ::VSLib.EasyLogic.QueryContextData)
-		return ::VSLib.EasyLogic.QueryContextData.NumberOutsideSafeSpot;
+	local survivor = ::VSLib.EasyLogic.Players.AnySurvivor();
+	if ( !survivor )
+		return;
 	
-	return;
+	return ResponseCriteria.GetValue( survivor.GetBaseEntity(), "numberoutsidesafespot" ).tointeger();
 }
 
 /**
@@ -3140,10 +3129,11 @@ function VSLib::Utils::GetNumberOutsideSafeSpot()
  */
 function VSLib::Utils::GetTimeSinceGroupInCombat()
 {
-	if ("TimeSinceGroupInCombat" in ::VSLib.EasyLogic.QueryContextData)
-		return ::VSLib.EasyLogic.QueryContextData.TimeSinceGroupInCombat;
+	local survivor = ::VSLib.EasyLogic.Players.AnySurvivor();
+	if ( !survivor )
+		return;
 	
-	return;
+	return ResponseCriteria.GetValue( survivor.GetBaseEntity(), "timesincegroupincombat" ).tofloat();
 }
 
 /**
@@ -3151,10 +3141,11 @@ function VSLib::Utils::GetTimeSinceGroupInCombat()
  */
 function VSLib::Utils::GetIntroActor()
 {
-	if ("IntroActor" in ::VSLib.EasyLogic.QueryContextData)
-		return ::VSLib.EasyLogic.QueryContextData.IntroActor;
+	local survivor = ::VSLib.EasyLogic.Players.AnySurvivor();
+	if ( !survivor )
+		return;
 	
-	return;
+	return ResponseCriteria.GetValue( survivor.GetBaseEntity(), "introactor" );
 }
 
 /**
@@ -3162,10 +3153,11 @@ function VSLib::Utils::GetIntroActor()
  */
 function VSLib::Utils::GetCampaignRandomNum()
 {
-	if ("CampaignRandomNum" in ::VSLib.EasyLogic.QueryContextData)
-		return ::VSLib.EasyLogic.QueryContextData.CampaignRandomNum;
+	local survivor = ::VSLib.EasyLogic.Players.AnySurvivor();
+	if ( !survivor )
+		return;
 	
-	return;
+	return ResponseCriteria.GetValue( survivor.GetBaseEntity(), "campaignrandomnum" ).tointeger();
 }
 
 /**
@@ -3173,10 +3165,11 @@ function VSLib::Utils::GetCampaignRandomNum()
  */
 function VSLib::Utils::IsLowViolence()
 {
-	if ("LowViolence" in ::VSLib.EasyLogic.QueryContextData)
-		return (::VSLib.EasyLogic.QueryContextData.LowViolence > 0) ? true : false;
+	local survivor = ::VSLib.EasyLogic.Players.AnySurvivor();
+	if ( !survivor )
+		return;
 	
-	return false;
+	return (ResponseCriteria.GetValue( survivor.GetBaseEntity(), "LowViolence" ).tointeger() > 0) ? true : false;
 }
 
 /**

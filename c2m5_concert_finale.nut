@@ -1,14 +1,36 @@
+/*
+::FINALE_GAUNTLET_1 <- 0
+::FINALE_HORDE_ATTACK_1 <- 1
+::FINALE_HALFTIME_BOSS <- 2
+::FINALE_GAUNTLET_2 <- 3
+::FINALE_HORDE_ATTACK_2 <- 4
+::FINALE_FINAL_BOSS <- 5
+::FINALE_HORDE_ESCAPE <- 6
+::FINALE_CUSTOM_PANIC <- 7
+::FINALE_CUSTOM_TANK <- 8
+::FINALE_CUSTOM_SCRIPTED <- 9
+::FINALE_CUSTOM_DELAY <- 10
+::FINALE_GAUNTLET_START <- 11
+::FINALE_GAUNTLET_HORDE <- 12
+::FINALE_GAUNTLET_HORDE_BONUSTIME <- 13
+::FINALE_GAUNTLET_BOSS_INCOMING <- 14
+::FINALE_GAUNTLET_BOSS <- 15
+::FINALE_GAUNTLET_ESCAPE <- 16
+*/
+getroottable()["WHITE"]		<- "\x01"
+getroottable()["BLUE"]		<- "\x03"
+getroottable()["ORANGE"]	<- "\x04"
+getroottable()["GREEN"]		<- "\x05"
 
+DEBUG <- 1
 
 //-----------------------------------------------------------------------------
-
-PANIC <- 0
-TANK <- 1
-DELAY <- 2
+PANIC <- 0//FINALE_CUSTOM_PANIC <- 7
+TANK <- 1//FINALE_CUSTOM_TANK <- 8
+DELAY <- 2//FINALE_CUSTOM_DELAY <- 10
 ONSLAUGHT <- 3
-
 //-----------------------------------------------------------------------------
-
+//ChangeFinaleStage: 18 ANTES Y DESPUES DE INICIAR//A PUNTO DE INICIAR ChangeFinaleStage: 1
 SharedOptions <-
 {
 	A_CustomFinale_StageCount = 9
@@ -92,7 +114,7 @@ function OnBeginCustomFinaleStage( num, type )
 		printl("========================================================");
 		printl( "Beginning custom finale stage " + num + " of type " + type );
 	}
-
+	ClientPrint(null, 3, BLUE+"Comenzando el Finale: Fase " + num + " de " + A_CustomFinale_StageCount + " fases. Tipo " + type);
 	local waveOptions = null
 	if ( num == 1 )
 	{
@@ -124,7 +146,7 @@ function OnBeginCustomFinaleStage( num, type )
 
 	//---------------------------------
 
-	if ( developer() > 0 )
+	if ( (developer() > 0) || (DEBUG == 1))
 	{
 		Msg( "\n*****\nMapScript.DirectorOptions:\n" );
 		foreach( key, value in MapScript.DirectorOptions )

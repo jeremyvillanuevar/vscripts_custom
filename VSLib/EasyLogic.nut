@@ -86,9 +86,70 @@
 	RoundVars =
 	{
 		function _newslot(key,value)
+					  
+					   
+				  
+					 
+					
+  
+						 
+					 
+					 
+					  
+  
+				   
+			 
+  
+				   
+			   
+  
+						 
+			   
+  
+						
+			   
+				   
+  
+							  
+					  
+  
+								 
+			  
+			  
+			  
+  
+			   
+			 
+  
+				   
+				 
+  
+					   
+					
+  
+										  
+			 
+  
+									
+					
+					   
+  
+								
+					  
+				 
+				 
+				   
+					
+				 
+  
+					
+			 
 		{
+							   
+	
 			::VSLib.EasyLogic.OrigRoundVars[key] <- value;
 			return value;
+	
 		}
 	}
 	
@@ -98,6 +159,12 @@
 	SessionVars = {}
 	SessionVarsBackup = {}
 	
+									
+			
+  
+								  
+				
+  
 	// Used to determine if the next map is a continuation of the same campaign
 	NextMapContinues = false
 	
@@ -143,6 +210,9 @@
 	SpawnL4D1Louis = false
 	SpawnL4D1Bot = null
 	
+							
+						  
+  
 	// Used for Utils.SpawnLeaker()
 	LeakerChance = 0
 	SpawnLeaker = 0
@@ -159,6 +229,7 @@
 		maprestarted = 0
 		maprestarts = 0
 		previousmap = ""
+   
 	}
 }
 
@@ -166,6 +237,8 @@
 // Just add any events that you want here. The actual event information follows this table.
 ::VSLib.EasyLogic.Notifications <-
 {
+								   
+  
 	// General events
 	OnAchievementEarned = {}
 	OnAchievementEvent = {}
@@ -332,6 +405,7 @@
 	OnUpgradeAlreadyUsed = {}
 	OnUpgradeFailed = {}
 	
+  
 	// Charger events
 	OnChargerCharged = {}
 	OnChargerCarryVictim = {}
@@ -357,6 +431,8 @@
 	OnJockeyRideStart = {}
 	OnJockeyRideEnd = {}
 	
+					  
+  
 	// Hunter
 	OnHunterHeadshot = {}
 	OnHunterPounceFailed = {}
@@ -398,12 +474,15 @@
 	OnSongPlayed = {}
 	OnChristmasGiftGrab = {}
 	
+						 
+  
 	// Misc
 	OnDifficulty = {}
 	OnDifficultyChanged = {}
 	OnSurvivorsDead = {}
 	OnBrokeProp = {}
 	OnBrokeBreakable = {}
+							
 	OnPickupInvItem = {} // Called when a player tries to pickup an item spawned with Utils.SpawnInventoryItem()
 	CanPickupObject = {} // Called when a player tries to pickup a game-related item (such as some prop or weapon)
 	OnModeStart = {}
@@ -507,6 +586,16 @@
 	OnExplainDLC3Door = {}
 	OnExplainOnslaught = {}
 	
+								   
+								   
+									 
+									
+							 
+								
+							
+							 
+							  
+  
 	// OnScriptEvent_ functions
 	OnHoldoutStart = {}
 	OnResourcesChanged = {}
@@ -517,6 +606,7 @@
 	
 	// ResponseRules Query Events
 	OnConcept = {}
+  
 }
 
 /**
@@ -761,6 +851,11 @@ g_MapScript.ScriptMode_OnActivate <- function (modename, mapname)
 //=========================================================
 g_MapScript.ScriptMode_OnShutdown <- function (reason, nextmap)
 {
+														  
+						
+					
+						  
+ 
 	if ( reason > 0 && reason < 4 )
 	{
 		if ( reason == 1 )
@@ -799,6 +894,9 @@ g_MapScript.ScriptMode_OnShutdown <- function (reason, nextmap)
 	foreach (func in ::VSLib.EasyLogic.OnShutdown)
 		func(reason, nextmap);
 	g_ModeScript = null;
+ 
+													   
+				
 }
 
 //=========================================================
@@ -1264,6 +1362,8 @@ g_MapScript.ScriptMode_AddCriteria <- function ( )
 {
 	foreach (func in ::VSLib.EasyLogic.Notifications.OnConcept)
 		func(query);
+ 
+			  
 }
 
 ::VSLib_ConceptData <- function (queryData)
@@ -1278,6 +1378,7 @@ g_MapScript.ScriptMode_AddCriteria <- function ( )
 		{
 			::VSLib.EasyLogic.CheckedMode <- true;
 			::VSLib.EasyLogic.BaseModeName <- query.gamemode;
+		   
 			
 			foreach (func in ::VSLib.EasyLogic.Notifications.OnModeStart)
 				func(query.gamemode);
@@ -1865,7 +1966,25 @@ g_MapScript.ScriptMode_AddCriteria <- function ( )
 ::_L4D1SurvivorTeamSwitch <- function (player)
 {
 	if ( ::VSLib.EasyLogic.SpawnL4D1Bot )
+  
 		player.SetNetProp("m_survivorCharacter", ::VSLib.EasyLogic.SpawnL4D1Bot);
+											
+  
+																					 
+  
+																			   
+											
+  
+																						
+  
+																				  
+											   
+  
+																					  
+  
+																				
+											 
+  
 	player.SetNetProp("m_iTeamNum", 2);
 	Convars.SetValue("sb_l4d1_survivor_behavior", ::VSLib.EasyLogic.L4D1Behavior);
 	::VSLib.EasyLogic.SpawnL4D1Bot = null;
@@ -2471,6 +2590,16 @@ g_MapScript.ScriptMode_AddCriteria <- function ( )
 		func(ents.entity, item, params);
 }
 
+																			 
+ 
+															
+																 
+																 
+ 
+																		
+													  
+ 
+
 ::VSLib.EasyLogic.Events.OnGameEvent_weapon_fire <- function (params)
 {
 	local ents = ::VSLib.EasyLogic.GetPlayersFromEvent(params);
@@ -2733,6 +2862,26 @@ g_MapScript.ScriptMode_AddCriteria <- function ( )
 	foreach (func in ::VSLib.EasyLogic.Notifications.OnHunterPouncedVictim)
 		func(ents.entity, victim, params);
 }
+
+																		
+ 
+																   
+																		 
+																	  
+ 
+																  
+															   
+ 
+
+																		 
+ 
+																   
+																		 
+																	  
+ 
+																   
+															   
+ 
 
 ::VSLib.EasyLogic.Events.OnGameEvent_pounce_stopped <- function (params)
 {
@@ -3092,6 +3241,8 @@ g_MapScript.ScriptMode_AddCriteria <- function ( )
 
 ::VSLib.EasyLogic.Events.OnGameEvent_triggered_car_alarm <- function (params)
 {
+																   
+ 
 	foreach (func in ::VSLib.EasyLogic.Notifications.OnTriggeredCarAlarm)
 		func();
 }
@@ -3392,6 +3543,38 @@ g_MapScript.ScriptMode_AddCriteria <- function ( )
 	foreach (func in ::VSLib.EasyLogic.Notifications.OnChristmasGiftGrab)
 		func(player, params);
 }
+
+																			   
+ 
+																   
+ 
+																		
+					   
+ 
+
+																				   
+ 
+																   
+ 
+																	 
+					   
+ 
+
+																			   
+ 
+																   
+ 
+							   
+  
+																			
+		  
+  
+	 
+																						 
+ 
+																  
+					   
+ 
 
 
 
@@ -4195,6 +4378,96 @@ g_MapScript.ScriptMode_AddCriteria <- function ( )
 		func(player, subject, params);
 }
 
+																				 
+ 
+																	 
+																   
+ 
+																		  
+								
+ 
+
+																					  
+ 
+																	 
+																   
+ 
+																			   
+								
+ 
+
+																					   
+ 
+																	 
+																   
+ 
+																			   
+								
+ 
+
+																						 
+ 
+																	 
+																   
+ 
+																				 
+								
+ 
+
+																						
+ 
+																	 
+																   
+ 
+																				
+								
+ 
+
+																				
+ 
+																	 
+																   
+ 
+																		 
+								
+ 
+
+																				   
+ 
+																	 
+																   
+ 
+																			
+								
+ 
+
+																			   
+ 
+																	 
+																   
+ 
+																		
+								
+ 
+
+																				
+ 
+																	 
+																   
+ 
+																		 
+								
+ 
+
+																				 
+ 
+																	 
+																   
+ 
+																		  
+								
+ 
+
 ::VSLib.EasyLogic.Events.OnScriptEvent_start_holdout <- function (params)
 {
 	foreach (func in ::VSLib.EasyLogic.Notifications.OnHoldoutStart)
@@ -4436,6 +4709,14 @@ function VSLib::EasyLogic::ChangeChatTriggerStartText(start_text)
 }
 
 /**
+																 
+   
+																
+ 
+											
+ 
+
+   
  * Adds an InterceptChat() callback (in case you don't want to use the chat trigger feature).
  */
 function VSLib::EasyLogic::AddInterceptChat(func)
@@ -4490,9 +4771,21 @@ function VSLib::EasyLogic::RemoveInterceptChat(func)
 			foreach (k, v in arr)
 			{
 				if (k != 0 && v != null && v != "")
+								 
+	
+						   
+					   
+	
+							  
+					
+				  
+						 
 				{
+										
+	  
 					args[idx] <- v;
 					idx++;
+	  
 				}
 			}
 			
@@ -4516,9 +4809,31 @@ function VSLib::EasyLogic::RemoveInterceptChat(func)
 			{
 				if (trigger == cmd || trigger.tolower() == cmd.tolower())
 				{
+												  
+	  
 					::VSLib.EasyLogic._itChatFunction[i](player, args, text);
 					break;
+					   
+	  
+																 
+	  
+																		   
+					  
+					   
+	  
 				}
+	
+														  
+															  
+	 
+															  
+	  
+															   
+					  
+					   
+			
+	  
+	 
 			}
 		}
 	}
@@ -4538,9 +4853,17 @@ function VSLib::EasyLogic::RemoveInterceptChat(func)
 		{
 			local name = "Console: ";
 			text = strip(str.slice(str.find(name) + name.len()));
+								   
 		}
 		else
+   
+									  
+	
+							 
 			text = str;
+	
+	   
+			   
 	}
 	
 	// Fire any intercept hooks
@@ -4552,7 +4875,25 @@ function VSLib::EasyLogic::RemoveInterceptChat(func)
 	foreach(v in ::VSLib.EasyLogic.OnInterceptChat)
 	{
 		if (v != null)
+	
 			v(text, player);
+				  
+	
+   
+  
+											
+   
+												 
+				 
+   
+										   
+   
+												
+				 
+   
+  
+				 
+				
 	}
 	
 	if ( "ModeInterceptChat" in g_ModeScript )
@@ -4610,9 +4951,18 @@ function VSLib::EasyLogic::GetArgument(idx)
 	foreach (k, v in arr)
 	{
 		if (k != -1 && v != null && v != "")
+							  
+  
+							
+				  
+				 
+					   
 		{
+									   
+	
 			args[idx] <- v;
 			idx++;
+	
 		}
 	}
 	
@@ -4628,6 +4978,12 @@ function VSLib::EasyLogic::GetArgument(idx)
 	{
 		if (v != null)
 			v(player, argArray, arg);
+   
+  
+												 
+											 
+												
+											
 	}
 	
 	if ( "ModeUserConsoleCommand" in g_ModeScript )
@@ -5596,11 +5952,14 @@ function VSLib::EasyLogic::Objects::All()
 
 ::Update <- function ()
 {
+						
+  
 	foreach (update in ::VSLib.EasyLogic.Update)
 		update();
 	
 	if ( "ModeUpdate" in g_ModeScript )
 		ModeUpdate();
+  
 }
 
 if ( ("Update" in g_ModeScript) && (g_ModeScript.Update != getroottable().Update) )
