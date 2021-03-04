@@ -41,7 +41,7 @@ else
 
 if ( DirectorScript.MapScript.ChallengeScript.rawin( "DirectorOptions" ) )
 {
-	Msg( "\n*****\nMODE 32 Y SCRIPTED MODE ACTIVADO DirectorScript.MapScript.ChallengeScript.DirectorOptions:\n" );
+	Msg( "\n*****\nMODE 32 Y GLOBAL SCRIPTED MODE ACTIVADO DirectorScript.MapScript.ChallengeScript.DirectorOptions:\n" );
 	foreach( key, value in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
 	{
 		Msg( "    " + key + " = " + value + "\n" );
@@ -63,7 +63,7 @@ else
 	Msg( "\n*****\nNO HAY DirectorScript.MapScript.ChallengeScript.MutationOptions :\n" );
 
 
-
+/*
 if ( SessionOptions !=null )
 {
 	Msg( "\n*****\nGLOBAL SCRIPTED MODE SessionOptions:\n" );
@@ -73,3 +73,4 @@ if ( SessionOptions !=null )
 	}		
 }else	
 	Msg( "\n*****\nNO HAY SessionOptions:\n" );
+*/

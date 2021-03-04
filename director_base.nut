@@ -41,15 +41,6 @@ DirectorOptions.finaleStageList.insert( FINALE_GAUNTLET_BOSS_INCOMING, "Event.Ta
 DirectorOptions.finaleStageList.insert( FINALE_GAUNTLET_BOSS, "FINALE_GAUNTLET_BOSS" );
 DirectorOptions.finaleStageList.insert( FINALE_GAUNTLET_ESCAPE, "" );
 	
-/*
-
-	DirectorOptions:
-    OnChangeFinaleMusic = 
-    finaleStageList = (array : 0x08E2B048)
-    OnChangeFinaleStage = (function : 0x08E8C000)
-    MaxSpecials = 2
-	
-*/
 function GetDirectorOptions()
 {
 	local result;

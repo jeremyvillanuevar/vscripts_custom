@@ -13,6 +13,7 @@
 **  Below fixes are for all modes -- except finale ones are Versus-only!
 *****************************************************************************/
 IncludeScript ("modifydirector.nut");
+IncludeScript ("announcedirector.nut");
 
 switch( g_MapName )
 {

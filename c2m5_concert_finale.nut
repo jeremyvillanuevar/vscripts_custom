@@ -17,12 +17,6 @@
 ::FINALE_GAUNTLET_BOSS <- 15
 ::FINALE_GAUNTLET_ESCAPE <- 16
 */
-getroottable()["WHITE"]		<- "\x01"
-getroottable()["BLUE"]		<- "\x03"
-getroottable()["ORANGE"]	<- "\x04"
-getroottable()["GREEN"]		<- "\x05"
-
-DEBUG <- 1
 
 //-----------------------------------------------------------------------------
 PANIC <- 0//FINALE_CUSTOM_PANIC <- 7
@@ -114,7 +108,9 @@ function OnBeginCustomFinaleStage( num, type )
 		printl("========================================================");
 		printl( "Beginning custom finale stage " + num + " of type " + type );
 	}
-	ClientPrint(null, 3, BLUE+"Comenzando el Finale: Fase " + num + " de " + A_CustomFinale_StageCount + " fases. Tipo " + type);
+	nowFinaleStageNum = num
+	nowFinaleStageType=type
+	nowFinaleStageEvent=1
 	local waveOptions = null
 	if ( num == 1 )
 	{

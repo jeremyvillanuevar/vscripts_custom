@@ -23,7 +23,7 @@ for(local i=0;i < 32;i++)
 ::Client_Count <- 0;
 ::GameDifficulty <- 0;
 //Ejecutado a cada rato
-function VSLib::EasyLogic::Update::DateUpDate()
+function VSLib::EasyLogic::Update::NamesUpdate()
 {
 	//Msg("DateUpDate \n");
 
@@ -402,3 +402,11 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 	}
 }
  
+
+::AttachOther <- function(entity,otherEntity, teleportOther,pos)
+{
+	teleportOther = (teleportOther.tointeger() > 0) ? true : false;
+	if (teleportOther)
+		otherEntity.SetOrigin(pos);
+	DoEntFire("!self", "SetParent", "!activator", 0, entity, otherEntity);
+}
