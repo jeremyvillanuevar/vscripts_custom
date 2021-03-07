@@ -1228,6 +1228,41 @@ function VSLib::Utils::ForcePanicEvent( )
 	}
 }
 
+function VSLib::Utils::DirectorBeginScript(scirpt)
+{
+
+	local ent = null;
+	if (ent = Entities.FindByClassname(ent, "info_director"))
+	{
+		local vsent = ::VSLib.Entity(ent);
+		vsent.Input("beginscript",scirpt);
+	}
+	else
+	{
+		ent = ::VSLib.Utils.CreateEntity("info_director");
+		ent.Input("beginscript",scirpt);
+		ent.Input("Kill");
+	}
+}
+
+function VSLib::Utils::DirectorEndScript()
+{
+
+	local ent = null;
+	if (ent = Entities.FindByClassname(ent, "info_director"))
+	{
+		local vsent = ::VSLib.Entity(ent);
+		vsent.Input("EndScript");
+	}
+	else
+	{
+		ent = ::VSLib.Utils.CreateEntity("info_director");
+		ent.Input("EndScript");
+		ent.Input("Kill");
+	}
+}
+
+
 /**
  * Triggers a stage type
  */
@@ -1249,6 +1284,24 @@ function VSLib::Utils::TriggerStage( stage, value = 1 )
 		ent.Input("ScriptedPanicEvent");
 		ent.Input("Kill");
 	}
+}
+
+
+/**
+ * Triggers a stage type
+ */
+function VSLib::Utils::HowAngry()
+{	
+	local ent = null;
+	
+	local directorangertbl ={
+		minAngerRange	= 1,
+		maxAngerRange	= 5,
+		noise =  75
+	}
+	ent = ::VSLib.Utils.CreateEntity("logic_director_query", Vector(0, 0, 0), QAngle(0, 0, 0),directorangertbl);
+	ent.Input("HowAngry");
+	ent.Input("Kill");
 }
 
 /**

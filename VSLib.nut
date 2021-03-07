@@ -37,15 +37,15 @@ if (!("VSLib" in getroottable()))
 /*
  * Include sub-files
  */
-IncludeScript("VSLib/Utils.nut");
-IncludeScript("VSLib/Timer.nut");
-IncludeScript("VSLib/Entity.nut");
-IncludeScript("VSLib/Player.nut");
-IncludeScript("VSLib/FileIO.nut");
-IncludeScript("VSLib/HUD.nut");
-IncludeScript("VSLib/EasyLogic.nut");
-IncludeScript("VSLib/ResponseRules.nut");
-IncludeScript("VSLib/RandomItemSpawner.nut");
+IncludeScript("vslib/utils.nut");
+IncludeScript("vslib/timer.nut");
+IncludeScript("vslib/entity.nut");
+IncludeScript("vslib/player.nut");
+IncludeScript("vslib/fileio.nut");
+IncludeScript("vslib/hud.nut");
+IncludeScript("vslib/easylogic.nut");
+IncludeScript("vslib/responserules.nut");
+IncludeScript("vslib/randomitemspawner.nut");
 
 if ( __VSLIB_NOTIFY_VERSION__ )
 	printf( "Loaded VSLib version %f", __VSLIB_VERSION__ );

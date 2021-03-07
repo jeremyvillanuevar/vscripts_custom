@@ -1007,7 +1007,7 @@ g_MapScript.ScriptMode_AddCriteria <- function ( )
 	else
 	{
 		local _id = ::VSLib.Player(activator).GetIndex();
-		if ( ::VSLib.EasyLogic.Cache[_id]._inRescue )
+		if ("_inRescue" in ::VSLib.EasyLogic.Cache[_id])//if ( ::VSLib.EasyLogic.Cache[_id]._inRescue )
 		{
 			::VSLib.EasyLogic.Cache[_id]._inRescue <- false;
 			foreach (func in ::VSLib.EasyLogic.Notifications.OnLeaveRescueVehicle)

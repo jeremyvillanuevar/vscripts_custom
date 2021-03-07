@@ -14,6 +14,7 @@
 *****************************************************************************/
 IncludeScript ("modifydirector.nut");
 IncludeScript ("announcedirector.nut");
+IncludeScript ("showplayers.nut");
 
 switch( g_MapName )
 {

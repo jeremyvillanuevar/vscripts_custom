@@ -913,7 +913,7 @@ function VSLib::Entity::AddOutput( output, target, input, parameter = "", delay 
 		return;
 	}
 	
-	EntityOutputs.AddOutput( _ent, output.tostring(), target.tostring(), input.tostring(), parameter.tostring(), delay,tofloat(), timesToFire.tointeger() );
+	EntityOutputs.AddOutput( _ent, output.tostring(), target.tostring(), input.tostring(), parameter.tostring(), delay.tofloat(), timesToFire.tointeger() );
 }
 
 /**

@@ -1,9 +1,11 @@
 //======== Copyright (c) 2009, Valve Corporation, All rights reserved. ========
 //
 //=============================================================================
-printl( "Debugging Director Options" );
+printl( "Debugging Director Options\n" );
+printl( "Map: "+SessionState.MapName+"\n" );
+printl( "Players: "+nowPlayersinGame+"\n" );
 		
-printl( "\nKeys Find on ChallengeScript ifnot in LocalScript,MapScript,DirectorScript" );
+printl( "Keys Find on ChallengeScript ifnot in LocalScript,MapScript,DirectorScript" );
 if ( "DirectorOptions" in DirectorScript )
 {
 	Msg( "\n*****\nDS 1 DirectorScript.DirectorOptions:\n" );

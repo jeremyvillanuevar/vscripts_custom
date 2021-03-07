@@ -13,20 +13,29 @@ function VSLib::EasyLogic::Update::AnnounceUpdate()
 }
 function Notifications::OnPanicEvent::Iniciado(entity, params)
 {
-	ClientPrint(null, 3, BLUE+"HORDA: Se apróxima una, derroten juntos a la horda!");
+	ClientPrint(null, 3, BLUE+"HORDA INMINENTE: Derroten juntos a la horda!");
 }
 function Notifications::OnPanicEventFinished::Finalizado()
 {
-	ClientPrint(null, 3, BLUE+"GENIAL! Ustedes lo hicieron!!");
+	ClientPrint(null, 3, BLUE+"GENIAL! Ustedes derrotaron la horda!!");
 	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )//gives a Player
 	{		
-		if(survivor.IsBot())
-			continue;	
+		//if(survivor.IsBot())
+		//	continue;
+		local achTemp="achieved"
+		AttachParticleCongrats(survivor,achTemp, 3.0);
 		if (survivor.GetCharacterName() =="Zoey")
 			survivor.Speak( "hurrah54", 0 )
 		else
 			survivor.Speak( "hurrah01", 0 )
 	}	
+	/*
+player <- null;
+while(player = Entities.FindByClassname(player, "player"))   // Iterate through the script handles of the players.
+{
+    DoEntFire("!self", "speakresponseconcept", "PlayerLaugh", 0, null, player); // Make each player laugh.
+}
+*/
 }
 
 
@@ -62,3 +71,18 @@ function Notifications::OnFinaleWin::Final(map_name, diff, params)
 }
 	
 	
+::AttachParticleCongrats <- function(ent,particleName = "", duration = 0.0)
+{	
+	if (particleName==null)
+		particleName="achieved"
+	local particle = g_ModeScript.CreateSingleSimpleEntityFromTable({ classname = "info_particle_system", targetname = "info_particle_system" + UniqueString(), origin = ent.GetEyePosition(), angles = QAngle(0,0,0), start_active = true, effect_name = particleName });
+	if (!particle)
+	{
+		printl("Advertencia: No se pudo crear la entidad de partículas.");
+		//printl("警告:创建粒子实体失败.");
+		return;
+	}
+	DoEntFire("!self", "Start", "", 0, null, particle);
+	DoEntFire("!self", "Kill", "", duration, null, particle);
+	AttachOther(PlayerInstanceFromIndex(ent.GetIndex()),particle, true,ent.GetEyePosition());
+}

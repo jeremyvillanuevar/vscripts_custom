@@ -54,13 +54,8 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 	local clientcount =0; 
 	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )
 	{
-		if(!::AllowShowBotSurvivor)
-		{
-			if(survivor.IsBot())
-				continue;	
-		}
-
-		
+		if(survivor.IsBot())
+			continue;	
 		KillNum.insert(clientcount++,survivor.GetIndex());
 		if(!PlayerKillCout.rawin(survivor.GetIndex()))
 		{
@@ -246,12 +241,10 @@ function Notifications::OnDifficultyChanged::DifficultyChanged(diff, olddiff)
 	return PlayerRankLine[7];
 }
  
-	Msg("Particle"+"\n");
-
 ::AttachParticle <- function(ent,particleName = "", duration = 0.0)
 {	
 	if (particleName=="achievedT"&&::tankcup)
-		particleName=="achieved"
+		particleName="achieved"
 	else
 		if(!::headshotcup) return;
 	local particle = g_ModeScript.CreateSingleSimpleEntityFromTable({ classname = "info_particle_system", targetname = "info_particle_system" + UniqueString(), origin = ent.GetEyePosition(), angles = QAngle(0,0,0), start_active = true, effect_name = particleName });
@@ -266,18 +259,44 @@ function Notifications::OnDifficultyChanged::DifficultyChanged(diff, olddiff)
 	AttachOther(PlayerInstanceFromIndex(ent.GetIndex()),particle, true,ent.GetEyePosition());
 }
 
-function Notifications::OnEnterSaferoom::ClearScores ( player, params )
+function Notifications::OnEnterSaferoom::ClearScores ( client, params )
 {
-	player.SetNetProp( "m_checkpointZombieKills", 0 );
-	player.SetNetProp( "m_missionZombieKills", 0 );
-	player.SetNetProp( "m_checkpointMeleeKills", 0 );
-	player.SetNetProp( "m_missionMeleeKills", 0 );
-	player.SetNetProp( "m_checkpointIncaps", 0 );
-	player.SetNetProp( "m_missionIncaps", 0 );
+	local player = ::VSLib.Player(client);
+	if(player.IsHuman())
+	{
+		player.SetNetProp( "m_checkpointZombieKills", 0 );
+		player.SetNetProp( "m_missionZombieKills", 0 );
+		player.SetNetProp( "m_checkpointMeleeKills", 0 );
+		player.SetNetProp( "m_missionMeleeKills", 0 );
+		player.SetNetProp( "m_checkpointIncaps", 0 );
+		player.SetNetProp( "m_missionIncaps", 0 );
+		player.SetNetProp( "m_checkpointDamageToTank", 0 );
+		player.SetNetProp( "m_checkpointDamageToWitch", 0 );
+		//data
+		player.SetNetProp( "m_iFrags", 0 );
+		//(_classname, _targetname = "", pos = Vector(0,0,0), ang = QAngle(0,0,0), kvs = {})
+		local game_score_index = null;
+		game_score_index = ::VSLib.Utils.SpawnEntity("game_score","gamescoreEnt");
+		//bool AcceptEntityInput(int dest, const char[] input, int activator, int caller, int outputid)
+		//AcceptEntityInput(game_score_index, "ApplyScore", attacker, 0); 
+		//Input(input, value = "", delay = 0, activator = null)
+		//DoEntFire("!self", input.tostring(), value.tostring(), delay.tofloat(), activator, _ent);
+		
+		if(PlayerKillCout.rawin(player.GetIndex()))
+		{
+			local newScore = PlayerKillCout[player.GetIndex()]*-1;
+			//AN ERROR HAS OCCURED [the index 'instance' does not exist] }
+			game_score_index.Input("ApplyScore",newScore.tostring(),0.0,client)
+			//
+			// Arguments: <entity name>, <input>, <parameter override>, <delay>, <caller>, <activator>
+			//DoEntFire( "gamescoreEnt", "ApplyScore",newScore.tostring(), 0.0, null, client);
+			game_score_index.KillEntity()
+		}
+	}
 }
 function Notifications::OnSurvivorsDead::MissionLost()
 {
-	VSLib.Utils.DirectorBeginScript("director_quiet");	
+	::VSLib.Utils.DirectorBeginScript("director_quiet");	
 	ClearEdicts = true;
 	// Después de un retraso de 6 segundos, el código de limpieza se ejecutará 1-2 veces.
 	//No establezca más de 7 segundos.
@@ -317,7 +336,8 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 			{
 				foreach( survivor in ::VSLib.EasyLogic.Players.AliveSurvivors() )
 				{
-					AttachParticle(survivor,"achievedT", 3.0);
+					local achTemp ="achievedT"
+					AttachParticle(survivor,achTemp, 3.0);
 					// No configures, la sangre se llena//不设置 虚血变成实血
 					//survivor.SwitchHealth("perm");
 					//HealthReg(survivor,tankgiveheal);	
@@ -356,8 +376,9 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 					//pos.z += 72.0;
 					// El jugador dirá buen trabajo//玩家会说nicejob
 	
+					local achTemp ="achieved"
 					// Muestra un trofeo en la cabeza del jugador. Si el jugador tiene un tiro en la cabeza//在玩家头上显示一个奖杯。如果玩家爆头特感
-					AttachParticle(attacker,"achieved", 3.0);
+					AttachParticle(attacker,achTemp, 3.0);
 				
 					//if(RandomFloat(0.0,100.0) > ::loot_chance)
 					//{
@@ -394,7 +415,8 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 					PlayerKillCout[attacker.GetIndex()]++;
 				if(!attacker.IsIncapacitated())
 				{
-					AttachParticle(attacker,"achieved", 3.0);					
+					local achTemp ="achieved"
+					AttachParticle(attacker,achTemp, 3.0);					
 				}		
 			}
 			break;		
