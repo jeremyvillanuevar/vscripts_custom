@@ -36,3 +36,14 @@ CommonLimit sería 0 porque local es más descendente
 
 Es facil buscar en la biblioteca usando el comando en windows
 findstr /N /S /I palabraabuscar *
+
+Créditos:
+c_d..0g C_D.og por la base para generar los scripts
+http://www.xygamers.com/forum.php?mod=viewthread&tid=25602
+
+jetSetWilly II por el amap logic
+Author URL: https://steamcommunity.com/id/jetsetwillyuncensored/
+https://steamcommunity.com/sharedfiles/filedetails/?id=1578912994
+
+Rayman1103 por la librería de VSLib que todos usan, he agregado funciones en mi fork
+https://steamcommunity.com/id/Rayman1103
