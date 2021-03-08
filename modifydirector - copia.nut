@@ -125,7 +125,7 @@ else
 		//Wanderers	
 		WanderingZombieDensityModifier  = 1 //Set to 0 to have no wandering zombies float
 		AlwaysAllowWanderers = true//bool
-		ClearedWandererRespawnChance = 15//percent int
+		ClearedWandererRespawnChance = 0//percent int
 		NumReservedWanderers=15//infected additional from mobs
 		//All survivors must be below this intensity before a Wanderer Peak is allowed to switch to Relax (in addition to the normal peak timer)
 		IntensityRelaxAllowWanderersThreshold =  1//float
@@ -135,6 +135,75 @@ else
 	}	
 }
 
+
+function Notifications::OnModeStart::GameStart(gamemode)
+{			
+	Msg("Loaded Map Change"+"\n");	
+	Timers.AddTimerByName("ShowHUDTimer", 2.5, true, ShowHUD(),null,0, {});
+	
+	Msg("ModifyDirector"+"\n");
+	local witchSpawnTime = 60.0;
+	// By adding a timer by name, any timer that previously existed with the specified name will be overwritten.
+	// The benefit is that you won't need to mess with timer indexes.
+	Timers.AddTimerByName("SpawnWitchTimer", witchSpawnTime, true, SpawnWitch );
+}
+
+//function Notifications::OnMapFirstStart::MapFirstStart()
+//{			
+//}
+
+function Notifications::OnSurvivorsLeftStartArea::Inicio()
+{			
+	SpawnWitch();
+	IncludeScript ("debug_directoroptions.nut");	
+}
+
+function Notifications::OnPlayerLeft::ModifyDirectorLeft (client, name, steamID, params)
+{
+	if ( (developer() > 0) || (DEBUG == 1))
+	{
+		ClientPrint(null, 3, BLUE+"OnPlayerLeft "+name);
+	}
+	local player = ::VSLib.Player(client);	
+	if (
+		(player.IsHuman())
+		|| 
+		( player.GetPlayerType()==Z_SURVIVOR && ((developer() > 0) || (DEBUG == 1)) )
+		)
+	{
+		if (nowFinaleStageEvent==0)
+			BalanceDirectorOptions(0)
+		else
+			BalanceFinaleDirectorOptions(1)
+	}
+}
+function Notifications::OnPlayerJoined::ModifyDirectorJoin (client, name, ipAddress, steamID, params)
+{
+
+	if ( (developer() > 0) || (DEBUG == 1))
+	{
+		ClientPrint(null, 3, BLUE+"OnPlayerJoined "+name);
+	}
+	local player = ::VSLib.Player(client);	
+	if (
+		(player.IsHuman())
+		|| 
+		( player.GetPlayerType()==Z_SURVIVOR && ((developer() > 0) || (DEBUG == 1)) )
+		)
+	{
+		if (nowFinaleStageEvent==0)
+			BalanceDirectorOptions(1)
+		else
+			BalanceFinaleDirectorOptions(1)
+	}
+}
+
+function Notifications::OnNextMap::NextMap(nextmap)
+{			
+	Timers.RemoveTimerByName ( "SpawnWitchTimer" );
+}
+
+	
 ::SpawnWitch <- function ()
 {
 	::VSLib.Utils.HowAngry();	
@@ -408,49 +477,28 @@ else
 	//Valid flags are: SPAWN_ABOVE_SURVIVORS, SPAWN_ANYWHERE, SPAWN_BEHIND_SURVIVORS( for SpawnBehindSurvivorsDistance int)
 	//SPAWN_FAR_AWAY_FROM_SURVIVORS, SPAWN_IN_FRONT_OF_SURVIVORS, SPAWN_LARGE_VOLUME,
 	//SPAWN_NEAR_IT_VICTIM, SPAWN_NO_PREFERENCE
-	
-		//PreferredMobDirection = SPAWN_NO_PREFERENCE
-		//Valid flags are: SPAWN_ABOVE_SURVIVORS, SPAWN_ANYWHERE, SPAWN_BEHIND_SURVIVORS( for SpawnBehindSurvivorsDistance int)
-		//SPAWN_FAR_AWAY_FROM_SURVIVORS, SPAWN_IN_FRONT_OF_SURVIVORS, SPAWN_LARGE_VOLUME,
-		//SPAWN_NEAR_IT_VICTIM, SPAWN_NO_PREFERENCE
-		//Note.png Note: 	SPAWN_NEAR_IT_VICTIM does not exist before a 
-		//finale and will cause an error, so I'm assuming the director picks 
-		//someone as IT when the finale starts. SPAWN_LARGE_VOLUME is what makes you be a mile away on DC finale.
-		//0=Anywhere, 1=Behind, 2=IT, 3=Specials in front, 4=Specials anywhere, 5=Far Away, 6=Above
-		//PreferredSpecialDirection and SPAWN_SPECIALS_ANYWHERE, SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS
-	local randDirection
 	if (nowPlayersinGame>5)
 	{
 		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnSetRule <- SPAWN_SURVIVORS
-		randDirection=RandomInt(0,2)
-		if (randDirection==0)
-			DirectorScript.MapScript.DirectorOptions.PreferredMobDirection <- 	SPAWN_BEHIND_SURVIVORS	
-		else 
-			if (randDirection==1)
-				DirectorScript.MapScript.DirectorOptions.PreferredMobDirection <- 	SPAWN_IN_FRONT_OF_SURVIVORS	
-			else
-				DirectorScript.MapScript.DirectorOptions.PreferredMobDirection <- 	SPAWN_LARGE_VOLUME	
-		randDirection=RandomInt(0,1)
-		if (randDirection==0)
-			DirectorScript.MapScript.DirectorOptions.PreferredSpecialDirection <- 	SPAWN_SPECIALS_ANYWHERE	
-		else 
-			if (randDirection==1)
-				DirectorScript.MapScript.DirectorOptions.PreferredSpecialDirection <- 	SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS	
+		//if ( "PreferredMobDirection" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
+			DirectorScript.MapScript.ChallengeScript.DirectorOptions.PreferredMobDirection <- 	SPAWN_NO_PREFERENCE	
+		//if ( "PreferredSpecialDirection" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
+			DirectorScript.MapScript.ChallengeScript.DirectorOptions.PreferredSpecialDirection <- 	SPAWN_NO_PREFERENCE	
 	}
 	else
 	if (nowPlayersinGame>2)
 	{
 		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnSetRule <- SPAWN_SURVIVORS
 		//if ( "PreferredMobDirection" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
-		DirectorScript.MapScript.DirectorOptions.PreferredMobDirection <- 	SPAWN_IN_FRONT_OF_SURVIVORS	
-		DirectorScript.MapScript.DirectorOptions.PreferredSpecialDirection	<- 	SPAWN_IN_FRONT_OF_SURVIVORS
+		DirectorScript.MapScript.ChallengeScript.DirectorOptions.PreferredMobDirection <- 	SPAWN_IN_FRONT_OF_SURVIVORS	
+		DirectorScript.MapScript.ChallengeScript.DirectorOptions.PreferredSpecialDirection	<- 	SPAWN_IN_FRONT_OF_SURVIVORS
 	}
 	else
 	{
 		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnSetRule <- SPAWN_BATTLEFIELD
 		//if ( "PreferredMobDirection" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
-			DirectorScript.MapScript.DirectorOptions.PreferredMobDirection <- 	SPAWN_NO_PREFERENCE	
-			DirectorScript.MapScript.DirectorOptions.PreferredSpecialDirection <- 	SPAWN_NO_PREFERENCE		
+			DirectorScript.MapScript.ChallengeScript.DirectorOptions.PreferredMobDirection <- 	SPAWN_NO_PREFERENCE	
+			DirectorScript.MapScript.ChallengeScript.DirectorOptions.PreferredSpecialDirection <- 	SPAWN_NO_PREFERENCE		
 	}
 		
 	//SpawnDirectionCount = 0
@@ -750,6 +798,8 @@ else
 	//else
 	//	DirectorScript.MapScript.DirectorOptions.HordeEscapeCommonLimit <- 15+3*nowPlayersinGame
 	
+	DirectorScript.MapScript.DirectorOptions.PreferredMobDirection		<- 	SPAWN_LARGE_VOLUME
+	DirectorScript.MapScript.DirectorOptions.PreferredSpecialDirection	<- 	SPAWN_LARGE_VOLUME
 	//Other Finale
 	if (nowPlayersinGame>2)
 	{				
@@ -830,26 +880,26 @@ else
 	//SPAWN_NEAR_IT_VICTIM, SPAWN_NO_PREFERENCE
 	if (nowPlayersinGame>5)
 	{
-		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnSetRule <- SPAWN_FINALE
+		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnSetRule <- SPAWN_SURVIVORS
 		//if ( "PreferredMobDirection" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
-			DirectorScript.MapScript.DirectorOptions.PreferredMobDirection <- 	SPAWN_LARGE_VOLUME	
+			DirectorScript.MapScript.ChallengeScript.DirectorOptions.PreferredMobDirection <- 	SPAWN_NO_PREFERENCE	
 		//if ( "PreferredSpecialDirection" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
-			DirectorScript.MapScript.DirectorOptions.PreferredSpecialDirection <- 	SPAWN_SPECIALS_ANYWHERE	
+			DirectorScript.MapScript.ChallengeScript.DirectorOptions.PreferredSpecialDirection <- 	SPAWN_NO_PREFERENCE	
 	}
 	else
 	if (nowPlayersinGame>2)
 	{
-		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnSetRule <- SPAWN_FINALE
+		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnSetRule <- SPAWN_SURVIVORS
 		//if ( "PreferredMobDirection" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
-		DirectorScript.MapScript.DirectorOptions.PreferredMobDirection <- 	SPAWN_LARGE_VOLUME	
-		DirectorScript.MapScript.DirectorOptions.PreferredSpecialDirection	<- 	SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS
+		DirectorScript.MapScript.ChallengeScript.DirectorOptions.PreferredMobDirection <- 	SPAWN_IN_FRONT_OF_SURVIVORS	
+		DirectorScript.MapScript.ChallengeScript.DirectorOptions.PreferredSpecialDirection	<- 	SPAWN_IN_FRONT_OF_SURVIVORS
 	}
 	else
 	{
-		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnSetRule <- SPAWN_FINALE
+		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnSetRule <- SPAWN_BATTLEFIELD
 		//if ( "PreferredMobDirection" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
-			DirectorScript.MapScript.DirectorOptions.PreferredMobDirection <- 	SPAWN_NO_PREFERENCE	
-			DirectorScript.MapScript.DirectorOptions.PreferredSpecialDirection <- 	SPAWN_SPECIALS_ANYWHERE		
+			DirectorScript.MapScript.ChallengeScript.DirectorOptions.PreferredMobDirection <- 	SPAWN_NO_PREFERENCE	
+			DirectorScript.MapScript.ChallengeScript.DirectorOptions.PreferredSpecialDirection <- 	SPAWN_NO_PREFERENCE		
 	}
 		
 	//SpawnDirectionCount = 0

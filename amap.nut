@@ -8,6 +8,8 @@
 
 Msg("................................................ " + g_MapName + "\n");
 Msg("..............................nowexecScriptName: " + nowexecScriptName + "\n");
+Msg(".............................nowLocalScriptExec: " + nowLocalScriptExec + "\n");
+
 local execscriptName=g_MapName
 if (nowexecScriptName!="")
 	execscriptName=nowexecScriptName
@@ -33,7 +35,7 @@ switch (execscriptName)
 			Msg("Replacing c1m1_reserved_wanderers\n");
 			Msg("Initiating Reserved Wanderers\n");
 
-			DirectorOptions <-
+			/*DirectorOptions <-
 			{
 				// Turn always wanderer on
 				AlwaysAllowWanderers = true
@@ -44,7 +46,7 @@ switch (execscriptName)
 				// This turns off tanks and witches.
 				//ProhibitBosses = true
 
-			}
+			}*/
 
 			Msg("Initiating relay buttons timers\n");
 
@@ -190,11 +192,16 @@ switch (execscriptName)
 		break;		
 	}
 	case "c1m2_streets":
+	//c1_3_trafficmessage_frequency
+	//c1m2_reserved_wanderers
+	//c1_streets_ambush 1
+	//c1_gunshop_quiet 2
 	{	
 		if (nowLocalScriptExec==0)
 		{
 			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			Msg("c1_streets_ambush\n");
 			Msg("Initiating Ambush\n");
 			local tempChargerLimit=2+1*nowPlayersinGame/2
 			DirectorOptions <-
@@ -210,8 +217,25 @@ switch (execscriptName)
 				LockTempo = true
 				SpecialRespawnInterval = 15
 				CommonLimit = 45
+				PreferredMobDirection = SPAWN_IN_FRONT_OF_SURVIVORS
+				PreferredSpecialDirection = SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS
 			}
 			Director.ResetMobTimer()
+		}
+		if (nowLocalScriptExec==1)
+		{
+			nowLocalScriptExec++;
+			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			Msg("c1_gunshop_quiet\n");
+			DirectorOptions <-
+			{
+				// This turns off tanks and witches.
+				ProhibitBosses = false
+				PreferredMobDirection = SPAWN_BEHIND_SURVIVORS
+				PreferredSpecialDirection = SPAWN_SPECIALS_ANYWHERE
+			}
+				Director.ResetMobTimer()
+				Director.PlayMegaMobWarningSounds()
 		}
 		break;
 	}
@@ -846,7 +870,7 @@ switch (execscriptName)
 	case "c10m2_drainage":
 	case "c10m3_ranchhouse":
 	case "c10m4_mainstreet":
-	case "c10m5_boathouse":
+	case "c10m5_houseboat":
 	{	
 		if (nowLocalScriptExec==0)
 		{
@@ -858,6 +882,34 @@ switch (execscriptName)
 			//-----------------------------------------------------
 			Msg("Initiating c10m5_houseboat_finale script\n");
 
+			MutationState <-
+			{
+				HUDWaveInfo = true           // do you want the Wave # in middle of UI
+				HUDRescueTimer = false       // or would you rather have the rescue timer (cant have both)
+				HUDTickerText = "Holdout as long as you can"
+				RescueStarted = false
+				RawStageNum = -1
+				ForcedEscapeStage = -1
+				ScriptedStageWave = 0
+				CooldownEndWarningTime = 8.5 // seconds before end of cooldown to play warning
+				CooldownEndWarningChance = 15 // percent chance to play warning
+				CooldownEndWarningFrequency = 0 // how many waves to wait before playing another warning
+				LastWaveCooldownWarningPlayed = -1 // the last wave that the cooldown warning played on
+			}
+
+			MapState <-
+			{
+				InitialResources = 0
+				HUDWaveInfo = true
+				HUDRescueTimer = false
+				HUDTickerText = "Objective: Hold out for 10 waves and then get to the chopper!  Use the radio to start."
+				StartActive = true
+				
+				ForcedEscapeStage = 28
+
+				CooldownEndWarningChance = 100 // crank up the chance of playing the end of wave warning
+			}
+			
 			//-----------------------------------------------------
 			ERROR		<- -1
 			PANIC 		<- 0
@@ -930,6 +982,8 @@ switch (execscriptName)
 				if ( type == 2 )
 					EntFire( "orator_boat_radio", "SpeakResponseConcept", "boat_radio_intransit" );
 			}
+			
+			
 		}
 		break;
 	}

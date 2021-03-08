@@ -1,15 +1,18 @@
 printl( "COOP" );
 //Enables Scripted Mode: Scope and VScript Hooks and Callbacks
-IncludeScript ("config.nut");
-IncludeScript("VSLib");
 //CONSIDER STRIPPER RUNS AFTER VSCRIPT
 //IncludeScript ("blendermode.nut");
+IncludeScript ("config.nut");
+IncludeScript("VSLib");
 getroottable()["WHITE"]		<- "\x01"
 getroottable()["BLUE"]		<- "\x03"
 getroottable()["ORANGE"]	<- "\x04"
 getroottable()["GREEN"]		<- "\x05"
-getroottable()["DEBUG"] <- 1
+IncludeScript ("debug.nut");
 
+::nowPlayersIntensity <- 0
+::nowPlayersTimeAveragedIntensity <- 0
+::nowPlayersinGame <- 0
 ::nowFinaleStageNum <- 0
 ::nowFinaleStageType <- 0
 ::nowFinaleStageEvent <- 0
