@@ -11,15 +11,99 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 		ClientPrint(null, 3, BLUE+"nowFinaleStageEvent "+nowFinaleStageEvent+"\n");
 	}
 	ShowHUD()
+	Time4Connections--
+	
 	if (nowFinaleStageEvent==1)
 	{
 		nowFinaleStageEvent = 0
 		OnCustomFinaleStageChangeHook()
 	}
+	
+	Time4TimerWitch--
+	if (Time4TimerWitch>0)
+	{
+		SpawnWitch();
+	}
+	else
+	{
+		Time4TimerWitch=60-5*nowPlayersinGame
+	}
+
+	local flow=-1
+	local countflow=0
+	local flowlist =[]
+	Time4TimerRusher--
+	if (Time4TimerRusher>0)
+	{
+		foreach ( survivor in ::VSLib.EasyLogic.Players.Survivors() )
+		{			
+			flow = survivor.GetFlowDistance();
+			if( flow && flow != -9999.0 ) // Invalid flows
+			{
+				countflow++
+				flowlist.insert(survivor.GetIndex(),flow);
+				//index = aList.Push(flow);
+				//aList.Set(index, client, 1);
+			}
+		}
+		if( countflow >= 2 )
+		{
+			flowlist.sort(CompareFlow);
+			local clientflowAvg;
+			local clientflowFirst;
+			local clientflowNear;
+			local lastFlow;
+			local distance;		
+			local teleportedahead =false;
+			local client=-1;
+			ClientPrint(null, 3, BLUE+"countflow "+countflow);			
+			// Loop through survivors from highest flow
+			for( local i = 0; i < flowlist.len(); i++ )
+			{
+				client = flowlist[i];
+				local player = ::VSLib.Player(client);	
+				ClientPrint(null, 3, BLUE+"player.GetName() "+player.GetName());
+				
+				local flowBack = true;
+				// Only check nearest half of survivor pack.
+				if( i < countflow / 2 )
+				{
+					local player2 = ::VSLib.Player(x);	
+					ClientPrint(null, 3, BLUE+"player2.GetName() "+player2.GetName());
+					
+					flow = Player(client).GetFlowDistance();
+					// Loop through from next survivor to mid-way through the pack.
+					for( local x = i + 1; x <= countflow / 2; x++ )
+					{
+						lastFlow = flowlist[x]//aList.Get(x, 0);
+						distance = flow - lastFlow;
+						// Compare higher flow with next survivor, they're rushing
+						if (distance > 1450)//1750 is antirush
+						{
+							// PrintToServer("RUSH: %N %f", client, distance);
+							flowBack = false;							
+							
+							//float vPos[3];
+							//GetClientAbsOrigin(clientflowNear, vPos);
+							//CPrintToChatAll("%s",rawmsg);
+							//TeleportEntity(client, vPos, NULL_VECTOR, NULL_VECTOR);
+							SpawnTank();
+							break;
+						}
+					}
+				}
+			}
+		}		
+	}
+	else
+	{
+		Time4TimerRusher=60-2*nowPlayersinGame
+	}
+	
 	if(ClearEdicts)
 	{
-		TimeTick--
-		if(TimeTick<=0)
+		Time4Tick--
+		if(Time4Tick<=0)
 		{
 			printl("MissionLost Clear Edicts prevent  ED_Alloc:no free edicts for some map");
 			foreach( Infected in ::VSLib.EasyLogic.Players.Infected())
@@ -114,7 +198,7 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 
 ::OnCustomFinaleStageChangeHook <- function ( )
 {
-	TimeTick4Timer=15
+	TimeTick4Rescue=15
 	if (nowFinaleStageNum < DirectorScript.MapScript.DirectorOptions.A_CustomFinale_StageCount )
 		ClientPrint(null, 3, BLUE+"Comenzando el Finale: Fase " + nowFinaleStageNum + " de " + DirectorScript.MapScript.DirectorOptions.A_CustomFinale_StageCount + " fases. Tipo " + numTypetoTypeString(nowFinaleStageType));
 	else 
@@ -189,7 +273,7 @@ function Notifications::OnSurvivorsDead::MissionLost()
 	// Después de un retraso de 6 segundos, el código de limpieza se ejecutará 1-2 veces.
 	//No establezca más de 7 segundos.
 	//延迟6秒后大概清理代码会执行1-2次。不要设置大于7秒。
-	TimeTick = 6;
+	Time4Tick = 6;
 	// Debido a la ejecución directa de una limpieza de sentido especial, será más abrupta.
 	//Así que retrasa el procesamiento
 	// ¿La función addtimer no es válida después de este evento?
@@ -316,11 +400,12 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 function Notifications::OnModeStart::GameStart(gamemode)
 {			
 	Msg("OnModeStart"+"\n");	
+	//Time4Connections=60
 	//Timers.AddTimerByName("ShowHUDTimer", 2.5, true, ShowHUD(),null,0, {});
-	local witchSpawnTime = 60.0;
+	//local witchSpawnTime = 60.0;
 	// By adding a timer by name, any timer that previously existed with the specified name will be overwritten.
 	// The benefit is that you won't need to mess with timer indexes.
-	Timers.AddTimerByName("SpawnWitchTimer", witchSpawnTime, true, SpawnWitch );
+	//Timers.AddTimerByName("SpawnWitchTimer", witchSpawnTime, true, SpawnWitch );
 }
 
 //function Notifications::OnMapFirstStart::MapFirstStart()
@@ -336,42 +421,144 @@ function Notifications::OnSurvivorsLeftStartArea::Inicio()
 
 function Notifications::OnPlayerLeft::ModifyDirectorLeft (client, name, steamID, params)
 {
+	if (Time4Connections<=0)
+	{
+		
+	}
+	else
+	{
+		if ((developer() > 0) || (DEBUG == 1))
+		{
+			ClientPrint(null, 3, BLUE+"Time4Connections "+Time4Connections);
+			ClientPrint(null, 3, BLUE+"nowStartConnections "+nowStartConnectionsnum);
+		}
+		local player = ::VSLib.Player(client);	
+		if	(
+		(player.IsHuman())
+		|| 
+		( player.GetPlayerType()==Z_SURVIVOR && ((developer() > 0) || (DEBUG == 1)) )
+		)
+			nowStartConnections.insert(nowStartConnectionsnum++,client);
+			ClientPrint(null, 3, BLUE+"nowStartConnections "+nowStartConnectionsnum);
+	}
+	
+	
 	if ( (developer() > 0) || (DEBUG == 1))
 	{
 		ClientPrint(null, 3, BLUE+"OnPlayerLeft "+name);
 	}
 	local player = ::VSLib.Player(client);	
+	local esta = false
+	if (Time4Connections>0)
+	{
+		ClientPrint(null, 3, BLUE+"Time4Connections "+Time4Connections);
+		for(local i=0;i < nowStartConnections.len();i++)
+		{
+			if ((developer() > 0) || (DEBUG == 1))
+			{
+			ClientPrint(null, 3, BLUE+"nowStartConnections[i] "+nowStartConnections[i]);
+			ClientPrint(null, 3, BLUE+"client "+client);
+			}
+			if (nowStartConnections[i]==client)
+				esta = true
+		}
+	}
+	
 	if (
 		(player.IsHuman())
 		|| 
 		( player.GetPlayerType()==Z_SURVIVOR && ((developer() > 0) || (DEBUG == 1)) )
 		)
 	{
+		if (!esta)
+			TimeTick4Connect=9
+		nowPlayerEvent="Left"
+		nowPlayerLeft=player.GetName();
 		if (nowFinaleStageEvent==0)
 			BalanceDirectorOptions(0)
 		else
 			BalanceFinaleDirectorOptions(1)
 	}
 }
+function Notifications::OnPlayerConnected::onStartingConnections (client, name, ipAddress, steamID, params)
+{
+	/*
+	if (Time4Connections<=0)
+	{
+		
+	}
+	else
+	{
+		if ((developer() > 0) || (DEBUG == 1))
+		{
+		ClientPrint(null, 3, BLUE+"Time4Connections "+Time4Connections);
+		ClientPrint(null, 3, BLUE+"nowStartConnections "+nowStartConnectionsnum);
+		}
+		local player = ::VSLib.Player(client);	
+		if	(player.IsHuman())
+			nowStartConnections.insert(nowStartConnectionsnum++,client);
+		if ((developer() > 0) || (DEBUG == 1))
+		{
+		ClientPrint(null, 3, BLUE+"nowStartConnections[i] "+nowStartConnections[i]);
+		ClientPrint(null, 3, BLUE+"client "+client);
+		}
+	}
+	*/
+}
 
 function Notifications::OnPlayerJoined::ModifyDirectorJoin (client, name, ipAddress, steamID, params)
 {
-
+	if (Time4Connections<=0)
+	{
+		
+	}
+	else
+	{
+		ClientPrint(null, 3, BLUE+"Time4Connections "+Time4Connections);
+		ClientPrint(null, 3, BLUE+"nowStartConnections "+nowStartConnectionsnum);
+		local player = ::VSLib.Player(client);	
+		if	(
+		(player.IsHuman())
+		|| 
+		( player.GetPlayerType()==Z_SURVIVOR && ((developer() > 0) || (DEBUG == 1)) )
+		)
+			nowStartConnections.insert(nowStartConnectionsnum++,client);
+		ClientPrint(null, 3, BLUE+"nowStartConnections "+nowStartConnectionsnum);
+	}
+	
 	if ( (developer() > 0) || (DEBUG == 1))
 	{
 		ClientPrint(null, 3, BLUE+"OnPlayerJoined "+name);
-	}
+	}	
 	local player = ::VSLib.Player(client);	
+	local esta = false
+	
+	if (Time4Connections>0)
+	{
+		ClientPrint(null, 3, BLUE+"Time4Connections "+Time4Connections);
+		for(local i=0;i < nowStartConnections.len();i++)
+		{
+			ClientPrint(null, 3, BLUE+"nowStartConnections[i] "+nowStartConnections[i]);
+			ClientPrint(null, 3, BLUE+"client "+client);
+			if (nowStartConnections[i]==client)
+				esta = true
+		}
+	}
 	if (
 		(player.IsHuman())
 		|| 
 		( player.GetPlayerType()==Z_SURVIVOR && ((developer() > 0) || (DEBUG == 1)) )
 		)
 	{
+		if (!esta)
+			TimeTick4Connect=9
+		
+		nowPlayerEvent="Join"
+		nowPlayerJoined=player.GetName();
 		if (nowFinaleStageEvent==0)
-			BalanceDirectorOptions(1)
+			BalanceDirectorOptions()
 		else
-			BalanceFinaleDirectorOptions(1)
+			BalanceFinaleDirectorOptions()
 	}
 }
 
@@ -420,11 +607,11 @@ function Notifications::OnFinaleStart::Final(campaign, params)
 
 function Notifications::OnFinaleWin::Final(map_name, diff, params)
 {
-	ClientPrint(null, 3, BLUE+"FELICIDADES lograron: " + map_name);	
-	if ( "A_CustomFinale_StageCount" in DirectorScript.MapScript.DirectorOptions )
-	{
-		Timers.RemoveTimerByName ( "OnBeginCustomFinaleStageTimer" );
-	}
+	//ClientPrint(null, 3, BLUE+"FELICIDADES lograron: " + map_name);	
+	//if ( "A_CustomFinale_StageCount" in DirectorScript.MapScript.DirectorOptions )
+	//{
+	//	Timers.RemoveTimerByName ( "OnBeginCustomFinaleStageTimer" );
+	//}
 }
 
 

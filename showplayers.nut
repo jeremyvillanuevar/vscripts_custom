@@ -7,8 +7,12 @@ printf( "\n\n\n\n==============Loaded SHOWPLAYERS =============== %f\n\n\n\n", _
 ::KillsCout <- 0;
 ::removed_common_spawns <- false;
 ::ClearEdicts<- false;
-::TimeTick <- 0;
-::TimeTick4Timer <- 0;
+::Time4Connections <- 54;
+::Time4TimerWitch <- 60;
+::Time4TimerRusher <- 60;
+::Time4Tick <- 0;
+::TimeTick4Rescue <- 0;
+::TimeTick4Connect <- 0;
 ::Client_Count <- 0;
 ::Survivors_Count <- 0;
 ::GameDifficulty <- 0;
@@ -38,6 +42,13 @@ for(local i=0;i < 32;i++)
 	return 0;
 } 
 
+// Grande-> pequeño//大->小
+::CompareFlow <- function(a,b)
+{
+	if(flowlist[a]>flowlist[b]) return -1
+	else if(flowlist[a]<flowlist[b]) return 1
+	return 0;
+} 
 
 /* en modifydirector
 function Notifications::OnModeStart::GameStart(gamemode)
@@ -157,10 +168,25 @@ function Notifications::OnModeStart::GameStart(gamemode)
 	return PlayerRankLine[7];
 }
  
+::playerJoined <- function ()
+{
+	return "Bienvenido "+nowPlayerJoined+"!!!";
+}
+::playerLeft <- function ()
+{
+	return nowPlayerLeft+" tuvo que irse";
+}
+ 
 ::AttachParticle <- function(ent,particleName = "", duration = 0.0)
 {	
+	local intRand = RandomInt(0,2)
 	if (particleName=="achievedT"&&::tankcup)
-		particleName="achieved"
+		if (intRand==0) particleName="achieved"
+		else
+			if (intRand==1)
+				particleName="mini_fireworks"
+			else
+				particleName="mini_firework_flare"
 	else
 		if(!::headshotcup) return;
 	local particle = g_ModeScript.CreateSingleSimpleEntityFromTable({ classname = "info_particle_system", targetname = "info_particle_system" + UniqueString(), origin = ent.GetEyePosition(), angles = QAngle(0,0,0), start_active = true, effect_name = particleName });
@@ -236,6 +262,7 @@ g_ModeScript.HoldoutHUD <- {}
 		//hudtip3.ChangeHUDNative(1100, 0, 180, 20, 1280, 720);//(x, y, width, height, resx, resy)
 		hudtip3.SetTextPosition(TextAlign.Left);
 		hudtip3.AddFlag(g_ModeScript.HUD_FLAG_NOBG|HUD_FLAG_BLINK); 		
+		
 		/*
 		local hudtip4 = HUD.Item("I: {inten} | TAI: {tai}");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
 		hudtip4.SetValue("inten", fninten);
@@ -262,8 +289,37 @@ g_ModeScript.HoldoutHUD <- {}
 		}
 		HUDPlace(HUD_FAR_LEFT, 0, 0, 380, 110)
 		*/
-	
-		
+		TimeTick4Connect--;
+
+		if (TimeTick4Connect<=0)
+		{			
+			local hudtip4 = HUD.Item("Bienvenido {name}!!!");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+			hudtip4.AttachTo(HUD_TICKER);
+			hudtip4.AddFlag(g_ModeScript.HUD_FLAG_NOTVISIBLE);		
+		}
+		else
+		{ 		
+			//Msg("DateUpDate \n");
+			if ( (developer() > 0) || (DEBUG == 1))
+			{
+				ClientPrint(null, 3, BLUE+"TimeTick4Connect en 0\n");
+			}		
+			local hudtip4 = HUD.Item("{name}");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+			
+			if (nowPlayerEvent=="Join")
+			{
+				hudtip4.SetValue("name", playerJoined);
+			}
+			else
+			if (nowPlayerEvent=="Left")
+			{
+				hudtip4.SetValue("name", playerLeft);
+			}
+			hudtip4.AttachTo(HUD_TICKER);
+			hudtip4.SetTextPosition(TextAlign.Center);
+			hudtip4.AddFlag(g_ModeScript.HUD_FLAG_BLINK); 		
+			//g_ModeScript.HoldoutHUD.Fields.ticker <- {slot = HUD_TICKER, name = "tickermsg", datafunc = @() testHUDTickerText, flags = HUD_FLAG_BLINK | HUD_FLAG_NOTVISIBLE}
+		}	
 	}
 	else
 	{
@@ -319,14 +375,14 @@ g_ModeScript.HoldoutHUD <- {}
 		
 		g_ModeScript.HoldoutHUD.Fields.ticker <- {slot = HUD_TICKER, name = "tickermsg", datafunc = @() testHUDTickerText, flags = HUD_FLAG_BLINK}
 		
-		TimeTick4Timer--;
+		TimeTick4Rescue--;
 
-		if (TimeTick4Timer<=0)
+		if (TimeTick4Rescue<=0)
 		{
 			//Msg("DateUpDate \n");
 			if ( (developer() > 0) || (DEBUG == 1))
 			{
-				ClientPrint(null, 3, BLUE+"TimeTick4Timer en 0\n");
+				ClientPrint(null, 3, BLUE+"TimeTick4Rescue en 0\n");
 			}		
 			g_ModeScript.HoldoutHUD.Fields.ticker <- {slot = HUD_TICKER, name = "tickermsg", datafunc = @() testHUDTickerText, flags = HUD_FLAG_BLINK | HUD_FLAG_NOTVISIBLE}		
 		}

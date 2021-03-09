@@ -10,6 +10,7 @@ getroottable()["ORANGE"]	<- "\x04"
 getroottable()["GREEN"]		<- "\x05"
 IncludeScript ("debug.nut");
 
+//SessionState now
 ::nowPlayersIntensity <- 0
 ::nowPlayersTimeAveragedIntensity <- 0
 ::nowPlayersinGame <- 0
@@ -20,6 +21,11 @@ IncludeScript ("debug.nut");
 ::nowFirstPlayerinGame <- 0
 ::nowPlayersinGame <- 0
 ::nowexecScriptName <- ""
+::nowStartConnectionsnum <- 0
+::nowStartConnections <-  []
+::nowPlayerEvent <- ""
+::nowPlayerJoined <- ""
+::nowPlayerLeft <- ""
 
 if ( (developer() > 0) || (DEBUG == 1))
 {

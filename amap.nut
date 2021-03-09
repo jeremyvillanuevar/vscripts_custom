@@ -197,31 +197,7 @@ switch (execscriptName)
 	//c1_streets_ambush 1
 	//c1_gunshop_quiet 2
 	{	
-		if (nowLocalScriptExec==0)
-		{
-			nowLocalScriptExec++;
-			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
-			Msg("c1_streets_ambush\n");
-			Msg("Initiating Ambush\n");
-			local tempChargerLimit=2+1*nowPlayersinGame/2
-			DirectorOptions <-
-			{
-				// This turns off tanks and witches.
-				//ProhibitBosses = false
-				BoomerLimit = 0
-				SmokerLimit = 0
-				HunterLimit = 0
-				ChargerLimit = tempChargerLimit
-				SpitterLimit = 1
-				JockeyLimit = 0
-				LockTempo = true
-				SpecialRespawnInterval = 15
-				CommonLimit = 45
-				PreferredMobDirection = SPAWN_IN_FRONT_OF_SURVIVORS
-				PreferredSpecialDirection = SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS
-			}
-			Director.ResetMobTimer()
-		}
+		
 		if (nowLocalScriptExec==1)
 		{
 			nowLocalScriptExec++;
@@ -234,8 +210,39 @@ switch (execscriptName)
 				PreferredMobDirection = SPAWN_BEHIND_SURVIVORS
 				PreferredSpecialDirection = SPAWN_SPECIALS_ANYWHERE
 			}
-				Director.ResetMobTimer()
-				Director.PlayMegaMobWarningSounds()
+			Director.ResetMobTimer()
+			Director.PlayMegaMobWarningSounds()
+		}
+		if (nowLocalScriptExec==0)
+		{
+			nowLocalScriptExec++;
+			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			Msg("c1_streets_ambush\n");
+			Msg("Initiating Ambush\n");
+			local tempChargerLimit=2+1*nowPlayersinGame/2
+			DirectorOptions <-
+			{
+				// This turns off tanks and witches.
+				//ProhibitBosses = false
+				MaxSpecials = DirectorScript.MapScript.DirectorOptions.MaxSpecials+tempChargerLimit
+				DominatorLimit = DirectorScript.MapScript.DirectorOptions.MaxSpecials+tempChargerLimit
+				BoomerLimit = 0
+				SmokerLimit = 0
+				HunterLimit = 0
+				ChargerLimit = tempChargerLimit
+				SpitterLimit = 1
+				JockeyLimit = 0
+				LockTempo = true
+				SpecialRespawnInterval = 15
+				SpecialInitialSpawnDelayMin = 2
+				SpecialInitialSpawnDelayMax = 6
+				ZombieSpawnRange=500
+				CommonLimit = 25+5*nowPlayersinGame
+				PreferredMobDirection = SPAWN_IN_FRONT_OF_SURVIVORS
+				PreferredSpecialDirection = SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS
+			}
+			Director.ResetMobTimer()
+			Director.PlayMegaMobWarningSounds()
 		}
 		break;
 	}

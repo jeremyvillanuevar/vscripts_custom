@@ -135,6 +135,27 @@ else
 	}	
 }
 
+
+::SpawnTank <- function ( vPos=null )
+{
+	//local vPos = player.GetLocation();
+	if (vPos==null)
+	{	
+		Msg("Spawning Tank!\n");
+		local MaxDist = RandomInt( 800, 1200 );
+		local MinDist = RandomInt( 400, 800 );	
+		//local player = ::VSLib.Player(client);
+		local player = Players.SurvivorWithHighestFlow();
+		Utils.SpawnZombieNearPlayer( player, Z_TANK, MaxDist, MinDist, false );
+	}	
+	else
+	{
+		Msg("Spawning Tank in Position "+vPos+"!\n");
+		//SpawnZombie(zombieType, pos = null, ang = QAngle(0,0,0), offerTank = false, victim = null)
+		Utils.SpawnZombie(Z_TANK, vPos);
+	}
+}
+
 ::SpawnWitch <- function ()
 {
 	::VSLib.Utils.HowAngry();	
@@ -149,27 +170,11 @@ else
 		Utils.SpawnZombieNearPlayer( player, Z_WITCH, MaxDist, MinDist, false );
 }
 
-::BalanceDirectorOptions <- function (joined)
+::BalanceDirectorOptions <- function ()
 {
 	
-	//if ( (developer() > 0) || (DEBUG == 1))
-	nowPlayersinGame = 0;
-	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )
-	{
-		if ((developer() > 0) || (DEBUG == 1))
-		{
-			if(survivor.IsBot())
-				ClientPrint(null, 3, BLUE+"Contando Bot");
-			else				
-				ClientPrint(null, 3, BLUE+"Contando Humano");
-		}
-			else
-				if(survivor.IsBot())
-				continue;	
-		nowPlayersinGame++;	
-	}	
-	if (joined==0)
-		nowPlayersinGame=nowPlayersinGame-1
+	CalculateNumberofPlayers()
+	
 	if (nowFirstPlayerinGame==0)
 		Director.ResetMobTimer()	
 	
@@ -250,8 +255,8 @@ else
 		DirectorScript.MapScript.DirectorOptions.SpecialInitialSpawnDelayMin <- 25
 		DirectorScript.MapScript.DirectorOptions.SpecialInitialSpawnDelayMax <- 35
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 17+1*nowPlayersinGame*10/2
-		DirectorScript.MapScript.DirectorOptions.MaxSpecials <-  1+1*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.DominatorLimit <-  1+1*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MaxSpecials <-  1+1*nowPlayersinGame/2
+		DirectorScript.MapScript.DirectorOptions.DominatorLimit <-  1+1*nowPlayersinGame/2
 		DirectorScript.MapScript.DirectorOptions.ChargerLimit <- 2
 		DirectorScript.MapScript.DirectorOptions.BoomerLimit <- 2
 		DirectorScript.MapScript.DirectorOptions.HunterLimit <- 1
@@ -607,9 +612,8 @@ else
 	
 }
 
-::BalanceFinaleDirectorOptions <- function (joined)
+::CalculateNumberofPlayers <- function ()
 {
-	
 	//if ( (developer() > 0) || (DEBUG == 1))
 	nowPlayersinGame = 0;
 	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )
@@ -620,14 +624,23 @@ else
 				ClientPrint(null, 3, BLUE+"Contando Bot");
 			else				
 				ClientPrint(null, 3, BLUE+"Contando Humano");
+			nowPlayersinGame++;	
+			continue;	
 		}
-			else
-				if(survivor.IsBot())
+		else
+		{
+			if(survivor.IsBot())
 				continue;	
-		nowPlayersinGame++;	
+			nowPlayersinGame++;	
+		}
 	}	
-	if (joined==0)
+	if (nowPlayerEvent=="Left")
 		nowPlayersinGame=nowPlayersinGame-1
+}
+::BalanceFinaleDirectorOptions <- function ()
+{
+	CalculateNumberofPlayers()
+	
 	if (nowFirstPlayerinGame==0)
 		Director.ResetMobTimer()	
 	

@@ -1,1 +1,1 @@
-getroottable()["DEBUG"] <- 0
+getroottable()["DEBUG"] <- 1
