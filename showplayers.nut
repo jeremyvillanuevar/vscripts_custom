@@ -1,21 +1,7 @@
 printf( "\n\n\n\n==============Loaded SHOWPLAYERS =============== %f\n\n\n\n", __COOP_VERSION__);
 
 //============================Clasificación de cálculo=计算排行=======================================//
-::PlayerKillCout <- {}; 
-::PlayerRandCout <- {}; 
-::PlayerRankLine <- {}; 
-::KillsCout <- 0;
-::removed_common_spawns <- false;
-::ClearEdicts<- false;
-::Time4Connections <- 54;
-::Time4TimerWitch <- 60;
-::Time4TimerRusher <- 60;
-::Time4Tick <- 0;
-::TimeTick4Rescue <- 0;
-::TimeTick4Connect <- 0;
-::Client_Count <- 0;
-::Survivors_Count <- 0;
-::GameDifficulty <- 0;
+
 // En la etapa inicial de maximizar la memoria de video de clasificación, Left 4 Dead 2 solo puede tener hasta 32 slot.
 // L4DToolZ establece 33slot y compila y ejecuta el juego y el resultado es malo 33 .. Demuestra que solo pueden sobrevivir 32 personas. Estas 32 personas incluyen todos los personajes operables. El modo de batalla: no es más que más personas y menos SI.
 // Inicialice todos y luego use algunos de ellos según sea necesario. De lo contrario, si hay más de 4 personas o el servidor está vacío con 0 jugadores, el índice 'número' se indicará en rojo. El índice 'número' no existe
@@ -130,7 +116,7 @@ function Notifications::OnModeStart::GameStart(gamemode)
 
 ::fnclientcount <- function ()
 {
-	return Client_Count;
+	return nowPlayersinGame;
 }
 ::fndifficulty <- function ()
 {
@@ -289,20 +275,63 @@ g_ModeScript.HoldoutHUD <- {}
 		}
 		HUDPlace(HUD_FAR_LEFT, 0, 0, 380, 110)
 		*/
-		TimeTick4Connect--;
-
-		if (TimeTick4Connect<=0)
-		{			
-			local hudtip4 = HUD.Item("Bienvenido {name}!!!");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
-			hudtip4.AttachTo(HUD_TICKER);
-			hudtip4.AddFlag(g_ModeScript.HUD_FLAG_NOTVISIBLE);		
+		if (TimeTick4ConnectMsg<=0)
+		{
+			local hudtip4 = HUD.Item("{name}");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+			if (TimeTick4BossMsg<=0)
+			{
+				if (TimeTick4WitchMsg<=0)
+				{
+					if (TimeTick4PanicMsg<=0)
+					{
+						if (TimeTick4HealMsg<=0)
+						{
+							//local hudtip4 = HUD.Item("Bienvenido {name}!!!");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+							//hudtip4.SetValue("name", "Bienvenido "+playerJoined+"!!!");
+							hudtip4.AttachTo(HUD_TICKER);
+							hudtip4.AddFlag(g_ModeScript.HUD_FLAG_NOTVISIBLE);
+						}
+						else
+						{
+							hudtip4.SetValue("name", nowPlayerHealer+" curó a "+nowPlayerHealed+"!!");
+							hudtip4.AttachTo(HUD_TICKER);
+							hudtip4.AddFlag(g_ModeScript.HUD_FLAG_BLINK);
+						}
+					}
+					else
+					{
+						hudtip4.SetValue("name", "PANIC: Derroten juntos a la horda!!!");
+						hudtip4.AttachTo(HUD_TICKER);
+						hudtip4.AddFlag(g_ModeScript.HUD_FLAG_BLINK);
+					}
+				}
+				else
+				{
+					//local hudtip4 = HUD.Item("Aparece una Witch, es ideal un ataque en grupo!!!");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+					hudtip4.SetValue("name", "Aparece una Witch, es ideal un ataque en grupo!!!");
+					hudtip4.AttachTo(HUD_TICKER);
+					hudtip4.AddFlag(g_ModeScript.HUD_FLAG_BLINK);				
+				}
+			}
+			else
+			{
+				if (nowPlayersinGame>1)
+					hudtip4.SetValue("name", "Aparece un Tank al verlos separados. | Derrotenlo para avanzar!!!");
+					else
+						hudtip4.SetValue("name", "Aparece un Tank Boss!!!");
+					//local hudtip4 = HUD.Item("Aparece un Tank Boss | Derrotenlo para avanzar!!!");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+					//else
+						//local hudtip4 = HUD.Item("Aparece un Tank Boss!!!");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+				hudtip4.AttachTo(HUD_TICKER);			
+				hudtip4.AddFlag(g_ModeScript.HUD_FLAG_BLINK);		
+			}
 		}
 		else
-		{ 		
+		{
 			//Msg("DateUpDate \n");
 			if ( (developer() > 0) || (DEBUG == 1))
 			{
-				ClientPrint(null, 3, BLUE+"TimeTick4Connect en 0\n");
+				ClientPrint(null, 3, BLUE+"TimeTick4ConnectMsg en 0\n");
 			}		
 			local hudtip4 = HUD.Item("{name}");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
 			
@@ -335,7 +364,7 @@ g_ModeScript.HoldoutHUD <- {}
 				//COOLDOWN
 				cooldown_time = { slot = HUD_LEFT_TOP, name = "cooldown", special = HUD_SPECIAL_COOLDOWN, flags = HUD_FLAG_COUNTDOWN_WARN | HUD_FLAG_BEEP },
 				//SUPPLIES
-				supply        = { slot = HUD_FAR_RIGHT, name = "supply", staticstring = "Amigos: ", datafunc = @() Client_Count }
+				supply        = { slot = HUD_FAR_RIGHT, name = "supply", staticstring = "Amigos: ", datafunc = @() nowPlayersinGame }
 
 				// this is kinda a lie! we are really going to move these w/HUDPlace for displaying final scores!
 				// we will move the Ticker down to be a "header" - then need 4 slots for top 4
@@ -376,7 +405,6 @@ g_ModeScript.HoldoutHUD <- {}
 		g_ModeScript.HoldoutHUD.Fields.ticker <- {slot = HUD_TICKER, name = "tickermsg", datafunc = @() testHUDTickerText, flags = HUD_FLAG_BLINK}
 		
 		TimeTick4Rescue--;
-
 		if (TimeTick4Rescue<=0)
 		{
 			//Msg("DateUpDate \n");

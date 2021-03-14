@@ -136,17 +136,19 @@ else
 }
 
 
-::SpawnTank <- function ( vPos=null )
+::SpawnTank <- function ( vPos=null,player=null )
 {
+	if (player!=0)
+		Utils.SpawnZombieNearPlayer( player, Z_TANK, 0, 0, false );
 	//local vPos = player.GetLocation();
 	if (vPos==null)
 	{	
 		Msg("Spawning Tank!\n");
 		local MaxDist = RandomInt( 800, 1200 );
 		local MinDist = RandomInt( 400, 800 );	
-		//local player = ::VSLib.Player(client);
-		local player = Players.SurvivorWithHighestFlow();
-		Utils.SpawnZombieNearPlayer( player, Z_TANK, MaxDist, MinDist, false );
+		DirectorScript.MapScript.DirectorOptions.PreferredSpecialDirection <- 	SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS	
+		local playerx = Players.SurvivorWithHighestFlow();
+		Utils.SpawnZombieNearPlayer( playerx, Z_TANK, MaxDist, MinDist, false );
 	}	
 	else
 	{
@@ -162,7 +164,6 @@ else
 	local player = Players.SurvivorWithHighestFlow();
 	local MaxDist = RandomInt( 800, 1200 );
 	local MinDist = RandomInt( 400, 800 );
-	
 	local ranTD = RandomInt(0,1);
 	if ( ranTD ==0 )
 		Utils.SpawnZombieNearPlayer( player, Z_WITCH_BRIDE, MaxDist, MinDist, false );

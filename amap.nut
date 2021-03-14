@@ -248,6 +248,375 @@ switch (execscriptName)
 	}
 	case "c1m3_mall":
 	case "c1m4_atrium":
+	{	
+		if (nowLocalScriptExec==0)
+		{
+			nowLocalScriptExec++;
+			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			Msg("----------------------FINALE SCRIPT------------------\n")
+			nowFinaleScavengeStarted=1
+			//-----------------------------------------------------
+			PANIC <- 0
+			TANK <- 1
+			DELAY <- 2
+			ONSLAUGHT <- 3
+			//-----------------------------------------------------
+
+			SharedOptions <-
+			{
+				A_CustomFinale1 = ONSLAUGHT
+				A_CustomFinaleValue1 = ""
+
+				A_CustomFinale2 = PANIC
+				A_CustomFinaleValue2 = 1
+
+				A_CustomFinale3 = ONSLAUGHT
+				A_CustomFinaleValue3 = "c1m4_delay"
+				
+				A_CustomFinale4 = PANIC
+				A_CustomFinaleValue4 = 1
+
+				A_CustomFinale5 = ONSLAUGHT
+				A_CustomFinaleValue5 = "c1m4_delay"
+
+				A_CustomFinale6 = TANK
+				A_CustomFinaleValue6 = 1
+
+				A_CustomFinale7 = ONSLAUGHT
+				A_CustomFinaleValue7 = "c1m4_delay"
+			 
+				A_CustomFinale8 = PANIC
+				A_CustomFinaleValue8 = 1
+
+				A_CustomFinale9 = ONSLAUGHT
+				A_CustomFinaleValue9 = "c1m4_delay"
+			 
+				A_CustomFinale10 = PANIC
+				A_CustomFinaleValue10 = 1
+
+				A_CustomFinale11 = ONSLAUGHT
+				A_CustomFinaleValue11 = "c1m4_delay"
+
+				A_CustomFinale12 = PANIC
+				A_CustomFinaleValue12 = 1
+				
+				A_CustomFinale13 = ONSLAUGHT
+				A_CustomFinaleValue13 = "c1m4_delay"
+				
+				A_CustomFinale14 = TANK
+				A_CustomFinaleValue14 = 1   
+				
+				A_CustomFinale15 = ONSLAUGHT
+				A_CustomFinaleValue15 = "c1m4_delay"
+				
+				A_CustomFinale16 = PANIC
+				A_CustomFinaleValue16 = 1  
+				
+				A_CustomFinale17 = ONSLAUGHT
+				A_CustomFinaleValue17 = "c1m4_delay"    
+				
+				A_CustomFinale18 = PANIC
+				A_CustomFinaleValue18 = 1  
+				
+				A_CustomFinale19 = ONSLAUGHT
+				A_CustomFinaleValue19 = "c1m4_delay"
+				
+				A_CustomFinale20 = PANIC
+				A_CustomFinaleValue20 = 1   
+				
+				A_CustomFinale21 = ONSLAUGHT
+				A_CustomFinaleValue21 = "c1m4_delay"
+				
+				A_CustomFinale22 = TANK
+				A_CustomFinaleValue22 = 1  
+				
+				A_CustomFinale23 = ONSLAUGHT
+				A_CustomFinaleValue23 = "c1m4_delay"    
+				
+				A_CustomFinale24 = PANIC
+				A_CustomFinaleValue24 = 1
+				
+				A_CustomFinale25 = ONSLAUGHT
+				A_CustomFinaleValue25 = "c1m4_delay"
+				
+				A_CustomFinale26 = PANIC
+				A_CustomFinaleValue26 = 1   
+				
+				A_CustomFinale27 = ONSLAUGHT
+				A_CustomFinaleValue27 = "c1m4_delay"
+				
+				A_CustomFinale28 = PANIC
+				A_CustomFinaleValue28 = 1  
+				
+				A_CustomFinale29 = ONSLAUGHT
+				A_CustomFinaleValue29 = "c1m4_delay"    
+				
+				A_CustomFinale30 = PANIC
+				A_CustomFinaleValue30 = 1
+
+				A_CustomFinale31 = ONSLAUGHT
+				A_CustomFinaleValue31 = "c1m4_delay"   
+				
+				//-----------------------------------------------------
+
+				PreferredMobDirection = SPAWN_LARGE_VOLUME
+				PreferredSpecialDirection = SPAWN_LARGE_VOLUME
+				
+			//	BoomerLimit = 0
+			//	SmokerLimit = 2
+			//	HunterLimit = 1
+			//	SpitterLimit = 1
+			//	JockeyLimit = 0
+			//	ChargerLimit = 1
+
+				ProhibitBosses = true
+				ZombieSpawnRange = 3000
+				MobRechargeRate = 0.5
+				HordeEscapeCommonLimit = 15
+				BileMobSize = 15
+				
+				MusicDynamicMobSpawnSize = 8
+				MusicDynamicMobStopSize = 2
+				MusicDynamicMobScanStopSize = 1
+			} 
+
+			InitialOnslaughtOptions <-
+			{
+				LockTempo = 0
+				IntensityRelaxThreshold = 1.1
+				RelaxMinInterval = 2
+				RelaxMaxInterval = 4
+				SustainPeakMinTime = 25
+				SustainPeakMaxTime = 30
+				
+				MobSpawnMinTime = 4
+				MobSpawnMaxTime = 8
+				MobMinSize = 2
+				MobMaxSize = 6
+				CommonLimit = 5
+				
+				SpecialRespawnInterval = 100
+			}
+
+			PanicOptions <-
+			{
+				MegaMobSize = 0 // randomized in OnBeginCustomFinaleStage
+				MegaMobMinSize = 20
+				MegaMobMaxSize = 40
+				
+				CommonLimit = 15
+				
+				SpecialRespawnInterval = 40
+			}
+
+			TankOptions <-
+			{
+				ShouldAllowMobsWithTank = true
+				ShouldAllowSpecialsWithTank = true
+
+				MobSpawnMinTime = 10
+				MobSpawnMaxTime = 20
+				MobMinSize = 3
+				MobMaxSize = 5
+
+				CommonLimit = 7
+				
+				SpecialRespawnInterval = 60
+			}
+
+
+			DirectorOptions <- clone SharedOptions
+			{
+			}
+
+
+			//-----------------------------------------------------
+
+			// number of cans needed to escape.
+			NumCansNeeded <- 13
+
+			// fewer cans in single player since bots don't help much
+			if ( Director.IsSinglePlayerGame() )
+			{
+				NumCansNeeded <- 8
+			}
+
+			// duration of delay stage.
+			DelayMin <- 10
+			DelayMax <- 20
+
+			// Number of touches and/or pours allowed before a delay is aborted.
+			DelayPourThreshold <- 1
+			DelayTouchedOrPouredThreshold <- 2
+
+
+			// Once the delay is aborted, amount of time before it progresses to next stage.
+			AbortDelayMin <- 1
+			AbortDelayMax <- 3
+
+			// Number of touches and pours it takes to transition out of c1m4_finale_wave_1
+			GimmeThreshold <- 4
+
+
+			// console overrides
+			if ( Director.IsPlayingOnConsole() )
+			{
+				DelayMin <- 20
+				DelayMax <- 30
+				
+				// Number of touches and/or pours allowed before a delay is aborted.
+				DelayPourThreshold <- 2
+				DelayTouchedOrPouredThreshold <- 4
+				
+				TankOptions.ShouldAllowSpecialsWithTank = false
+			}
+			//-----------------------------------------------------
+			//      INIT
+			//-----------------------------------------------------
+
+			GasCansTouched          <- 0
+			GasCansPoured           <- 0
+			DelayTouchedOrPoured    <- 0
+			DelayPoured             <- 0
+
+			EntFire( "timer_delay_end", "LowerRandomBound", DelayMin )
+			EntFire( "timer_delay_end", "UpperRandomBound", DelayMax )
+			EntFire( "timer_delay_abort", "LowerRandomBound", AbortDelayMin )
+			EntFire( "timer_delay_abort", "UpperRandomBound", AbortDelayMax )
+
+			// this is too late. Moved to c1m4_atrium.nut
+			//EntFire( "progress_display", "SetTotalItems", NumCansNeeded )
+
+			function AbortDelay(){}  	// only defined during a delay, in c1m4_delay.nut
+			function EndDelay(){}		// only defined during a delay, in c1m4_delay.nut
+
+			NavMesh.UnblockRescueVehicleNav()
+
+			//-----------------------------------------------------
+
+			function GasCanTouched()
+			{
+				GasCansTouched++
+				Msg(" Touched: " + GasCansTouched + "\n")   
+				 
+				EvalGasCansPouredOrTouched()
+			}
+
+			function GasCanPoured()
+			{
+				GasCansPoured++
+				DelayPoured++
+				Msg(" Poured: " + GasCansPoured + "\n")   
+
+				if ( GasCansPoured == NumCansNeeded )
+				{
+					Msg(" needed: " + NumCansNeeded + "\n") 
+					EntFire( "relay_car_ready", "trigger" )
+				}
+
+				EvalGasCansPouredOrTouched()
+			}
+
+			function EvalGasCansPouredOrTouched()
+			{
+				TouchedOrPoured <- GasCansPoured + GasCansTouched
+				Msg(" Poured or touched: " + TouchedOrPoured + "\n")
+
+				DelayTouchedOrPoured++
+				Msg(" DelayTouchedOrPoured: " + DelayTouchedOrPoured + "\n")
+				Msg(" DelayPoured: " + DelayPoured + "\n")
+				
+				if (( DelayTouchedOrPoured >= DelayTouchedOrPouredThreshold ) || ( DelayPoured >= DelayPourThreshold ))
+				{
+					AbortDelay()
+				}
+				
+				switch( TouchedOrPoured )
+				{
+					case GimmeThreshold:
+						EntFire( "@director", "EndCustomScriptedStage" )
+						break
+				}
+			}
+			//-----------------------------------------------------
+
+			function AddTableToTable( dest, src )
+			{
+				foreach( key, val in src )
+				{
+					dest[key] <- val
+				}
+			}
+
+			function OnBeginCustomFinaleStage( num, type )
+			{
+				printl( "Beginning custom finale stage " + num + " of type " + type );
+				
+				local waveOptions = null
+				if ( num == 1 )
+				{
+					waveOptions = InitialOnslaughtOptions
+				}
+				else if ( type == PANIC )
+				{
+					waveOptions = PanicOptions
+					waveOptions.MegaMobSize = PanicOptions.MegaMobMinSize + rand()%( PanicOptions.MegaMobMaxSize - PanicOptions.MegaMobMinSize )
+					
+					Msg("*************************" + waveOptions.MegaMobSize + "\n")
+					
+				}
+				else if ( type == TANK )
+				{
+					waveOptions = TankOptions
+				}
+				
+				//---------------------------------
+
+
+				MapScript.DirectorOptions.clear()
+				
+
+				AddTableToTable( MapScript.DirectorOptions, SharedOptions );
+
+				if ( waveOptions != null )
+				{
+					AddTableToTable( MapScript.DirectorOptions, waveOptions );
+				}
+				
+				
+				Director.ResetMobTimer()
+				
+				if ( developer() > 0 )
+				{
+					Msg( "\n*****\nMapScript.DirectorOptions:\n" );
+					foreach( key, value in MapScript.DirectorOptions )
+					{
+						Msg( "    " + key + " = " + value + "\n" );
+					}
+
+					if ( LocalScript.rawin( "DirectorOptions" ) )
+					{
+						Msg( "\n*****\nLocalScript.DirectorOptions:\n" );
+						foreach( key, value in LocalScript.DirectorOptions )
+						{
+							Msg( "    " + key + " = " + value + "\n" );
+						}
+					}
+				}
+			}
+
+			//-----------------------------------------------------
+
+
+			if ( Director.GetGameModeBase() == "versus" )
+			{
+				SharedOptions.ProhibitBosses = false
+			}
+
+
+		}
+		break;
+	}
 	case "c2m1_highway":
 	case "c2m2_fairgrounds":
 	case "c2m3_coaster":
@@ -411,25 +780,25 @@ switch (execscriptName)
 				 A_CustomFinaleValue1 = 2
 				 
 				 A_CustomFinale2 = DELAY
-				 A_CustomFinaleValue2 = 12
+				 A_CustomFinaleValue2 = 30-1*nowPlayersinGame
 				 
 				 A_CustomFinale3 = TANK
 				 A_CustomFinaleValue3 = 1
 				 
 				 A_CustomFinale4 = DELAY
-				 A_CustomFinaleValue4 = 12
+				 A_CustomFinaleValue4 = 30-1*nowPlayersinGame
 				 
 				 A_CustomFinale5 = PANIC
 				 A_CustomFinaleValue5 = 2
 				 
 				 A_CustomFinale6 = DELAY
-				 A_CustomFinaleValue6 = 15
+				 A_CustomFinaleValue6 = 30-1*nowPlayersinGame
 				 
 				 A_CustomFinale7 = TANK
 				 A_CustomFinaleValue7 = 2
 
 				 A_CustomFinale8 = DELAY
-				 A_CustomFinaleValue8 = 10
+				 A_CustomFinaleValue8 = 30-1*nowPlayersinGame
 				 
 				SpecialRespawnInterval = 55
 
@@ -500,25 +869,25 @@ switch (execscriptName)
 				 A_CustomFinaleValue1 = 1
 				 
 				 A_CustomFinale2 = DELAY
-				 A_CustomFinaleValue2 = 10
+				 A_CustomFinaleValue2 = 30-1*nowPlayersinGame
 				 
 				 A_CustomFinale3 = TANK
 				 A_CustomFinaleValue3 = 1
 				 
 				 A_CustomFinale4 = DELAY
-				 A_CustomFinaleValue4 = 10
+				 A_CustomFinaleValue4 = 30-1*nowPlayersinGame
 				 
 				 A_CustomFinale5 = PANIC
 				 A_CustomFinaleValue5 = 1
 				 
 				 A_CustomFinale6 = DELAY
-				 A_CustomFinaleValue6 = 10
+				 A_CustomFinaleValue6 = 30-1*nowPlayersinGame
 				 
 				 A_CustomFinale7 = TANK
 				 A_CustomFinaleValue7 = 1
 				 
 				 A_CustomFinale8 = DELAY
-				 A_CustomFinaleValue8 = 15
+				 A_CustomFinaleValue8 = 30-1*nowPlayersinGame
 				 
 				 
 				HordeEscapeCommonLimit = 15
@@ -666,15 +1035,747 @@ switch (execscriptName)
 	case "c6m1_riverbank":
 	case "c6m2_bedlam":
 	case "c6m3_port":
+	{	
+		if (nowLocalScriptExec==0)
+		{
+			nowLocalScriptExec++;
+			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowFinaleScavengeStarted=1
+
+			Msg("----------------------FINALE SCRIPT------------------\n")
+			//-----------------------------------------------------
+			PANIC <- 0
+			TANK <- 1
+			DELAY <- 2
+			ONSLAUGHT <- 3
+			//-----------------------------------------------------
+
+			SharedOptions <-
+			{
+				A_CustomFinale1 = ONSLAUGHT
+				A_CustomFinaleValue1 = ""
+
+				A_CustomFinale2 = PANIC
+				A_CustomFinaleValue2 = 1
+
+				A_CustomFinale3 = ONSLAUGHT
+				A_CustomFinaleValue3 = "c1m4_delay"
+					
+				A_CustomFinale4 = PANIC
+				A_CustomFinaleValue4 = 1
+
+				A_CustomFinale5 = ONSLAUGHT
+				A_CustomFinaleValue5 = "c1m4_delay"
+
+				A_CustomFinale6 = TANK
+				A_CustomFinaleValue6 = 1
+
+				A_CustomFinale7 = ONSLAUGHT
+				A_CustomFinaleValue7 = "c1m4_delay"
+			 
+				A_CustomFinale8 = PANIC
+				A_CustomFinaleValue8 = 1
+
+				A_CustomFinale9 = ONSLAUGHT
+				A_CustomFinaleValue9 = "c1m4_delay"
+			 
+				A_CustomFinale10 = PANIC
+				A_CustomFinaleValue10 = 1
+
+				A_CustomFinale11 = ONSLAUGHT
+				A_CustomFinaleValue11 = "c1m4_delay"
+
+				A_CustomFinale12 = PANIC
+				A_CustomFinaleValue12 = 1
+					
+				A_CustomFinale13 = ONSLAUGHT
+				A_CustomFinaleValue13 = "c1m4_delay"
+					
+				A_CustomFinale14 = TANK
+				A_CustomFinaleValue14 = 2   
+					
+				A_CustomFinale15 = ONSLAUGHT
+				A_CustomFinaleValue15 = "c1m4_delay"
+					
+				A_CustomFinale16 = PANIC
+				A_CustomFinaleValue16 = 1  
+							  
+				A_CustomFinale17 = ONSLAUGHT
+				A_CustomFinaleValue17 = "c1m4_delay"    
+								   
+				A_CustomFinale18 = PANIC
+				A_CustomFinaleValue18 = 1  
+				
+				A_CustomFinale19 = ONSLAUGHT
+				A_CustomFinaleValue19 = "c1m4_delay"
+					
+				A_CustomFinale20 = PANIC
+				A_CustomFinaleValue20 = 1   
+					
+				A_CustomFinale21 = ONSLAUGHT
+				A_CustomFinaleValue21 = "c1m4_delay"
+					
+				A_CustomFinale22 = TANK
+				A_CustomFinaleValue22 = 1  
+							  
+				A_CustomFinale23 = ONSLAUGHT
+				A_CustomFinaleValue23 = "c1m4_delay"    
+								   
+				A_CustomFinale24 = PANIC
+				A_CustomFinaleValue24 = 1
+																		
+				A_CustomFinale25 = ONSLAUGHT
+				A_CustomFinaleValue25 = "c1m4_delay"
+					
+				A_CustomFinale26 = PANIC
+				A_CustomFinaleValue26 = 1   
+					
+				A_CustomFinale27 = ONSLAUGHT
+				A_CustomFinaleValue27 = "c1m4_delay"
+					
+				A_CustomFinale28 = PANIC
+				A_CustomFinaleValue28 = 1  
+							  
+				A_CustomFinale29 = ONSLAUGHT
+				A_CustomFinaleValue29 = "c1m4_delay"    
+								   
+				A_CustomFinale30 = PANIC
+				A_CustomFinaleValue30 = 1
+
+				A_CustomFinale31 = ONSLAUGHT
+				A_CustomFinaleValue31 = "c1m4_delay"   
+
+				A_CustomFinale32 = TANK
+				A_CustomFinaleValue32 = 2  
+							  
+				A_CustomFinale33 = ONSLAUGHT
+				A_CustomFinaleValue33 = "c1m4_delay"    
+								   
+				A_CustomFinale34 = PANIC
+				A_CustomFinaleValue34 = 1
+																		
+				A_CustomFinale35 = ONSLAUGHT
+				A_CustomFinaleValue35 = "c1m4_delay"
+					
+				A_CustomFinale36 = PANIC
+				A_CustomFinaleValue36 = 1   
+					
+				A_CustomFinale37 = ONSLAUGHT
+				A_CustomFinaleValue37 = "c1m4_delay"
+					
+				A_CustomFinale38 = PANIC
+				A_CustomFinaleValue38 = 1  
+							  
+				A_CustomFinale39 = ONSLAUGHT
+				A_CustomFinaleValue39 = "c1m4_delay"    
+								   
+				A_CustomFinale40 = PANIC
+				A_CustomFinaleValue40 = 1
+
+				A_CustomFinale41 = ONSLAUGHT
+				A_CustomFinaleValue41 = "c1m4_delay"   
+
+				A_CustomFinale42 = TANK
+				A_CustomFinaleValue42 = 1  
+							  
+				A_CustomFinale43 = ONSLAUGHT
+				A_CustomFinaleValue43 = "c1m4_delay"    
+								   
+				A_CustomFinale44 = PANIC
+				A_CustomFinaleValue44 = 1
+																		
+				A_CustomFinale45 = ONSLAUGHT
+				A_CustomFinaleValue45 = "c1m4_delay"
+					
+				A_CustomFinale46 = PANIC
+				A_CustomFinaleValue46 = 1   
+					
+				A_CustomFinale47 = ONSLAUGHT
+				A_CustomFinaleValue47 = "c1m4_delay"
+					
+				A_CustomFinale48 = PANIC
+				A_CustomFinaleValue48 = 1  
+							  
+				A_CustomFinale49 = ONSLAUGHT
+				A_CustomFinaleValue49 = "c1m4_delay"    
+								   
+				A_CustomFinale50 = PANIC
+				A_CustomFinaleValue50 = 1
+
+				A_CustomFinale51 = ONSLAUGHT
+				A_CustomFinaleValue51 = "c1m4_delay"   
+								  
+				//-----------------------------------------------------
+
+				PreferredMobDirection = SPAWN_LARGE_VOLUME
+				PreferredSpecialDirection = SPAWN_LARGE_VOLUME
+					
+			//	BoomerLimit = 0
+			//	SmokerLimit = 2
+			//	HunterLimit = 1
+			//	SpitterLimit = 1
+			//	JockeyLimit = 0
+			//	ChargerLimit = 1
+
+				ProhibitBosses = true
+				ZombieSpawnRange = 3000
+				MobRechargeRate = 0.5
+				HordeEscapeCommonLimit = 15
+				BileMobSize = 15
+				SpecialRespawnInterval = 20
+				
+				MusicDynamicMobSpawnSize = 8
+				MusicDynamicMobStopSize = 2
+				MusicDynamicMobScanStopSize = 1
+			} 
+
+			InitialOnslaughtOptions <-
+			{
+				LockTempo = 0
+				IntensityRelaxThreshold = 1.1
+				RelaxMinInterval = 2
+				RelaxMaxInterval = 4
+				SustainPeakMinTime = 25
+				SustainPeakMaxTime = 30
+				
+				MobSpawnMinTime = 4
+				MobSpawnMaxTime = 8
+				MobMinSize = 2
+				MobMaxSize = 6
+				CommonLimit = 5
+				
+				SpecialRespawnInterval = 100
+			}
+
+			PanicOptions <-
+			{
+				MegaMobSize = 0 // randomized in OnBeginCustomFinaleStage
+				MegaMobMinSize = 20
+				MegaMobMaxSize = 40
+				MaxSpecials = 5
+				BoomerLimit = 1
+				SmokerLimit = 2
+				HunterLimit = 2
+				SpitterLimit = 1
+				JockeyLimit = 1
+				ChargerLimit = 1
+				CommonLimit = 25
+				
+				SpecialRespawnInterval = 25
+			}
+
+			TankOptions <-
+			{
+				ShouldAllowMobsWithTank = true
+				ShouldAllowSpecialsWithTank = true
+
+				MobSpawnMinTime = 20
+				MobSpawnMaxTime = 40
+				MobMinSize = 3
+				MobMaxSize = 5
+				MaxSpecials = 3
+				CommonLimit = 5
+				
+				SpecialRespawnInterval = 50
+			}
+
+
+			DirectorOptions <- clone SharedOptions
+			{
+			}
+
+
+			//-----------------------------------------------------
+
+			// number of cans needed to escape.
+			NumCansNeeded <- 16
+
+			// fewer cans in single player since bots don't help much
+			if ( Director.IsSinglePlayerGame() )
+			{
+				NumCansNeeded <- 10
+			}
+
+			// duration of delay stage.
+			DelayMin <- 10
+			DelayMax <- 20
+
+			// Number of touches and/or pours allowed before a delay is aborted.
+			DelayPourThreshold <- 1
+			DelayTouchedOrPouredThreshold <- 2
+
+
+			// Once the delay is aborted, amount of time before it progresses to next stage.
+			AbortDelayMin <- 1
+			AbortDelayMax <- 3
+
+			// Number of touches and pours it takes to transition out of c1m4_finale_wave_1
+			GimmeThreshold <- 4
+
+
+			// console overrides
+			if ( Director.IsPlayingOnConsole() )
+			{
+				DelayMin <- 20
+				DelayMax <- 30
+				
+				// Number of touches and/or pours allowed before a delay is aborted.
+				DelayPourThreshold <- 2
+				DelayTouchedOrPouredThreshold <- 4
+				
+				TankOptions.ShouldAllowSpecialsWithTank = false
+			}
+			//-----------------------------------------------------
+			//      INIT
+			//-----------------------------------------------------
+
+			GasCansTouched          <- 0
+			GasCansPoured           <- 0
+			DelayTouchedOrPoured    <- 0
+			DelayPoured             <- 0
+
+			EntFire( "timer_delay_end", "LowerRandomBound", DelayMin )
+			EntFire( "timer_delay_end", "UpperRandomBound", DelayMax )
+			EntFire( "timer_delay_abort", "LowerRandomBound", AbortDelayMin )
+			EntFire( "timer_delay_abort", "UpperRandomBound", AbortDelayMax )
+
+			// this is too late. Moved to c1m4_atrium.nut
+			//EntFire( "progress_display", "SetTotalItems", NumCansNeeded )
+
+			function AbortDelay(){}  	// only defined during a delay, in c1m4_delay.nut
+			function EndDelay(){}		// only defined during a delay, in c1m4_delay.nut
+
+			NavMesh.UnblockRescueVehicleNav()
+
+			//-----------------------------------------------------
+
+			function GasCanTouched()
+			{
+				GasCansTouched++
+				Msg(" Touched: " + GasCansTouched + "\n")   
+				 
+				EvalGasCansPouredOrTouched()    
+			}
+				
+			function GasCanPoured()
+			{
+				GasCansPoured++
+				DelayPoured++
+				Msg(" Poured: " + GasCansPoured + "\n")   
+
+				if ( GasCansPoured == NumCansNeeded )
+				{
+					Msg(" needed: " + NumCansNeeded + "\n") 
+					EntFire( "relay_car_ready", "trigger" )
+				}
+
+				EvalGasCansPouredOrTouched()
+			}
+
+			function EvalGasCansPouredOrTouched()
+			{
+				TouchedOrPoured <- GasCansPoured + GasCansTouched
+				Msg(" Poured or touched: " + TouchedOrPoured + "\n")
+
+				DelayTouchedOrPoured++
+				Msg(" DelayTouchedOrPoured: " + DelayTouchedOrPoured + "\n")
+				Msg(" DelayPoured: " + DelayPoured + "\n")
+				
+				if (( DelayTouchedOrPoured >= DelayTouchedOrPouredThreshold ) || ( DelayPoured >= DelayPourThreshold ))
+				{
+					AbortDelay()
+				}
+				
+				switch( TouchedOrPoured )
+				{
+					case GimmeThreshold:
+						EntFire( "@director", "EndCustomScriptedStage" )
+						break
+				}
+			}
+			//-----------------------------------------------------
+
+			function AddTableToTable( dest, src )
+			{
+				foreach( key, val in src )
+				{
+					dest[key] <- val
+				}
+			}
+
+			function OnBeginCustomFinaleStage( num, type )
+			{
+				printl( "Beginning custom finale stage " + num + " of type " + type );
+				
+				local waveOptions = null
+				if ( num == 1 )
+				{
+					waveOptions = InitialOnslaughtOptions
+				}
+				else if ( type == PANIC )
+				{
+					waveOptions = PanicOptions
+					waveOptions.MegaMobSize = PanicOptions.MegaMobMinSize + rand()%( PanicOptions.MegaMobMaxSize - PanicOptions.MegaMobMinSize )
+					
+					Msg("*************************" + waveOptions.MegaMobSize + "\n")
+					
+				}
+				else if ( type == TANK )
+				{
+					waveOptions = TankOptions
+					EntFire( "bonus_relay", "Trigger", 0 )
+				}
+				
+				// give out items at certain stages
+				if ( num == 3 || num == 7 || num == 15 || num == 23 )
+				{
+					Director.L4D1SurvivorGiveItem()
+				}
+				
+				//---------------------------------
+
+
+				MapScript.DirectorOptions.clear()
+				
+
+				AddTableToTable( MapScript.DirectorOptions, SharedOptions );
+
+				if ( waveOptions != null )
+				{
+					AddTableToTable( MapScript.DirectorOptions, waveOptions );
+				}
+				
+				
+				Director.ResetMobTimer()
+				
+				if ( developer() > 0 )
+				{
+					Msg( "\n*****\nMapScript.DirectorOptions:\n" );
+					foreach( key, value in MapScript.DirectorOptions )
+					{
+						Msg( "    " + key + " = " + value + "\n" );
+					}
+
+					if ( LocalScript.rawin( "DirectorOptions" ) )
+					{
+						Msg( "\n*****\nLocalScript.DirectorOptions:\n" );
+						foreach( key, value in LocalScript.DirectorOptions )
+						{
+							Msg( "    " + key + " = " + value + "\n" );
+						}
+					}
+				}
+			}
+
+			//-----------------------------------------------------
+
+
+			if ( Director.GetGameModeBase() == "versus" )
+			{
+				SharedOptions.ProhibitBosses = false
+			}
+
+
+		}
+		break;
+	}
 	case "c7m1_docks":
 	case "c7m2_barge":
 	case "c7m3_port":
+	{	
+		if (nowLocalScriptExec==0)
+		{
+			nowLocalScriptExec++;
+			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			//-----------------------------------------------------
+			// This script handles the logic for the Port / Bridge
+			// finale in the River Campaign. 
+			//
+			//-----------------------------------------------------
+			Msg("Initiating c7m3_port_finale script\n");
+			nowFinaleScavengeStarted=1
+			//-----------------------------------------------------
+			ERROR		<- -1
+			PANIC 		<- 0
+			TANK 		<- 1
+			DELAY 		<- 2
+
+			//-----------------------------------------------------
+
+			// This keeps track of the number of times the generator button has been pressed. 
+			// Init to 1, since one button press has been used to start the finale and run 
+			// this script. 
+			ButtonPressCount <- 1
+
+			// This stores the stage number that we last
+			// played the "Press the Button!" VO
+			LastVOButtonStageNumber <- 0
+
+			// We use this to keep from running a bunch of queued advances really quickly. 
+			// Init to true because we are starting a finale from a button press in the pre-finale script 
+			// see GeneratorButtonPressed in c7m3_port.nut
+			PendingWaitAdvance <- true	
+
+			// We use three generator button presses to push through
+			// 8 stages. We have to queue up state advances
+			// depending on the state of the finale when buttons are pressed
+			QueuedDelayAdvances <- 0
+
+
+			// Tracking current finale states
+			CurrentFinaleStageNumber <- ERROR
+			CurrentFinaleStageType <- ERROR
+
+			// The finale is 3 phases. 
+			// We randomize the event types in the first two
+			local RandomFinaleStage1 = 0
+			local RandomFinaleStage2 = 0
+			local RandomFinaleStage4 = 0
+			local RandomFinaleStage5 = 0
+
+			// PHASE 1 EVENTS
+			if ( RandomInt( 1, 100 ) < 50 )
+			{
+				RandomFinaleStage1 = PANIC
+				RandomFinaleStage2 = TANK
+			}
+			else
+			{
+				RandomFinaleStage1 = TANK
+				RandomFinaleStage2 = PANIC
+			}
+
+
+			// PHASE 2 EVENTS
+			if ( RandomInt( 1, 100 ) < 50 )
+			{
+				RandomFinaleStage4 = PANIC
+				RandomFinaleStage5 = TANK
+			}
+			else
+			{
+				RandomFinaleStage4 = TANK
+				RandomFinaleStage5 = PANIC
+			}
+
+
+
+			// We want to give the survivors a little of extra time to 
+			// get on their feet before the escape, since you have to fight through 
+			// the sacrifice.
+
+			PreEscapeDelay <- 0
+			if ( Director.GetGameModeBase() == "coop" || Director.GetGameModeBase() == "realism" )
+			{
+				PreEscapeDelay <- 5
+			}
+			else if ( Director.GetGameModeBase() == "versus" )
+			{
+				PreEscapeDelay <- 15
+			}
+
+			DirectorOptions <-
+			{	
+				A_CustomFinale_StageCount = 8
+				
+				// PHASE 1
+				A_CustomFinale1 = RandomFinaleStage1
+				A_CustomFinaleValue1 = 1
+				A_CustomFinale2 = RandomFinaleStage2
+				A_CustomFinaleValue2 = 1
+				A_CustomFinale3 = DELAY
+				A_CustomFinaleValue3 = 9999
+				
+				
+				// PHASE 2
+				A_CustomFinale4 = RandomFinaleStage4
+				A_CustomFinaleValue4 = 1
+				A_CustomFinale5 = RandomFinaleStage5
+				A_CustomFinaleValue5 = 1	
+				A_CustomFinale6 = DELAY
+				A_CustomFinaleValue6 = 9999 	 
+				
+				
+				// PHASE 3
+				A_CustomFinale7 = TANK
+				A_CustomFinaleValue7 = 1	 	 		 
+				A_CustomFinale8 = DELAY
+				A_CustomFinaleValue8 = PreEscapeDelay
+				
+				
+				
+				TankLimit = 4
+				WitchLimit = 0
+				CommonLimit = 20	
+				HordeEscapeCommonLimit = 15	
+				EscapeSpawnTanks = false
+				//SpecialRespawnInterval = 80
+			}
+
+
+			function OnBeginCustomFinaleStage( num, type )
+			{
+				printl( "*!* Beginning custom finale stage " + num + " of type " + type );
+				printl( "*!* PendingWaitAdvance " + PendingWaitAdvance + ", QueuedDelayAdvances " + QueuedDelayAdvances );
+				
+				// Store off the state... 
+				CurrentFinaleStageNumber = num
+				CurrentFinaleStageType = type
+				
+				// Acknowledge the state advance
+				PendingWaitAdvance = false
+			}
+
+
+			function GeneratorButtonPressed()
+			{
+				printl( "*!* GeneratorButtonPressed finale stage " + CurrentFinaleStageNumber + " of type " +CurrentFinaleStageType );
+				printl( "*!* PendingWaitAdvance " + PendingWaitAdvance + ", QueuedDelayAdvances " + QueuedDelayAdvances );
+				
+				
+				ButtonPressCount++
+				
+				
+				local ImmediateAdvances = 0
+				
+				
+				if ( CurrentFinaleStageNumber == 1 || CurrentFinaleStageNumber == 4 )
+				{		
+					// First stage of a phase, so next stage is an "action" stage too.
+					// Advance to next action stage, and then queue an advance to the 
+					// next delay.
+					QueuedDelayAdvances++
+					ImmediateAdvances = 1
+				}
+				else if ( CurrentFinaleStageNumber == 2 || CurrentFinaleStageNumber == 5 )
+				{
+					// Second stage of a phase, so next stage is a "delay" stage.
+					// We need to immediately advance past the delay and into an action state. 
+					
+					//QueuedDelayAdvances++	// NOPE!
+					ImmediateAdvances = 2
+				}
+				else if ( CurrentFinaleStageNumber == 3 || CurrentFinaleStageNumber == 6 )
+				{
+					// Wait states... (very long delay)
+					// Advance immediately into an action state
+					
+					//QueuedDelayAdvances++
+					ImmediateAdvances = 1
+				}
+				else if ( CurrentFinaleStageNumber == -1 || 
+						  CurrentFinaleStageNumber == 0 )
+				{
+					// the finale is *just* about to start... 
+					// we can get this if all the buttons are hit at once at the beginning
+					// Just queue a wait advance
+					QueuedDelayAdvances++
+					ImmediateAdvances = 0
+				}
+				else
+				{
+					printl( "*!* Unhandled generator button press! " );
+				}
+
+				if ( ImmediateAdvances > 0 )
+				{	
+					EntFire( "generator_start_model", "Enable" )
+					
+					
+					if ( ImmediateAdvances == 1 )
+					{
+						printl( "*!* GeneratorButtonPressed Advancing State ONCE");
+						EntFire( "generator_start_model", "AdvanceFinaleState" )
+					}
+					else if ( ImmediateAdvances == 2 )
+					{
+						printl( "*!* GeneratorButtonPressed Advancing State TWICE");
+						EntFire( "generator_start_model", "AdvanceFinaleState" )
+						EntFire( "generator_start_model", "AdvanceFinaleState" )
+					}
+					
+					EntFire( "generator_start_model", "Disable" )
+					
+					PendingWaitAdvance = true
+				}
+				
+			}
+
+			function Update()
+			{
+				// Should we advance the finale state?
+				// 1. If we're in a DELAY state
+				// 2. And we have queued advances.... 
+				// 3. And we haven't just tried to advance the advance the state.... 
+				if ( CurrentFinaleStageType == DELAY && QueuedDelayAdvances > 0 && !PendingWaitAdvance )
+				{
+					// If things are calm (relatively), jump to the next state
+					if ( !Director.IsTankInPlay() && !Director.IsAnySurvivorInCombat() )
+					{
+						if ( Director.GetPendingMobCount() < 1 && Director.GetCommonInfectedCount() < 5 )
+						{
+							printl( "*!* Update Advancing State finale stage " + CurrentFinaleStageNumber + " of type " +CurrentFinaleStageType );
+							printl( "*!* PendingWaitAdvance " + PendingWaitAdvance + ", QueuedDelayAdvances " + QueuedDelayAdvances );
+					
+							QueuedDelayAdvances--
+							EntFire( "generator_start_model", "Enable" )
+							EntFire( "generator_start_model", "AdvanceFinaleState" )
+							EntFire( "generator_start_model", "Disable" )
+							PendingWaitAdvance = true
+						}
+					}
+				}
+				
+				// Should we fire the director event to play the "Press the button!" Nag VO?	
+				// If we're on an infinite delay stage...
+				if ( CurrentFinaleStageType == DELAY && CurrentFinaleStageNumber > 1 && CurrentFinaleStageNumber < 7 )	
+				{		
+					// 1. We haven't nagged for this stage yet
+					// 2. There are button presses remaining
+					if ( CurrentFinaleStageNumber != LastVOButtonStageNumber && ButtonPressCount < 3 )
+					{
+						// We're not about to process a wait advance..
+						if ( QueuedDelayAdvances == 0 && !PendingWaitAdvance )
+						{
+							// If things are pretty calm, run the event
+							if ( Director.GetPendingMobCount() < 1 && Director.GetCommonInfectedCount() < 1 )
+							{
+								if ( !Director.IsTankInPlay() && !Director.IsAnySurvivorInCombat() )
+								{
+									printl( "*!* Update firing event 1 (VO Prompt)" )
+									LastVOButtonStageNumber = CurrentFinaleStageNumber
+									Director.UserDefinedEvent1()
+								}
+							}
+						}
+					}
+				}
+				
+			}
+
+
+			function EnableEscapeTanks()
+			{
+				printl( "*!* EnableEscapeTanks finale stage " + CurrentFinaleStageNumber + " of type " +CurrentFinaleStageType );
+				
+				//Msg( "\n*****\nMapScript.DirectorOptions:\n" );
+				//foreach( key, value in MapScript.DirectorOptions )
+				//{
+				//	Msg( "    " + key + " = " + value + "\n" );
+				//}
+
+				MapScript.DirectorOptions.EscapeSpawnTanks <- true
+			}
+		}
+		break;
+	}
+
 	case "c8m1_apartment":
 	case "c8m2_subway":
 	case "c8m3_sewers":
 	case "c8m4_interior":
 	case "c8m5_rooftop":
-	{	
+	{
 		if (nowLocalScriptExec==0)
 		{
 			nowLocalScriptExec++;
@@ -697,8 +1798,8 @@ switch (execscriptName)
 			PreEscapeDelay <- 0
 			if ( Director.GetGameModeBase() == "coop" || Director.GetGameModeBase() == "realism" )
 			{
-				StageDelay <- 5
-				PreEscapeDelay <- 5
+				StageDelay <- 30-1*nowPlayersinGame//5
+				PreEscapeDelay <- 30-1*nowPlayersinGame//5
 			}
 			else if ( Director.GetGameModeBase() == "versus" )
 			{
@@ -815,8 +1916,8 @@ switch (execscriptName)
 			PreEscapeDelay <- 0
 			if ( Director.GetGameModeBase() == "coop" || Director.GetGameModeBase() == "realism" )
 			{
-				StageDelay <- 5
-				PreEscapeDelay <- 5
+				StageDelay <- 30-1*nowPlayersinGame//5
+				PreEscapeDelay <- 30-1*nowPlayersinGame//5
 			}
 			else if ( Director.GetGameModeBase() == "versus" )
 			{
@@ -929,8 +2030,8 @@ switch (execscriptName)
 			PreEscapeDelay <- 0
 			if ( Director.GetGameModeBase() == "coop" || Director.GetGameModeBase() == "realism" )
 			{
-				StageDelay <- 5
-				PreEscapeDelay <- 5
+				StageDelay <- 30-1*nowPlayersinGame//5
+				PreEscapeDelay <- 30-1*nowPlayersinGame//5
 			}
 			else if ( Director.GetGameModeBase() == "versus" )
 			{
@@ -1022,8 +2123,8 @@ switch (execscriptName)
 			PreEscapeDelay <- 0
 			if ( Director.GetGameModeBase() == "coop" || Director.GetGameModeBase() == "realism" )
 			{
-				StageDelay <- 5
-				PreEscapeDelay <- 5
+				StageDelay <- 30-1*nowPlayersinGame//5
+				PreEscapeDelay <- 30-1*nowPlayersinGame//5
 			}
 			else if ( Director.GetGameModeBase() == "versus" )
 			{
@@ -1114,11 +2215,6 @@ switch (execscriptName)
 	case "c12m3_bridge":
 	case "c12m4_barn":
 	case "c12m5_cornfield":
-	case "C12m1_hilltop":
-	case "C12m2_traintunnel":
-	case "C12m3_bridge":
-	case "C12m4_barn":
-	case "C12m5_cornfield":
 	{	
 		if (nowLocalScriptExec==0)
 		{
@@ -1142,8 +2238,8 @@ switch (execscriptName)
 			PreEscapeDelay <- 0
 			if ( Director.GetGameModeBase() == "coop" || Director.GetGameModeBase() == "realism" )
 			{
-				StageDelay <- 5
-				PreEscapeDelay <- 5
+				StageDelay <- 30-1*nowPlayersinGame//5
+				PreEscapeDelay <- 30-1*nowPlayersinGame//5
 			}
 			else if ( Director.GetGameModeBase() == "versus" )
 			{
@@ -1204,6 +2300,12 @@ switch (execscriptName)
 		}
 		break;
 	}
+	case "c13m1_alpinecreek":
+	case "c13m2_southpinestream":
+	case "c13m3_memorialbridge":
+	case "c13m4_cutthroatcreek":
+	case "c14m1_junkyard":
+	case "c14m2_lighthouse":
 	default:
 		break;
 }

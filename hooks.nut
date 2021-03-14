@@ -19,10 +19,11 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 		OnCustomFinaleStageChangeHook()
 	}
 	
-	Time4TimerWitch--
-	if (Time4TimerWitch>0)
+	Time4TimerWitch--;
+	if (Time4TimerWitch<=0)
 	{
 		SpawnWitch();
+		TimeTick4WitchMsg=10;
 	}
 	else
 	{
@@ -31,24 +32,70 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 
 	local flow=-1
 	local countflow=0
+	local survivorlist =[]
 	local flowlist =[]
-	Time4TimerRusher--
-	if (Time4TimerRusher>0)
+	
+	TimeTick4ConnectMsg--;		
+	TimeTick4WitchMsg--;
+	TimeTick4PanicMsg--;
+	TimeTick4BossMsg--;
+	Time4TimerRusher--;
+	TimeTick4HealMsg--;
+	
+
+	if (Time4TimerRusher<=0 && nowFinaleStageNum==0 && nowFinaleScavengeStarted==0)
 	{
+		if ( (developer() > 0) || (DEBUG == 1))
+		{
+			ClientPrint(null, 3, BLUE+"Time4TimerRusher");
+		}
 		foreach ( survivor in ::VSLib.EasyLogic.Players.Survivors() )
-		{			
+		{				
 			flow = survivor.GetFlowDistance();
+			
+			if ( (developer() > 0) || (DEBUG == 1))
+			{
+				ClientPrint(null, 3, BLUE+"survivor.GetFlowDistance() "+flow);	
+			}
 			if( flow && flow != -9999.0 ) // Invalid flows
 			{
+				survivorlist.insert(countflow,survivor.GetIndex());
+				flowlist.insert(countflow,flow);				
 				countflow++
-				flowlist.insert(survivor.GetIndex(),flow);
 				//index = aList.Push(flow);
 				//aList.Set(index, client, 1);
 			}
 		}
+		countflow=flowlist.len();//deja de ser indice
 		if( countflow >= 2 )
 		{
-			flowlist.sort(CompareFlow);
+			//flowlist.sort(CompareFlow);
+			for (local i = 0; i < flowlist.len()-1; i++ )
+			{	
+				local temp1,temp2;
+					
+				if(flowlist[i]>flowlist[i+1])
+				{
+					/*
+					temp1=flowlist[i+1]
+					temp2=survivorlist[i+1]
+					flowlist[i+1]=flowlist[i]
+					survivorlist[i+1]=survivorlist[i]
+					flowlist[i]=temp1
+					survivorlist[i]=temp2				
+					*/
+				}
+				else 
+				if(flowlist[i]<flowlist[i+1])
+				{
+					temp1=flowlist[i]
+					temp2=survivorlist[i]
+					flowlist[i]=flowlist[i+1]
+					survivorlist[i]=survivorlist[i+1]
+					flowlist[i+1]=temp1
+					survivorlist[i+1]=temp2				
+				}
+			}
 			local clientflowAvg;
 			local clientflowFirst;
 			local clientflowNear;
@@ -56,29 +103,49 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 			local distance;		
 			local teleportedahead =false;
 			local client=-1;
-			ClientPrint(null, 3, BLUE+"countflow "+countflow);			
-			// Loop through survivors from highest flow
-			for( local i = 0; i < flowlist.len(); i++ )
+			if ( (developer() > 0) || (DEBUG == 1))
 			{
-				client = flowlist[i];
-				local player = ::VSLib.Player(client);	
-				ClientPrint(null, 3, BLUE+"player.GetName() "+player.GetName());
+				ClientPrint(null, 3, BLUE+"countflow "+countflow);	
+			}				
+			// Loop through survivors from highest flow
+			for( local i = 0; i < flowlist.len(); i++ )//len es tamaño completo no es -1
+			{
 				
+				client = survivorlist[i];
+				local player = ::VSLib.Player(client);	
+				if ( (developer() > 0) || (DEBUG == 1))
+				{
+					ClientPrint(null, 3, BLUE+"player.GetName() "+player.GetName());
+				}				
 				local flowBack = true;
 				// Only check nearest half of survivor pack.
 				if( i < countflow / 2 )
-				{
-					local player2 = ::VSLib.Player(x);	
-					ClientPrint(null, 3, BLUE+"player2.GetName() "+player2.GetName());
-					
-					flow = Player(client).GetFlowDistance();
+				{					
+					flow = flowlist[i];
+					if ( (developer() > 0) || (DEBUG == 1))
+					{
+						ClientPrint(null, 3, BLUE+"GetFlowDistance() "+flow);
+					}
 					// Loop through from next survivor to mid-way through the pack.
 					for( local x = i + 1; x <= countflow / 2; x++ )
 					{
+						local player2 = ::VSLib.Player(survivorlist[x]);	
+						if ( (developer() > 0) || (DEBUG == 1))
+						{
+							ClientPrint(null, 3, BLUE+"player2.GetName() "+player2.GetName());
+						}
 						lastFlow = flowlist[x]//aList.Get(x, 0);
+						if ( (developer() > 0) || (DEBUG == 1))
+						{
+							ClientPrint(null, 3, BLUE+"GetFlowDistance() "+lastFlow);
+						}
 						distance = flow - lastFlow;
+						if ( (developer() > 0) || (DEBUG == 1))
+						{
+							ClientPrint(null, 3, BLUE+"flow - lastFlow "+distance);
+						}
 						// Compare higher flow with next survivor, they're rushing
-						if (distance > 1450)//1750 is antirush
+						if (distance > 1650)//1750 is antirush
 						{
 							// PrintToServer("RUSH: %N %f", client, distance);
 							flowBack = false;							
@@ -87,7 +154,9 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 							//GetClientAbsOrigin(clientflowNear, vPos);
 							//CPrintToChatAll("%s",rawmsg);
 							//TeleportEntity(client, vPos, NULL_VECTOR, NULL_VECTOR);
-							SpawnTank();
+							SpawnTank(null,player);
+							Time4TimerRusher=60-1*nowPlayersinGame
+							TimeTick4BossMsg=10;
 							break;
 						}
 					}
@@ -95,10 +164,10 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 			}
 		}		
 	}
-	else
-	{
-		Time4TimerRusher=60-2*nowPlayersinGame
-	}
+	//else
+	//{
+	//	Time4TimerRusher=60-2*nowPlayersinGame
+	//}
 	
 	if(ClearEdicts)
 	{
@@ -191,7 +260,8 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 	//KillsCout = killcout;
 
 	//Msg("killcout "+killcout+"\n");
-	Client_Count=clientcount;
+	//Client_Count=clientcount;
+	nowPlayersinGame=clientcount;
 	Survivors_Count=survivorcount;
 	
 }
@@ -232,38 +302,45 @@ function Notifications::OnDifficultyChanged::DifficultyChanged(diff, olddiff)
 
 function Notifications::OnEnterSaferoom::ClearScores ( client, params )
 {
-	local player = ::VSLib.Player(client);
-	if(player.IsHuman())
-	{
-		player.SetNetProp( "m_checkpointZombieKills", 0 );
-		player.SetNetProp( "m_missionZombieKills", 0 );
-		player.SetNetProp( "m_checkpointMeleeKills", 0 );
-		player.SetNetProp( "m_missionMeleeKills", 0 );
-		player.SetNetProp( "m_checkpointIncaps", 0 );
-		player.SetNetProp( "m_missionIncaps", 0 );
-		player.SetNetProp( "m_checkpointDamageToTank", 0 );
-		player.SetNetProp( "m_checkpointDamageToWitch", 0 );
-		//data
-		player.SetNetProp( "m_iFrags", 0 );
-		//(_classname, _targetname = "", pos = Vector(0,0,0), ang = QAngle(0,0,0), kvs = {})
-		local game_score_index = null;
-		game_score_index = ::VSLib.Utils.SpawnEntity("game_score","gamescoreEnt");
-		//bool AcceptEntityInput(int dest, const char[] input, int activator, int caller, int outputid)
-		//AcceptEntityInput(game_score_index, "ApplyScore", attacker, 0); 
-		//Input(input, value = "", delay = 0, activator = null)
-		//DoEntFire("!self", input.tostring(), value.tostring(), delay.tofloat(), activator, _ent);
-		
-		if(PlayerKillCout.rawin(player.GetIndex()))
+	//local player = ::VSLib.Player(client);
+	
+
+	foreach ( survivor in ::VSLib.EasyLogic.Players.Survivors() )
+	{			
+		if(survivor.IsHuman())
 		{
-			local newScore = PlayerKillCout[player.GetIndex()]*-1;
-			//AN ERROR HAS OCCURED [the index 'instance' does not exist] }
-			game_score_index.Input("ApplyScore",newScore.tostring(),0.0,client)
-			//
-			// Arguments: <entity name>, <input>, <parameter override>, <delay>, <caller>, <activator>
-			//DoEntFire( "gamescoreEnt", "ApplyScore",newScore.tostring(), 0.0, null, client);
-			game_score_index.KillEntity()
+			survivor.SetNetProp( "m_checkpointZombieKills", 9999 );
+			survivor.SetNetProp( "m_missionZombieKills", 9999 );
+			survivor.SetNetProp( "m_checkpointMeleeKills", 9999 );
+			survivor.SetNetProp( "m_missionMeleeKills", 9999 );
+			survivor.SetNetProp( "m_checkpointIncaps", 9999 );
+			survivor.SetNetProp( "m_missionIncaps", 9999 );
+			survivor.SetNetProp( "m_checkpointDamageToTank", 9999 );
+			survivor.SetNetProp( "m_checkpointDamageToWitch", 9999 );
+			//data
+			survivor.SetNetProp( "m_iFrags", 9999 );
+			//(_classname, _targetname = "", pos = Vector(0,0,0), ang = QAngle(0,0,0), kvs = {})
+			local game_score_index = null;
+			game_score_index = ::VSLib.Utils.SpawnEntity("game_score","gamescoreEnt");
+			//bool AcceptEntityInput(int dest, const char[] input, int activator, int caller, int outputid)
+			//AcceptEntityInput(game_score_index, "ApplyScore", attacker, 0); 
+			//Input(input, value = "", delay = 0, activator = null)
+			//DoEntFire("!self", input.tostring(), value.tostring(), delay.tofloat(), activator, _ent);
+			
+			if(PlayerKillCout.rawin(survivor.GetIndex()))
+			{
+				local newScore = 9999;//PlayerKillCout[survivor.GetIndex()]*-1;
+				//AN ERROR HAS OCCURED [the index 'instance' does not exist] }
+				game_score_index.Input("ApplyScore",newScore.tostring(),0.0,client)
+				//
+				// Arguments: <entity name>, <input>, <parameter override>, <delay>, <caller>, <activator>
+				//DoEntFire( "gamescoreEnt", "ApplyScore",newScore.tostring(), 0.0, null, client);
+				game_score_index.KillEntity()
+			}
 		}
+		
 	}
+	
 }
 function Notifications::OnSurvivorsDead::MissionLost()
 {
@@ -439,7 +516,10 @@ function Notifications::OnPlayerLeft::ModifyDirectorLeft (client, name, steamID,
 		( player.GetPlayerType()==Z_SURVIVOR && ((developer() > 0) || (DEBUG == 1)) )
 		)
 			nowStartConnections.insert(nowStartConnectionsnum++,client);
+		if ((developer() > 0) || (DEBUG == 1))
+		{
 			ClientPrint(null, 3, BLUE+"nowStartConnections "+nowStartConnectionsnum);
+		}
 	}
 	
 	
@@ -451,7 +531,10 @@ function Notifications::OnPlayerLeft::ModifyDirectorLeft (client, name, steamID,
 	local esta = false
 	if (Time4Connections>0)
 	{
-		ClientPrint(null, 3, BLUE+"Time4Connections "+Time4Connections);
+		if ((developer() > 0) || (DEBUG == 1))
+		{
+			ClientPrint(null, 3, BLUE+"Time4Connections "+Time4Connections);		
+		}
 		for(local i=0;i < nowStartConnections.len();i++)
 		{
 			if ((developer() > 0) || (DEBUG == 1))
@@ -471,16 +554,16 @@ function Notifications::OnPlayerLeft::ModifyDirectorLeft (client, name, steamID,
 		)
 	{
 		if (!esta)
-			TimeTick4Connect=9
+			TimeTick4ConnectMsg=9
 		nowPlayerEvent="Left"
 		nowPlayerLeft=player.GetName();
 		if (nowFinaleStageEvent==0)
-			BalanceDirectorOptions(0)
+			BalanceDirectorOptions()
 		else
-			BalanceFinaleDirectorOptions(1)
+			BalanceFinaleDirectorOptions()
 	}
 }
-function Notifications::OnPlayerConnected::onStartingConnections (client, name, ipAddress, steamID, params)
+function Notifications::OnPlayerConnected::onStartingConnections (client, params)
 {
 	/*
 	if (Time4Connections<=0)
@@ -514,8 +597,11 @@ function Notifications::OnPlayerJoined::ModifyDirectorJoin (client, name, ipAddr
 	}
 	else
 	{
-		ClientPrint(null, 3, BLUE+"Time4Connections "+Time4Connections);
-		ClientPrint(null, 3, BLUE+"nowStartConnections "+nowStartConnectionsnum);
+		if ((developer() > 0) || (DEBUG == 1))
+		{
+			ClientPrint(null, 3, BLUE+"Time4Connections "+Time4Connections);
+			ClientPrint(null, 3, BLUE+"nowStartConnections "+nowStartConnectionsnum);
+		}
 		local player = ::VSLib.Player(client);	
 		if	(
 		(player.IsHuman())
@@ -523,7 +609,10 @@ function Notifications::OnPlayerJoined::ModifyDirectorJoin (client, name, ipAddr
 		( player.GetPlayerType()==Z_SURVIVOR && ((developer() > 0) || (DEBUG == 1)) )
 		)
 			nowStartConnections.insert(nowStartConnectionsnum++,client);
-		ClientPrint(null, 3, BLUE+"nowStartConnections "+nowStartConnectionsnum);
+		if ((developer() > 0) || (DEBUG == 1))
+		{
+			ClientPrint(null, 3, BLUE+"nowStartConnections "+nowStartConnectionsnum);
+		}
 	}
 	
 	if ( (developer() > 0) || (DEBUG == 1))
@@ -535,11 +624,17 @@ function Notifications::OnPlayerJoined::ModifyDirectorJoin (client, name, ipAddr
 	
 	if (Time4Connections>0)
 	{
-		ClientPrint(null, 3, BLUE+"Time4Connections "+Time4Connections);
+		if ((developer() > 0) || (DEBUG == 1))
+		{
+			ClientPrint(null, 3, BLUE+"Time4Connections "+Time4Connections);
+		}
 		for(local i=0;i < nowStartConnections.len();i++)
 		{
-			ClientPrint(null, 3, BLUE+"nowStartConnections[i] "+nowStartConnections[i]);
-			ClientPrint(null, 3, BLUE+"client "+client);
+			if ((developer() > 0) || (DEBUG == 1))
+			{	
+				ClientPrint(null, 3, BLUE+"nowStartConnections[i] "+nowStartConnections[i]);
+				ClientPrint(null, 3, BLUE+"client "+client);
+			}
 			if (nowStartConnections[i]==client)
 				esta = true
 		}
@@ -551,7 +646,7 @@ function Notifications::OnPlayerJoined::ModifyDirectorJoin (client, name, ipAddr
 		)
 	{
 		if (!esta)
-			TimeTick4Connect=9
+			TimeTick4ConnectMsg=9
 		
 		nowPlayerEvent="Join"
 		nowPlayerJoined=player.GetName();
@@ -569,8 +664,25 @@ function Notifications::OnNextMap::NextMap(nextmap)
 }
 function Notifications::OnPanicEvent::Iniciado(entity, params)
 {
-	ClientPrint(null, 3, BLUE+"PANIC: Derroten juntos a la horda!");
+	TimeTick4PanicMsg=10;
 }
+
+function Notifications::OnHealSuccess::completaCuracion(healee, healer, health, params)
+{
+	local healer = ::VSLib.Player();
+	nowPlayerHealer=healer.GetName();
+	local healee = ::VSLib.Player();
+	nowPlayerHealed=healee.GetName();
+	if ( (developer() > 0) || (DEBUG == 1))
+	{
+			TimeTick4HealMsg=10;
+	}
+	else
+		if (!(healer.IsBot()) &&!(healee.IsBot()) && (healer.GetIndex()!=healee.GetIndex()))
+			TimeTick4HealMsg=10;	
+}
+
+
 function Notifications::OnPanicEventFinished::Finalizado()
 {
 	ClientPrint(null, 3, BLUE+"YEAH! Ustedes derrotaron la horda!!");
