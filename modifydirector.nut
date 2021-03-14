@@ -476,7 +476,9 @@ else
 		//if ( "cm_AggressiveSpecials" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
 			DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <-  0	
 	}
-	IncludeScript ("debug_directoroptions.nut");	
+	
+	if ( (developer() > 0) || (DEBUG == 1))
+		IncludeScript ("debug_directoroptions.nut");	
 	
 	/*
 	
@@ -884,7 +886,7 @@ else
 		//if ( "cm_AggressiveSpecials" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
 			DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <-  0	
 	}
-	
-	IncludeScript ("debug_directoroptions.nut");	
+	if ( (developer() > 0) || (DEBUG == 1))
+		IncludeScript ("debug_directoroptions.nut");	
 		
 }

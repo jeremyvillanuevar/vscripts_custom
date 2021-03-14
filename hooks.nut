@@ -41,8 +41,6 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 	TimeTick4BossMsg--;
 	Time4TimerRusher--;
 	TimeTick4HealMsg--;
-	
-
 	if (Time4TimerRusher<=0 && nowFinaleStageNum==0 && nowFinaleScavengeStarted==0)
 	{
 		if ( (developer() > 0) || (DEBUG == 1))
@@ -491,9 +489,15 @@ function Notifications::OnModeStart::GameStart(gamemode)
 
 function Notifications::OnSurvivorsLeftStartArea::Inicio()
 {			
-	Msg("OnSurvivorsLeftStartArea"+"\n");	
-	SpawnWitch();
-	IncludeScript ("debug_directoroptions.nut");	
+	Msg("OnSurvivorsLeftStartArea"+"\n");
+	if (nowPlayersinGame>4)
+	{	
+		SpawnWitch();
+		Time4TimerWitch=60-5*nowPlayersinGame;
+		TimeTick4WitchMsg=10;
+	}
+	if ( (developer() > 0) || (DEBUG == 1))
+		IncludeScript ("debug_directoroptions.nut");	
 }
 
 function Notifications::OnPlayerLeft::ModifyDirectorLeft (client, name, steamID, params)
@@ -667,14 +671,13 @@ function Notifications::OnPanicEvent::Iniciado(entity, params)
 	TimeTick4PanicMsg=10;
 }
 
-function Notifications::OnHealSuccess::completaCuracion(healee, healer, health, params)
+function Notifications::OnHealSuccess::completaCuracion ( healee, healer, health, params )
 {
-	local healer = ::VSLib.Player();
 	nowPlayerHealer=healer.GetName();
-	local healee = ::VSLib.Player();
 	nowPlayerHealed=healee.GetName();
 	if ( (developer() > 0) || (DEBUG == 1))
 	{
+		if (healer.GetIndex()!=healee.GetIndex())
 			TimeTick4HealMsg=10;
 	}
 	else
