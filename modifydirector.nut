@@ -112,7 +112,7 @@ else
 		//Relaxation stage//放松阶段
 		RelaxMinInterval = 30
 		RelaxMaxInterval = 60
-		RelaxMaxFlowTravel = 700	
+		RelaxMaxFlowTravel = 2000//1750
 		
 		//Specials and Panic Events
 		//Number of commons that spawn when a bile bomb is thrown or a survivor is hit by vomit

@@ -22,6 +22,11 @@ c2m5_concert
 c5m5_bridge
 c8m5_rooftop
 c11m5_runway
+
+3 scavenge
+c1m4_atrium
+c6m3_port
+c7m3_port
 */
 switch (execscriptName)
 {	
@@ -196,8 +201,7 @@ switch (execscriptName)
 	//c1m2_reserved_wanderers
 	//c1_streets_ambush 1
 	//c1_gunshop_quiet 2
-	{	
-		
+	{			
 		if (nowLocalScriptExec==1)
 		{
 			nowLocalScriptExec++;
@@ -219,7 +223,7 @@ switch (execscriptName)
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
 			Msg("c1_streets_ambush\n");
 			Msg("Initiating Ambush\n");
-			local tempChargerLimit=2+1*nowPlayersinGame/2
+			local tempChargerLimit=2+1*nowPlayersinGame/4
 			DirectorOptions <-
 			{
 				// This turns off tanks and witches.
@@ -232,8 +236,8 @@ switch (execscriptName)
 				ChargerLimit = tempChargerLimit
 				SpitterLimit = 1
 				JockeyLimit = 0
-				LockTempo = true
-				SpecialRespawnInterval = 15
+				LockTempo = false
+				SpecialRespawnInterval = 30-1*nowPlayersinGame
 				SpecialInitialSpawnDelayMin = 2
 				SpecialInitialSpawnDelayMax = 6
 				ZombieSpawnRange=500
@@ -249,7 +253,7 @@ switch (execscriptName)
 	case "c1m3_mall":
 	case "c1m4_atrium":
 	{	
-		if (nowLocalScriptExec==0)
+		if (nowLocalScriptExec==1)
 		{
 			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
@@ -438,7 +442,7 @@ switch (execscriptName)
 			// fewer cans in single player since bots don't help much
 			if ( Director.IsSinglePlayerGame() )
 			{
-				NumCansNeeded <- 8
+				NumCansNeeded <- 18
 			}
 
 			// duration of delay stage.
@@ -459,17 +463,17 @@ switch (execscriptName)
 
 
 			// console overrides
-			if ( Director.IsPlayingOnConsole() )
-			{
-				DelayMin <- 20
-				DelayMax <- 30
-				
-				// Number of touches and/or pours allowed before a delay is aborted.
-				DelayPourThreshold <- 2
-				DelayTouchedOrPouredThreshold <- 4
-				
-				TankOptions.ShouldAllowSpecialsWithTank = false
-			}
+			//if ( Director.IsPlayingOnConsole() )
+			//{
+			DelayMin <- 20
+			DelayMax <- 30
+			
+			// Number of touches and/or pours allowed before a delay is aborted.
+			DelayPourThreshold <- 2
+			DelayTouchedOrPouredThreshold <- 4
+			
+			//TankOptions.ShouldAllowSpecialsWithTank = false
+			//}
 			//-----------------------------------------------------
 			//      INIT
 			//-----------------------------------------------------
@@ -612,8 +616,40 @@ switch (execscriptName)
 			{
 				SharedOptions.ProhibitBosses = false
 			}
+		}
+		if (nowLocalScriptExec==0)
+		{
+			nowLocalScriptExec++;
+			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			Msg("c1m4_atrium\n");
+						
+			Msg(" atrium map script "+"\n")
+
+			// number of cans needed to escape.
+
+			if ( Director.IsSinglePlayerGame() )
+			{
+				NumCansNeeded <- 18
+			}
+			else
+			{
+				NumCansNeeded <- 13
+			}
 
 
+			DirectorOptions <-
+			{
+				
+			CommonLimit = 15
+
+			}
+
+			NavMesh.UnblockRescueVehicleNav()
+
+			EntFire( "progress_display", "SetTotalItems", NumCansNeeded )
+
+
+			function GasCanPoured(){}
 		}
 		break;
 	}
@@ -1314,17 +1350,17 @@ switch (execscriptName)
 
 
 			// console overrides
-			if ( Director.IsPlayingOnConsole() )
-			{
-				DelayMin <- 20
-				DelayMax <- 30
+			//if ( Director.IsPlayingOnConsole() )
+			//{
+			DelayMin <- 20
+			DelayMax <- 30
+			
+			// Number of touches and/or pours allowed before a delay is aborted.
+			DelayPourThreshold <- 2
+			DelayTouchedOrPouredThreshold <- 4
 				
-				// Number of touches and/or pours allowed before a delay is aborted.
-				DelayPourThreshold <- 2
-				DelayTouchedOrPouredThreshold <- 4
-				
-				TankOptions.ShouldAllowSpecialsWithTank = false
-			}
+			//	TankOptions.ShouldAllowSpecialsWithTank = false
+			//}
 			//-----------------------------------------------------
 			//      INIT
 			//-----------------------------------------------------
@@ -1837,8 +1873,8 @@ switch (execscriptName)
 				MegaMobSize=50
 				//The Panic should end when we finish with Specials, not wait for the MegaMob.
 				PanicSpecialsOnly=true
-				PanicWavePauseMax=60
-				PanicWavePauseMin=60
+				PanicWavePauseMax=5
+				PanicWavePauseMin=1
 				//The minimum amount of time a SCRIPTED stage is allowed to run before ending.
 				MinimumStageTime =30
 				EscapeSpawnTanks =true
@@ -2162,8 +2198,8 @@ switch (execscriptName)
 				MegaMobSize=50
 				//The Panic should end when we finish with Specials, not wait for the MegaMob.
 				PanicSpecialsOnly=true
-				PanicWavePauseMax=60
-				PanicWavePauseMin=60
+				PanicWavePauseMax=5
+				PanicWavePauseMin=1
 				//The minimum amount of time a SCRIPTED stage is allowed to run before ending.
 				MinimumStageTime =30
 				EscapeSpawnTanks =true

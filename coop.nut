@@ -20,6 +20,8 @@ IncludeScript ("debug.nut");
 ::nowFinaleStageEvent <- 0
 ::nowLocalScriptExec <- 0
 ::nowFirstPlayerinGame <- 0
+::nowSpawnedTankRusher <- 0
+::nowSpawnedWitch <- 0
 ::nowexecScriptName <- ""
 ::nowStartConnectionsnum <- 0
 ::nowStartConnections <-  []

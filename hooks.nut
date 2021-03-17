@@ -12,35 +12,38 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 	}
 	ShowHUD()
 	Time4Connections--
-	
 	if (nowFinaleStageEvent==1)
 	{
 		nowFinaleStageEvent = 0
 		OnCustomFinaleStageChangeHook()
 	}
-	
-	Time4TimerWitch--;
-	if (Time4TimerWitch<=0)
-	{
-		SpawnWitch();
-		TimeTick4WitchMsg=10;
-	}
-	else
-	{
-		Time4TimerWitch=60-5*nowPlayersinGame
-	}
-
 	local flow=-1
 	local countflow=0
 	local survivorlist =[]
 	local flowlist =[]
 	
+	//if (nowPlayersinGame>8)
+	//{
+		Time4TimerWitch--;
+	//}
 	TimeTick4ConnectMsg--;		
 	TimeTick4WitchMsg--;
 	TimeTick4PanicMsg--;
 	TimeTick4BossMsg--;
-	Time4TimerRusher--;
 	TimeTick4HealMsg--;
+	/*
+	if (Time4TimerWitch<=0)
+	{
+		SpawnWitch();
+		Time4TimerWitch=60-5*nowPlayersinGame;
+		TimeTick4WitchMsg=10;
+		nowSpawnedWitch++;
+	}
+	*/
+	//if (nowPlayersinGame>8)
+	//{
+		Time4TimerRusher--;
+	//}
 	if (Time4TimerRusher<=0 && nowFinaleStageNum==0 && nowFinaleScavengeStarted==0)
 	{
 		if ( (developer() > 0) || (DEBUG == 1))
@@ -48,7 +51,7 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 			ClientPrint(null, 3, BLUE+"Time4TimerRusher");
 		}
 		foreach ( survivor in ::VSLib.EasyLogic.Players.Survivors() )
-		{				
+		{
 			flow = survivor.GetFlowDistance();
 			
 			if ( (developer() > 0) || (DEBUG == 1))
@@ -58,7 +61,7 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 			if( flow && flow != -9999.0 ) // Invalid flows
 			{
 				survivorlist.insert(countflow,survivor.GetIndex());
-				flowlist.insert(countflow,flow);				
+				flowlist.insert(countflow,flow);
 				countflow++
 				//index = aList.Push(flow);
 				//aList.Set(index, client, 1);
@@ -143,7 +146,7 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 							ClientPrint(null, 3, BLUE+"flow - lastFlow "+distance);
 						}
 						// Compare higher flow with next survivor, they're rushing
-						if (distance > 1650)//1750 is antirush
+						if (distance > 1750)//1750 is antirush
 						{
 							// PrintToServer("RUSH: %N %f", client, distance);
 							flowBack = false;							
@@ -153,6 +156,7 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 							//CPrintToChatAll("%s",rawmsg);
 							//TeleportEntity(client, vPos, NULL_VECTOR, NULL_VECTOR);
 							SpawnTank(null,player);
+							nowSpawnedTankRusher++
 							Time4TimerRusher=60-1*nowPlayersinGame
 							TimeTick4BossMsg=10;
 							break;
@@ -162,10 +166,6 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 			}
 		}		
 	}
-	//else
-	//{
-	//	Time4TimerRusher=60-2*nowPlayersinGame
-	//}
 	
 	if(ClearEdicts)
 	{
@@ -264,6 +264,12 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 	
 }
 
+
+function Notifications::OnWitchSpawned(witchid, params)
+{	
+	TimeTick4WitchMsg=10;
+}
+
 ::OnCustomFinaleStageChangeHook <- function ( )
 {
 	TimeTick4Rescue=15
@@ -307,16 +313,16 @@ function Notifications::OnEnterSaferoom::ClearScores ( client, params )
 	{			
 		if(survivor.IsHuman())
 		{
-			survivor.SetNetProp( "m_checkpointZombieKills", 9999 );
-			survivor.SetNetProp( "m_missionZombieKills", 9999 );
-			survivor.SetNetProp( "m_checkpointMeleeKills", 9999 );
-			survivor.SetNetProp( "m_missionMeleeKills", 9999 );
-			survivor.SetNetProp( "m_checkpointIncaps", 9999 );
-			survivor.SetNetProp( "m_missionIncaps", 9999 );
-			survivor.SetNetProp( "m_checkpointDamageToTank", 9999 );
-			survivor.SetNetProp( "m_checkpointDamageToWitch", 9999 );
+			survivor.SetNetProp( "m_checkpointZombieKills", 99999 );
+			survivor.SetNetProp( "m_missionZombieKills", 99999 );
+			survivor.SetNetProp( "m_checkpointMeleeKills", 99999 );
+			survivor.SetNetProp( "m_missionMeleeKills", 99999 );
+			survivor.SetNetProp( "m_checkpointIncaps", 99999 );
+			survivor.SetNetProp( "m_missionIncaps", 99999 );
+			survivor.SetNetProp( "m_checkpointDamageToTank", 99999 );
+			survivor.SetNetProp( "m_checkpointDamageToWitch", 99999 );
 			//data
-			survivor.SetNetProp( "m_iFrags", 9999 );
+			survivor.SetNetProp( "m_iFrags", 99999 );
 			//(_classname, _targetname = "", pos = Vector(0,0,0), ang = QAngle(0,0,0), kvs = {})
 			local game_score_index = null;
 			game_score_index = ::VSLib.Utils.SpawnEntity("game_score","gamescoreEnt");
