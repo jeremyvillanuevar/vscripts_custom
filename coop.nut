@@ -11,6 +11,7 @@ getroottable()["GREEN"]		<- "\x05"
 IncludeScript ("debug.nut");
 
 //SessionState now
+::nowNumCansNeeded <- 0
 ::nowPlayersIntensity <- 0
 ::nowPlayersTimeAveragedIntensity <- 0
 ::nowPlayersinGame <- 0
