@@ -313,8 +313,8 @@ function Notifications::OnEnterSaferoom::ClearScores ( client, params )
 	{			
 		if(survivor.IsHuman())
 		{
-			survivor.SetNetProp( "m_checkpointZombieKills", 99999 );
-			survivor.SetNetProp( "m_missionZombieKills", 99999 );
+			survivor.SetNetProp( "m_checkpointZombieKills", 99990 );
+			survivor.SetNetProp( "m_missionZombieKills", 99990 );
 			survivor.SetNetProp( "m_checkpointMeleeKills", 99999 );
 			survivor.SetNetProp( "m_missionMeleeKills", 99999 );
 			survivor.SetNetProp( "m_checkpointIncaps", 99999 );

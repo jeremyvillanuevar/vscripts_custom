@@ -2,13 +2,21 @@ printl( "COOP" );
 //Enables Scripted Mode: Scope and VScript Hooks and Callbacks
 //CONSIDER STRIPPER RUNS AFTER VSCRIPT
 //IncludeScript ("blendermode.nut");
-IncludeScript ("config.nut");
+//IncludeScript ("config.nut");
 IncludeScript("VSLib");
 getroottable()["WHITE"]		<- "\x01"
 getroottable()["BLUE"]		<- "\x03"
 getroottable()["ORANGE"]	<- "\x04"
 getroottable()["GREEN"]		<- "\x05"
 IncludeScript ("debug.nut");
+
+::__COOP_VERSION__ <- 9.3;
+/// Mostrar muertes de jugadores ///// Por razones de exhibición, solo se muestran los cuatro primeros
+///////////////////////////////////显示玩家击杀/////因为显示原因所以只显示前四名///////////////////////////
+// Interruptor de visualización de clasificación
+::Show_Player_Rank<-true;                            //排行显示开关
+// Si se permite la visualización de estadísticas de muerte de la computadora. Dado que el reproductor puede sobrescribir el índice de la computadora, las estadísticas de la computadora se borrarán después de que el jugador real muera y se vaya, o es posible que no se muestren directamente.
+::AllowShowBotSurvivor <- false;                 //是否允许显示电脑的击杀统计。由于电脑的index可能会被玩家覆盖，所以会出现真实玩家死亡离开后电脑统计被清空，或者直接不显示的情况
 
 //SessionState now
 ::nowNumCansNeeded <- 0
