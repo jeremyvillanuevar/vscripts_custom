@@ -236,14 +236,11 @@ switch (execscriptName)
 				ChargerLimit = tempChargerLimit
 				SpitterLimit = 1
 				JockeyLimit = 0
-				LockTempo = false
+				LockTempo = true
 				SpecialRespawnInterval = 30-1*nowPlayersinGame
 				SpecialInitialSpawnDelayMin = 2
 				SpecialInitialSpawnDelayMax = 6
-				ZombieSpawnRange=500
-				CommonLimit = 25+5*nowPlayersinGame
-				PreferredMobDirection = SPAWN_IN_FRONT_OF_SURVIVORS
-				PreferredSpecialDirection = SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS
+				ZombieSpawnRange=500				
 			}
 			Director.ResetMobTimer()
 			Director.PlayMegaMobWarningSounds()
@@ -1868,38 +1865,8 @@ switch (execscriptName)
 				A_CustomFinale8 		= DELAY
 				A_CustomFinaleValue8 	= PreEscapeDelay
 				
-					
-				//Finales Options
-				IntensityRelaxThreshold = 0.97		
-				PausePanicWhenRelaxing	= true
-				//The amount of total infected spawned during a panic event
-				MegaMobSize=50
-				//The Panic should end when we finish with Specials, not wait for the MegaMob.
-				PanicSpecialsOnly=true
-				PanicWavePauseMax=5
-				PanicWavePauseMin=1
-				//The minimum amount of time a SCRIPTED stage is allowed to run before ending.
-				MinimumStageTime =30
-				EscapeSpawnTanks =true
-				HordeEscapeCommonLimit		=	25		//was 25
-				PreferredMobDirection		=	SPAWN_LARGE_VOLUME
-				PreferredSpecialDirection	=	SPAWN_LARGE_VOLUME
-				ShouldConstrainLargeVolumeSpawn	=	false
-				//Other Finale
-				ShouldAllowSpecialsWithTank = true
-				MobMinSize					=	15
-				MobMaxSize					=	35
-				MobRechargeRate				=	15
-				CommonLimit		=	45	
-				ZombieSpawnRange			=	3000
-				SpecialRespawnInterval		=	15
-				BileMobSize					=	15
-				ProhibitBosses				=	false
-				MusicDynamicMobSpawnSize	=	8
-				MusicDynamicMobStopSize		=	2
-				MusicDynamicMobScanStopSize	=	1
-				TankLimit					=	5
-				WitchLimit					=	1	
+				
+				ZombieSpawnRange			=	500
 		
 			}
 
@@ -2194,37 +2161,7 @@ switch (execscriptName)
 				A_CustomFinaleValue8 	= PreEscapeDelay
 				
 					
-				//Finales Options
-				IntensityRelaxThreshold = 0.97		
-				PausePanicWhenRelaxing	= true
-				//The amount of total infected spawned during a panic event
-				MegaMobSize=50
-				//The Panic should end when we finish with Specials, not wait for the MegaMob.
-				PanicSpecialsOnly=true
-				PanicWavePauseMax=5
-				PanicWavePauseMin=1
-				//The minimum amount of time a SCRIPTED stage is allowed to run before ending.
-				MinimumStageTime =30
-				EscapeSpawnTanks =true
-				HordeEscapeCommonLimit		=	25		//was 25
-				PreferredMobDirection		=	SPAWN_LARGE_VOLUME
-				PreferredSpecialDirection	=	SPAWN_LARGE_VOLUME
-				ShouldConstrainLargeVolumeSpawn	=	false
-				//Other Finale
-				ShouldAllowSpecialsWithTank = true
-				MobMinSize					=	15
-				MobMaxSize					=	35
-				MobRechargeRate				=	15
-				CommonLimit		=	45	
-				ZombieSpawnRange			=	3000
-				SpecialRespawnInterval		=	15
-				BileMobSize					=	15
-				ProhibitBosses				=	false
-				MusicDynamicMobSpawnSize	=	8
-				MusicDynamicMobStopSize		=	2
-				MusicDynamicMobScanStopSize	=	1
-				TankLimit					=	5
-				WitchLimit					=	1	
+				ZombieSpawnRange		=	1000
 		
 				
 			}

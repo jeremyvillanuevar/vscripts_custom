@@ -286,10 +286,19 @@ g_ModeScript.HoldoutHUD <- {}
 					{
 						if (TimeTick4HealMsg<=0)
 						{
-							//local hudtip4 = HUD.Item("Bienvenido {name}!!!");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
-							//hudtip4.SetValue("name", "Bienvenido "+playerJoined+"!!!");
-							hudtip4.AttachTo(HUD_TICKER);
-							hudtip4.AddFlag(g_ModeScript.HUD_FLAG_NOTVISIBLE);
+							if (TimeTick4BossDefeatedMsg<=0)
+							{
+								//local hudtip4 = HUD.Item("Bienvenido {name}!!!");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+								//hudtip4.SetValue("name", "Bienvenido "+playerJoined+"!!!");
+								hudtip4.AttachTo(HUD_TICKER);
+								hudtip4.AddFlag(g_ModeScript.HUD_FLAG_NOTVISIBLE);
+							}
+							else
+							{
+								hudtip4.SetValue("name", "Bien!! Derrota al Boss y avanza!");
+								hudtip4.AttachTo(HUD_TICKER);
+								hudtip4.AddFlag(g_ModeScript.HUD_FLAG_BLINK);
+							}
 						}
 						else
 						{
@@ -308,7 +317,7 @@ g_ModeScript.HoldoutHUD <- {}
 				else
 				{
 					//local hudtip4 = HUD.Item("Aparece una Witch, es ideal un ataque en grupo!!!");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
-					hudtip4.SetValue("name", "Aparece una Witch, es ideal un ataque en grupo!!!");
+					hudtip4.SetValue("name", "Aparece una Witch, ataquen en grupo!!!");
 					hudtip4.AttachTo(HUD_TICKER);
 					hudtip4.AddFlag(g_ModeScript.HUD_FLAG_BLINK);				
 				}
@@ -316,7 +325,7 @@ g_ModeScript.HoldoutHUD <- {}
 			else
 			{
 				if (nowPlayersinGame>1)
-					hudtip4.SetValue("name", "Aparece un Tank al verlos separados. | Derrotenlo para avanzar!!!");
+					hudtip4.SetValue("name", "Aparece un Tank, derrotenlo!!!");
 					else
 						hudtip4.SetValue("name", "Aparece un Tank Boss!!!");
 					//local hudtip4 = HUD.Item("Aparece un Tank Boss | Derrotenlo para avanzar!!!");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");

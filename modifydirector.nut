@@ -54,9 +54,9 @@ else
 		AggressiveSpecials = 0
 		MaxSpecials = 2
 		DominatorLimit = 2
-		SpecialRespawnInterval = 30
-		SpecialInitialSpawnDelayMin = 5
-		SpecialInitialSpawnDelayMax =10
+		SpecialRespawnInterval = 5
+		SpecialInitialSpawnDelayMin = 0
+		SpecialInitialSpawnDelayMax =0
 		SmokerLimit=1
 		BoomerLimit=1
 		HunterLimit=1
@@ -65,72 +65,15 @@ else
 		ChargerLimit=1
 		WitchLimit=1
 		SurvivorMaxIncapacitatedCount =6
-		CommonLimit=18
-		//Panic Waves... and how much Panic they cause, and when the Director decides they are done
-		//MegaMobSize (and CommonLimit) A Panic lasts until MegaMobSize commons spawn, and no more 
-		//than CommonLimit will ever be out at once. So MegaMobSize 50 CommonLimit 2 is a long slow 
-		//gentle PANIC, and MegaMobSize 80 CommonLimit 80 is over instantly, with a lot of zombies around. 
-		//MegaMobSize/CommonLimit 1000 is a good way to crash the game.
-		//PreferredMobDirection = SPAWN_NO_PREFERENCE
-		//Valid flags are: SPAWN_ABOVE_SURVIVORS, SPAWN_ANYWHERE, SPAWN_BEHIND_SURVIVORS( for SpawnBehindSurvivorsDistance int)
-		//SPAWN_FAR_AWAY_FROM_SURVIVORS, SPAWN_IN_FRONT_OF_SURVIVORS, SPAWN_LARGE_VOLUME,
-		//SPAWN_NEAR_IT_VICTIM, SPAWN_NO_PREFERENCE
-		//Note.png Note: 	SPAWN_NEAR_IT_VICTIM does not exist before a 
-		//finale and will cause an error, so I'm assuming the director picks 
-		//someone as IT when the finale starts. SPAWN_LARGE_VOLUME is what makes you be a mile away on DC finale.
-		//0=Anywhere, 1=Behind, 2=IT, 3=Specials in front, 4=Specials anywhere, 5=Far Away, 6=Above
-		//PreferredSpecialDirection and SPAWN_SPECIALS_ANYWHERE, SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS
-		//SPAWN SET RULE
-		// What general rule does the director use for spawning. Choices are
-		// SPAWN_FINALE spawn in finale nav areas only
-		// SPAWN_BATTLEFIELD spawn in battlefield nav areas only
-		// SPAWN_SURVIVORS use the areas near/explored by the survivors (@TODO: is this actually right?)
-		// SPAWN_POSITIONAL use the SpawnSetPosition/Radius to pick the spawn area
-		// SpawnSetRadius/SpawnSetPosition: A radius in units, a Vector(x,y,z) center point for POSITIONAL spawning
-		//The horde spawning pacing consists of: 
-		//BUILD_UP -> spawn horde -> SUSTAIN_PEAK -> RELAX -> BUILD_UP again.
-		// How many zombies are in each mob.		
-		//The size of the mob-parameters are modified in real time//尸潮大小		-参数被实时修改
-		MobMinSize = 25
-		MobMaxSize = 35	
-		//Reserved number of zombies-parameters are modified in real time//预留僵尸数量 -参数被实时修改
-		MobMaxPending  = 10
-		//BuildUpMinInterval
-		// Sets the time between mob spawns. Mobs can only spawn when the pacing is in the BUILD_UP state.
-		//The mob refresh time-parameters are modified in real time//尸潮刷新时间 -参数被实时修改
-		MobSpawnMinTime = 20
-		MobSpawnMaxTime = 36		
-		//	Setting LockTempo = true removes the 
-		//"SUSTAIN_PEAK -> RELAX -> BUILD_UP" bit making your hordes spawn constantly without a delay.
-		LockTempo = false
-		// Modifies the length of the SUSTAIN_PEAK and RELAX states to shorten the time between mob spawns.
-		//Continuous peak//持续高峰
-		SustainPeakMinTime = 35
-		SustainPeakMaxTime  = 75
-		//All survivors must be below this intensity before a Peak is allowed to switch to Relax (in addition to the normal peak timer)
-		IntensityRelaxThreshold = 0.81
-		//Relaxation stage//放松阶段
-		RelaxMinInterval = 30
-		RelaxMaxInterval = 60
-		RelaxMaxFlowTravel = 2000//1750
 		
-		//Specials and Panic Events
-		//Number of commons that spawn when a bile bomb is thrown or a survivor is hit by vomit
-		BileMobSize= 20
-		//The amount of total infected spawned during a panic event
-		MegaMobSize=50
-		//Wanderer count (N) is zeroed:
-		//When an area becomes visible to any Survivor
-		//When the Director is in Relax mode
-		//Wanderers	
-		WanderingZombieDensityModifier  = 1 //Set to 0 to have no wandering zombies float
-		AlwaysAllowWanderers = true//bool
-		ClearedWandererRespawnChance = 15//percent int
-		NumReservedWanderers=15//infected additional from mobs
-		//All survivors must be below this intensity before a Wanderer Peak is allowed to switch to Relax (in addition to the normal peak timer)
-		IntensityRelaxAllowWanderersThreshold =  1//float
-			
-		DisallowThreatType = 8
+		CommonLimit=18
+		MobMinSize = 5
+		MobMaxSize = 8
+		MobMaxPending= 999
+		
+		MobSpawnMinTime=10
+		MobSpawnMaxTime=20
+		
 		ProhibitBosses = false
 	}	
 }
@@ -172,14 +115,15 @@ else
 }
 
 ::BalanceDirectorOptions <- function ()
-{
-	
-	CalculateNumberofPlayers()
+{	
 	
 	if (nowFirstPlayerinGame==0)
 		Director.ResetMobTimer()	
-	
 	//You can only assign DirectorOptions with <-
+	
+	//NO SPECIALS SETTINGS
+	//DisallowThreatType=SI Disallowed
+	//ex. ZOMBIE_TANK = 8, ZOMBIE_WITCH = 7
 	if (nowPlayersinGame>2)
 	{
 		DirectorScript.DirectorOptions.AggressiveSpecials <- 1
@@ -198,6 +142,7 @@ else
 			nowFirstPlayerinGame++;			
 	}	
 	
+	//SI SPECIAL INFECTED SETTINGS
 	//30 en facil para 4 personas, entonces si hay 5 30/4*5, si hay 1 30/4*1,si hay 2 30/4*2
 	//if ( "MaxSpecials" in DirectorScript.MapScript.DirectorOptions )		
 	if (nowPlayersinGame>12)
@@ -205,7 +150,6 @@ else
 		DirectorScript.MapScript.DirectorOptions.SpecialRespawnInterval <- RandomInt(60,80)
 		DirectorScript.MapScript.DirectorOptions.SpecialInitialSpawnDelayMin <- 60-3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.SpecialInitialSpawnDelayMax <- 80-3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 30+4*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.MaxSpecials <-  2+1*nowPlayersinGame*3/2
 		DirectorScript.MapScript.DirectorOptions.DominatorLimit <-  2+1*nowPlayersinGame*3/2
 		DirectorScript.MapScript.DirectorOptions.ChargerLimit <- 2
@@ -222,7 +166,6 @@ else
 		DirectorScript.MapScript.DirectorOptions.SpecialRespawnInterval <- RandomInt(70,90)
 		DirectorScript.MapScript.DirectorOptions.SpecialInitialSpawnDelayMin <- 70-3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.SpecialInitialSpawnDelayMax <- 90-3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 10+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.MaxSpecials <-  2+1*nowPlayersinGame*3/2
 		DirectorScript.MapScript.DirectorOptions.DominatorLimit <-  2+1*nowPlayersinGame*3/2
 		DirectorScript.MapScript.DirectorOptions.ChargerLimit <- 3
@@ -239,7 +182,6 @@ else
 		DirectorScript.MapScript.DirectorOptions.SpecialRespawnInterval <- RandomInt(50,70)
 		DirectorScript.MapScript.DirectorOptions.SpecialInitialSpawnDelayMin <- 50-2*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.SpecialInitialSpawnDelayMax <- 70-2*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 10+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.MaxSpecials <-  2+1*nowPlayersinGame*4/8
 		DirectorScript.MapScript.DirectorOptions.DominatorLimit <-  2+1*nowPlayersinGame*4/8
 		DirectorScript.MapScript.DirectorOptions.ChargerLimit <- 2
@@ -255,7 +197,6 @@ else
 		DirectorScript.MapScript.DirectorOptions.SpecialRespawnInterval <- RandomInt(25,35)
 		DirectorScript.MapScript.DirectorOptions.SpecialInitialSpawnDelayMin <- 25
 		DirectorScript.MapScript.DirectorOptions.SpecialInitialSpawnDelayMax <- 35
-		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 17+1*nowPlayersinGame*10/2
 		DirectorScript.MapScript.DirectorOptions.MaxSpecials <-  1+1*nowPlayersinGame/2
 		DirectorScript.MapScript.DirectorOptions.DominatorLimit <-  1+1*nowPlayersinGame/2
 		DirectorScript.MapScript.DirectorOptions.ChargerLimit <- 2
@@ -267,109 +208,14 @@ else
 		DirectorScript.MapScript.DirectorOptions.WitchLimit <- 1
 	}
 			
-	//else
-	//	DirectorScript.MapScript.DirectorOptions.MaxSpecials <- 1+1*nowPlayersinGame;
-	//if ( "DominatorLimit" in DirectorScript.MapScript.DirectorOptions )		
-			
-	//else
-	//	DirectorScript.MapScript.DirectorOptions.DominatorLimit <- 1+1*nowPlayersinGame;
-	
-	//if ( "ChargerLimit" in DirectorScript.MapScript.DirectorOptions )
-	//else
-	//	DirectorScript.MapScript.DirectorOptions.ChargerLimit <- 2+1*nowPlayersinGame/4;
-	//if ( "BoomerLimit" in DirectorScript.MapScript.DirectorOptions )
-	//else
-	//	DirectorScript.MapScript.DirectorOptions.BoomerLimit <- 1+1*nowPlayersinGame/4;
-	
-	//if ( "HunterLimit" in DirectorScript.MapScript.DirectorOptions )
-	//else
-	//	DirectorScript.MapScript.DirectorOptions.HunterLimit <- 1+1*nowPlayersinGame/4;
-
-	//if ( "JockeyLimit" in DirectorScript.MapScript.DirectorOptions )
-	//else
-	//	DirectorScript.MapScript.DirectorOptions.JockeyLimit <- 1+1*nowPlayersinGame/4
-
-	//if ( "SmokerLimit" in DirectorScript.MapScript.DirectorOptions )
-	//else
-	//	DirectorScript.MapScript.DirectorOptions.SmokerLimit <- 2+1*nowPlayersinGame/4;
-
-	
-	//if ( "SpitterLimit" in DirectorScript.MapScript.DirectorOptions )
-	//else
-	//	DirectorScript.MapScript.DirectorOptions.SpitterLimit <- 1+1*nowPlayersinGame/4
-
-
-	//if ( "WitchLimit" in DirectorScript.MapScript.DirectorOptions )
-	//else
-	//	DirectorScript.MapScript.DirectorOptions.WitchLimit <- 1+1*nowPlayersinGame/4
-
-	//if ( "CommonLimit" in DirectorScript.MapScript.DirectorOptions )
-				
-	//else
-	//	DirectorScript.MapScript.DirectorOptions.CommonLimit <- 18+3*nowPlayersinGame
-	
+	//TIMEOFDAY SETTING
 	local ranTD = RandomInt(0,1);
 	if (ranTD==1)
 		worldspawn_timeofday <- ["3"]
 	else 
 		worldspawn_timeofday <- ["0"]
 	
-	
-	//if ( "SpecialRespawnInterval" in DirectorScript.MapScript.DirectorOptions )
-	//else
-	//	DirectorScript.MapScript.DirectorOptions.SpecialRespawnInterval <- 30-1*nowPlayersinGame
-	
-	
-	//if ( "SpecialInitialSpawnDelayMin" in DirectorScript.MapScript.DirectorOptions )
-	//else
-	//	DirectorScript.MapScript.DirectorOptions.SpecialInitialSpawnDelayMin <- 5-1*nowPlayersinGame/4
-	
-	
-	//if ( "SpecialInitialSpawnDelayMax" in DirectorScript.MapScript.DirectorOptions )
-	//else
-	//	DirectorScript.MapScript.DirectorOptions.SpecialInitialSpawnDelayMax <- 10-1*nowPlayersinGame/4
-	
-	
-	//if ( "IntensityRelaxThreshold" in DirectorScript.MapScript.DirectorOptions )
-	//{
-	if (nowPlayersinGame>4)
-	{				
-		DirectorScript.MapScript.DirectorOptions.IntensityRelaxThreshold <- 0.90-0.015*nowPlayersinGame
-	}				
-	else
-	{
-		DirectorScript.MapScript.DirectorOptions.IntensityRelaxThreshold <- 0.81+0.03*nowPlayersinGame
-	}				
-	//}		
-	
-	//if ( "NumReservedWanderers" in DirectorScript.MapScript.DirectorOptions )
-		DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- 15+3*nowPlayersinGame;
-	
-	//if ( "IntensityRelaxAllowWanderersThreshold" in DirectorScript.MapScript.DirectorOptions )
-	//{
-	if (nowPlayersinGame>4)
-	{				
-		DirectorScript.MapScript.DirectorOptions.IntensityRelaxAllowWanderersThreshold <- 0.90-0.015*nowPlayersinGame
-	}				
-	else
-	{
-		DirectorScript.MapScript.DirectorOptions.IntensityRelaxAllowWanderersThreshold <- 0.81+0.03*nowPlayersinGame
-	}				
-	//}	
-	//else
-	//{
-		// if (nowPlayersinGame>4)
-		// {				
-			// DirectorScript.MapScript.DirectorOptions.IntensityRelaxAllowWanderersThreshold <- 0.90-0.015*nowPlayersinGame;
-		// }				
-		// else
-		// {
-			// DirectorScript.MapScript.DirectorOptions.IntensityRelaxAllowWanderersThreshold <- 0.81+0.03*nowPlayersinGame;
-		// }				
-	// }	
-	//if ( "NumReservedWanderers" in DirectorScript.MapScript.DirectorOptions )
-	DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- 15+3*nowPlayersinGame
-	
+	//STAGES SETTINGS
 	//DONT USE IN HERE;
 	//Defaults
 	//30 en facil para 4 personas, entonces si hay 5 30/4*5, si hay 1 30/4*1,si hay 2 30/4*2
@@ -403,27 +249,45 @@ else
 	//ScriptedStageValue = 1000 Dependant on the stage type.
 	if ( "ScriptedStageValue" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
 		DirectorScript.MapScript.ChallengeScript.DirectorOptions.ScriptedStageValue <- 	1000	
-	//MODE OPTIONS
-	// What general rule does the director use for spawning. Choices are
+	
+	//SPAWN RULES SETTINGS
+	//SpawnSetRule = SPAWN_SURVIVORS
+	//if ( "SpawnSetRule" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
+	//SPAWN SET RULE
+	//Overrides the mode of spawning used. Seems to be non-functional in finales. 
+	// What general rule does the director use for spawning. 
+	//Valid flags are: SPAWN_ANYWHERE,
 	// SPAWN_FINALE spawn in finale nav areas only
 	// SPAWN_BATTLEFIELD spawn in battlefield nav areas only
 	// SPAWN_SURVIVORS use the areas near/explored by the survivors (@TODO: is this actually right?)
 	// SPAWN_POSITIONAL use the SpawnSetPosition/Radius to pick the spawn area
-	//SpawnSetRule = SPAWN_SURVIVORS
-	//if ( "SpawnSetRule" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
+	
+	//PreferredMobDirection = SPAWN_NO_PREFERENCE
 	//Valid flags are: SPAWN_ABOVE_SURVIVORS, SPAWN_ANYWHERE, SPAWN_BEHIND_SURVIVORS( for SpawnBehindSurvivorsDistance int)
 	//SPAWN_FAR_AWAY_FROM_SURVIVORS, SPAWN_IN_FRONT_OF_SURVIVORS, SPAWN_LARGE_VOLUME,
 	//SPAWN_NEAR_IT_VICTIM, SPAWN_NO_PREFERENCE
-	
-		//PreferredMobDirection = SPAWN_NO_PREFERENCE
-		//Valid flags are: SPAWN_ABOVE_SURVIVORS, SPAWN_ANYWHERE, SPAWN_BEHIND_SURVIVORS( for SpawnBehindSurvivorsDistance int)
-		//SPAWN_FAR_AWAY_FROM_SURVIVORS, SPAWN_IN_FRONT_OF_SURVIVORS, SPAWN_LARGE_VOLUME,
-		//SPAWN_NEAR_IT_VICTIM, SPAWN_NO_PREFERENCE
-		//Note.png Note: 	SPAWN_NEAR_IT_VICTIM does not exist before a 
-		//finale and will cause an error, so I'm assuming the director picks 
-		//someone as IT when the finale starts. SPAWN_LARGE_VOLUME is what makes you be a mile away on DC finale.
-		//0=Anywhere, 1=Behind, 2=IT, 3=Specials in front, 4=Specials anywhere, 5=Far Away, 6=Above
-		//PreferredSpecialDirection and SPAWN_SPECIALS_ANYWHERE, SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS
+	//Note.png Note: 	SPAWN_NEAR_IT_VICTIM does not exist before a 
+	//finale and will cause an error, so I'm assuming the director picks 
+	//someone as IT when the finale starts. SPAWN_LARGE_VOLUME is what makes you be a mile away on DC finale.
+	//0=Anywhere, 1=Behind, 2=IT, 3=Specials in front, 4=Specials anywhere, 5=Far Away, 6=Above
+	//SPAWN_ABOVE_SURVIVORS = 6
+	// SPAWN_ANYWHERE = 0
+	// SPAWN_BATTLEFIELD = 2
+	// SPAWN_BEHIND_SURVIVORS = 1
+	// SPAWN_FAR_AWAY_FROM_SURVIVORS = 5
+	// SPAWN_FINALE = 0
+	// SPAWN_IN_FRONT_OF_SURVIVORS = 7
+	// SPAWN_LARGE_VOLUME = 9
+	// SPAWN_NEAR_IT_VICTIM = 2
+	// SPAWN_NEAR_POSITION = 10
+	// SPAWN_NO_PREFERENCE = -1
+	// SPAWN_POSITIONAL = 3
+	// SPAWN_SURVIVORS = 1
+	// SPAWN_VERSUS_FINALE_DISTANCE = 8
+	//PreferredSpecialDirection and SPAWN_SPECIALS_ANYWHERE, SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS
+	// SPAWN_SPECIALS_ANYWHERE = 4
+	// SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS = 3
+	// SpawnSetRadius/SpawnSetPosition: A radius in units, a Vector(x,y,z) center point for POSITIONAL spawning
 	local randDirection
 	if (nowPlayersinGame>5)
 	{
@@ -477,11 +341,156 @@ else
 			DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <-  0	
 	}
 	
+	//PANIC WAVES AND COMMON SETTINGS
+	//A Panic lasts until MegaMobSize commons spawn
+	//MegaMobSize The amount of total infected spawned during a panic event
+	//how much Panic they cause, and when the Director decides they are done
+	//no more than CommonLimit will ever be out at once. 
+	//So MegaMobSize 50 CommonLimit 2 is a long slow gentle PANIC
+	//and MegaMobSize 80 CommonLimit 80 is over instantly, with a lot of zombies around. 
+	//MegaMobSize/CommonLimit 1000 is a good way to crash the game.
+	//The horde spawning pacing consists of: 
+	//BUILD_UP -> spawn horde -> SUSTAIN_PEAK -> RELAX -> BUILD_UP again.
+	
+	//	Setting LockTempo = true removes the 
+	//"SUSTAIN_PEAK -> RELAX -> BUILD_UP" bit making your hordes spawn constantly without a delay.
+	DirectorScript.MapScript.DirectorOptions.LockTempo  <- false
+	//MobMaxPending is a queue for zombies that couldn't spawn because of the limit
+	DirectorScript.MapScript.DirectorOptions.MobMaxPending  <- 999
+	
+	
+	//BUILD_UP
+	//MobMinSize MobMaxSize 
+	//How many zombies are in each mob.		
+	//MobSpawnSize: Static amount of infected in a mob. Likely overrides MobMinSize and MobMinSize.
+	//BuildUpMinInterval MobSpawnMinTime MobSpawnMaxTime
+	// Sets the time between mob spawns. Mobs can only spawn when the pacing is in the BUILD_UP state.
+	if (nowPlayersinGame>12)
+	{
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 5+3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 40+4*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 10-10+4*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 10-5+4*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- 20-1*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- 36-1*nowPlayersinGame
+	}
+	else
+	if (nowPlayersinGame>8)
+	{
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 5+3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 45+3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 10-10+3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 10-5+3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- 20-1*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- 36-1*nowPlayersinGame
+	}
+	else
+	if (nowPlayersinGame>4)
+	{
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 5+3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 45+3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 10-10+3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 10-5+3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- 20-1*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- 36-1*nowPlayersinGame
+	}
+		else
+	{
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 5
+		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 55+1*nowPlayersinGame*10/2
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 17-10+1*nowPlayersinGame*10/2
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 17-5+1*nowPlayersinGame*10/2
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- 20
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- 36
+	}	
+	
+	
+	//SUSTAIN_PEAK	
+	//Modifies the length of the SUSTAIN_PEAK state to shorten the time between mob spawns.
+	//SustainPeakMinTime SustainPeakMaxTime//持续高峰	
+	
+	//IntensityRelaxThreshold
+	//All survivors must be below this intensity before a Peak is allowed to switch to Relax (in addition to the normal peak timer)
+	if (nowPlayersinGame>4)
+	{				
+		DirectorScript.MapScript.DirectorOptions.IntensityRelaxThreshold <- 0.90-0.015*nowPlayersinGame
+	}				
+	else
+	{
+		DirectorScript.MapScript.DirectorOptions.IntensityRelaxThreshold <- 0.81+0.03*nowPlayersinGame
+	}	
+	
+	//RELAX	
+	//Modifies the length of the RELAX state to shorten the time between mob spawns.
+	//RelaxMinInterval RelaxMaxInterval//放松阶段
+	//RelaxMaxFlowTravel
+	//How far the survivors can advance along the flow before transitioning from RELAX to BUILD_UP.
+	if (nowPlayersinGame>12)
+	{
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMinTime <- 35-2*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMaxTime <- 75-2*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.RelaxMinInterval <- 30-3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxInterval <- 60-3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxFlowTravel <- 1350
+	}
+	else
+	if (nowPlayersinGame>8)
+	{
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMinTime <- 35-2*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMaxTime <- 75-2*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.RelaxMinInterval <- 30-3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxInterval <- 60-3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxFlowTravel <- 1350
+	}
+	else
+	if (nowPlayersinGame>4)
+	{
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMinTime <- 35-3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMaxTime <- 75-3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.RelaxMinInterval <- 30-3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxInterval <- 60-3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxFlowTravel <- 1500
+	}
+	else
+	{
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMinTime <- 35
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMaxTime <- 75
+		DirectorScript.MapScript.DirectorOptions.RelaxMinInterval <- 30
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxInterval <- 60
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxFlowTravel <- 1750
+	}	
+	
+	
+	//WANDERING SETTINGS
+	//Wanderer count (N) is zeroed:
+	//When an area becomes visible to any Survivor
+	//When the Director is in Relax mode
+	//AlwaysAllowWanderers = true//bool
+	//WanderingZombieDensityModifier  = 1 //Set to 0 to have no wandering zombies float
+	//ClearedWandererRespawnChance percent int
+	//NumReservedWanderers= common additional from mobs 
+	//IntensityRelaxAllowWanderersThreshold float
+	//All survivors must be below this intensity before a Wanderer Peak is allowed to switch to Relax (in addition to the normal peak timer)
+	DirectorScript.MapScript.DirectorOptions.AlwaysAllowWanderers <- true;	
+	DirectorScript.MapScript.DirectorOptions.WanderingZombieDensityModifier <- 1;
+	DirectorScript.MapScript.DirectorOptions.ClearedWandererRespawnChance <- 100;
+	DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- 15+3*nowPlayersinGame;
+	if (nowPlayersinGame>4)
+	{				
+		DirectorScript.MapScript.DirectorOptions.IntensityRelaxAllowWanderersThreshold <- 0.90-0.015*nowPlayersinGame
+	}				
+	else
+	{
+		DirectorScript.MapScript.DirectorOptions.IntensityRelaxAllowWanderersThreshold <- 0.81+0.03*nowPlayersinGame
+	}				
+
+	
 	if ( (developer() > 0) || (DEBUG == 1))
 		IncludeScript ("debug_directoroptions.nut");	
 	
-	/*
 	
+	/*
+	//Progress Based
 	
 	//Increase common limit based on progress  
 	    local progressPct = ( Director.GetFurthestSurvivorFlow() / BridgeSpan )
@@ -581,10 +590,11 @@ else
 		DirectorScript.MapScript.GetDirectorOptions().IntensityRelaxAllowWanderersThreshold <-  1
 	
 	
-	local Difficulty = Convars.GetStr( "z_difficulty" ).tolower();
 		
 		*/
 	/*
+	//Difficulty Based
+	local Difficulty = Convars.GetStr( "z_difficulty" ).tolower();
 	local enable_tanks = 1;
 	local finale_check = 1;
 	local allow_random_trigger = 0;
@@ -613,7 +623,10 @@ else
 	}
 	*/	
 	
+	
+	
 }
+
 
 ::CalculateNumberofPlayers <- function ()
 {
@@ -640,9 +653,10 @@ else
 	if (nowPlayerEvent=="Left")
 		nowPlayersinGame=nowPlayersinGame-1
 }
+
+
 ::BalanceFinaleDirectorOptions <- function ()
 {
-	CalculateNumberofPlayers()
 	
 	if (nowFirstPlayerinGame==0)
 		Director.ResetMobTimer()	
@@ -782,8 +796,8 @@ else
 	}	
 	DirectorScript.MapScript.DirectorOptions.MobMinSize					 <-	15+2*nowPlayersinGame
 	DirectorScript.MapScript.DirectorOptions.MobMaxSize					 <-	35+2*nowPlayersinGame
+	DirectorScript.MapScript.DirectorOptions.MobMaxPending  <- 999
 	DirectorScript.MapScript.DirectorOptions.MobRechargeRate				 <-	25-1*nowPlayersinGame
-	//ZombieSpawnRange			 <-	3000
 	DirectorScript.MapScript.DirectorOptions.SpecialRespawnInterval		 <-	30-1*nowPlayersinGame
 	DirectorScript.MapScript.DirectorOptions.BileMobSize					 <-	15+3*nowPlayersinGame
 	DirectorScript.MapScript.DirectorOptions.ProhibitBosses				 <-	false
@@ -833,17 +847,46 @@ else
 	//ScriptedStageValue = 1000 Dependant on the stage type.
 	if ( "ScriptedStageValue" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
 		DirectorScript.MapScript.ChallengeScript.DirectorOptions.ScriptedStageValue <- 	1000	
-	//MODE OPTIONS
-	// What general rule does the director use for spawning. Choices are
+	
+	//SpawnSetRule = SPAWN_SURVIVORS
+	//if ( "SpawnSetRule" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
+	//SPAWN SET RULE
+	//Overrides the mode of spawning used. Seems to be non-functional in finales. 
+	// What general rule does the director use for spawning. 
+	//Valid flags are: SPAWN_ANYWHERE,
 	// SPAWN_FINALE spawn in finale nav areas only
 	// SPAWN_BATTLEFIELD spawn in battlefield nav areas only
 	// SPAWN_SURVIVORS use the areas near/explored by the survivors (@TODO: is this actually right?)
 	// SPAWN_POSITIONAL use the SpawnSetPosition/Radius to pick the spawn area
-	//SpawnSetRule = SPAWN_SURVIVORS
-	//if ( "SpawnSetRule" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
+	
+	//PreferredMobDirection = SPAWN_NO_PREFERENCE
 	//Valid flags are: SPAWN_ABOVE_SURVIVORS, SPAWN_ANYWHERE, SPAWN_BEHIND_SURVIVORS( for SpawnBehindSurvivorsDistance int)
 	//SPAWN_FAR_AWAY_FROM_SURVIVORS, SPAWN_IN_FRONT_OF_SURVIVORS, SPAWN_LARGE_VOLUME,
 	//SPAWN_NEAR_IT_VICTIM, SPAWN_NO_PREFERENCE
+	//Note.png Note: 	SPAWN_NEAR_IT_VICTIM does not exist before a 
+	//finale and will cause an error, so I'm assuming the director picks 
+	//someone as IT when the finale starts. SPAWN_LARGE_VOLUME is what makes you be a mile away on DC finale.
+	//0=Anywhere, 1=Behind, 2=IT, 3=Specials in front, 4=Specials anywhere, 5=Far Away, 6=Above
+	//SPAWN_ABOVE_SURVIVORS = 6
+	// SPAWN_ANYWHERE = 0
+	// SPAWN_BATTLEFIELD = 2
+	// SPAWN_BEHIND_SURVIVORS = 1
+	// SPAWN_FAR_AWAY_FROM_SURVIVORS = 5
+	// SPAWN_FINALE = 0
+	// SPAWN_IN_FRONT_OF_SURVIVORS = 7
+	// SPAWN_LARGE_VOLUME = 9
+	// SPAWN_NEAR_IT_VICTIM = 2
+	// SPAWN_NEAR_POSITION = 10
+	// SPAWN_NO_PREFERENCE = -1
+	// SPAWN_POSITIONAL = 3
+	// SPAWN_SURVIVORS = 1
+	// SPAWN_VERSUS_FINALE_DISTANCE = 8
+	//PreferredSpecialDirection and SPAWN_SPECIALS_ANYWHERE, SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS
+	// SPAWN_SPECIALS_ANYWHERE = 4
+	// SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS = 3
+	// SpawnSetRadius/SpawnSetPosition: A radius in units, a Vector(x,y,z) center point for POSITIONAL spawning
+	
+	
 	if (nowPlayersinGame>5)
 	{
 		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnSetRule <- SPAWN_FINALE

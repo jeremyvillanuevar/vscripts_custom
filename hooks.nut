@@ -5,12 +5,29 @@ printl( "\n\n\n\n==============Loaded HOOKS ===============\n\n\n\n");
 //Ejecutado a cada rato
 function VSLib::EasyLogic::Update::NamesUpdate()
 {
+	//DEBUG
+	//nowActivateBalance=0
+
 	//Msg("DateUpDate \n");
 	if ( (developer() > 0) || (DEBUG == 1))
 	{
 		ClientPrint(null, 3, BLUE+"nowFinaleStageEvent "+nowFinaleStageEvent+"\n");
 	}
 	ShowHUD()
+	
+	if (nowActivateBalance==1)
+		if (nowFinaleStarted==1)
+		{
+			BalanceFinaleDirectorOptions();
+			nowFinaleStarted==2;
+		}
+		else
+		if (nowFinaleStarted==0)
+		{
+			if (nowFinaleStageEvent==1 || nowFinaleScavengeStarted==1)
+				nowFinaleStarted=1;
+		}
+		
 	Time4Connections--
 	if (nowFinaleStageEvent==1)
 	{
@@ -31,6 +48,7 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 	TimeTick4PanicMsg--;
 	TimeTick4BossMsg--;
 	TimeTick4HealMsg--;
+	TimeTick4BossDefeatedMsg--;
 	/*
 	if (Time4TimerWitch<=0)
 	{
@@ -44,7 +62,7 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 	//{
 		Time4TimerRusher--;
 	//}
-	if (Time4TimerRusher<=0 && nowFinaleStageNum==0 && nowFinaleScavengeStarted==0)
+	if (Time4TimerRusher<=0 && nowFinaleStageNum==0 && nowFinaleScavengeStarted==0 && nowPlayersinGame > 2)
 	{
 		if ( (developer() > 0) || (DEBUG == 1))
 		{
@@ -146,7 +164,7 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 							ClientPrint(null, 3, BLUE+"flow - lastFlow "+distance);
 						}
 						// Compare higher flow with next survivor, they're rushing
-						if (distance > 1750)//1750 is antirush
+						if (distance > 1850)//1750 is antirush
 						{
 							// PrintToServer("RUSH: %N %f", client, distance);
 							flowBack = false;							
@@ -157,7 +175,7 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 							//TeleportEntity(client, vPos, NULL_VECTOR, NULL_VECTOR);
 							SpawnTank(null,player);
 							nowSpawnedTankRusher++
-							Time4TimerRusher=60-1*nowPlayersinGame
+							Time4TimerRusher=160
 							TimeTick4BossMsg=10;
 							break;
 						}
@@ -264,12 +282,12 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 	
 }
 
-
+/*
 function Notifications::OnWitchSpawned(witchid, params)
 {	
 	TimeTick4WitchMsg=10;
 }
-
+*/
 ::OnCustomFinaleStageChangeHook <- function ( )
 {
 	TimeTick4Rescue=15
@@ -313,8 +331,8 @@ function Notifications::OnEnterSaferoom::ClearScores ( client, params )
 	{			
 		if(survivor.IsHuman())
 		{
-			survivor.SetNetProp( "m_checkpointZombieKills", 99990 );
-			survivor.SetNetProp( "m_missionZombieKills", 99990 );
+			survivor.SetNetProp( "m_checkpointZombieKills", 1699 );
+			survivor.SetNetProp( "m_missionZombieKills", 1699 );
 			survivor.SetNetProp( "m_checkpointMeleeKills", 99999 );
 			survivor.SetNetProp( "m_missionMeleeKills", 99999 );
 			survivor.SetNetProp( "m_checkpointIncaps", 99999 );
@@ -391,6 +409,7 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 				{
 					local achTemp ="achievedT"
 					AttachParticle(survivor,achTemp, 3.0);
+					TimeTick4BossDefeatedMsg=10;
 					// No configures, la sangre se llena//不设置 虚血变成实血
 					//survivor.SwitchHealth("perm");
 					//HealthReg(survivor,tankgiveheal);	
@@ -455,7 +474,7 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 				//::ItemLoot(pos);
 				//attacker.SwitchHealth("perm");
 				//HealthReg(attacker,witchgiveheal);
-
+				
 				if(!::AllowShowBotSurvivor)
 				{
 					if(!attacker.IsBot())
@@ -565,12 +584,14 @@ function Notifications::OnPlayerLeft::ModifyDirectorLeft (client, name, steamID,
 	{
 		if (!esta)
 			TimeTick4ConnectMsg=9
+		CalculateNumberofPlayers()
 		nowPlayerEvent="Left"
 		nowPlayerLeft=player.GetName();
-		if (nowFinaleStageEvent==0)
-			BalanceDirectorOptions()
-		else
-			BalanceFinaleDirectorOptions()
+		if (nowActivateBalance==1)
+			if (nowFinaleStarted==0 && nowFinaleScavengeStarted==0)
+				BalanceDirectorOptions()
+			else
+				BalanceFinaleDirectorOptions()
 	}
 }
 function Notifications::OnPlayerConnected::onStartingConnections (client, params)
@@ -658,12 +679,14 @@ function Notifications::OnPlayerJoined::ModifyDirectorJoin (client, name, ipAddr
 		if (!esta)
 			TimeTick4ConnectMsg=9
 		
+		CalculateNumberofPlayers()
 		nowPlayerEvent="Join"
 		nowPlayerJoined=player.GetName();
-		if (nowFinaleStageEvent==0)
-			BalanceDirectorOptions()
-		else
-			BalanceFinaleDirectorOptions()
+		if (nowActivateBalance==1)
+			if (nowFinaleStageEvent==0 && nowFinaleScavengeStarted==0)
+				BalanceDirectorOptions()
+			else
+				BalanceFinaleDirectorOptions()
 	}
 }
 
@@ -703,6 +726,9 @@ function Notifications::OnPanicEventFinished::Finalizado()
 		AttachParticleCongrats(survivor,achTemp, 3.0);
 		if (survivor.GetCharacterName() =="Zoey")
 			survivor.Speak( "hurrah54", 0 )
+		else
+		if (survivor.GetCharacterName() =="Bill")
+			survivor.Speak( "hurrah02", 0 )
 		else
 			survivor.Speak( "hurrah01", 0 )
 	}	
