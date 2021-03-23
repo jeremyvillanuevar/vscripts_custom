@@ -15,6 +15,12 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 	}
 	ShowHUD()
 	
+	
+	if (nowFinaleStarted==1 || nowCrescendoStarted==1)
+	{
+		Time4TimerRusher=99999;
+	}
+	
 	if (nowActivateBalance==1)
 		if (nowFinaleStarted==1)
 		{
@@ -164,7 +170,7 @@ function VSLib::EasyLogic::Update::NamesUpdate()
 							ClientPrint(null, 3, BLUE+"flow - lastFlow "+distance);
 						}
 						// Compare higher flow with next survivor, they're rushing
-						if (distance > 1850)//1750 is antirush
+						if (distance > 1800)//1750 is antirush
 						{
 							// PrintToServer("RUSH: %N %f", client, distance);
 							flowBack = false;							

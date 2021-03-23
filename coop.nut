@@ -29,6 +29,7 @@ IncludeScript ("debug.nut");
 ::nowPlayersTimeAveragedIntensity <- 0
 ::nowPlayersinGame <- 0
 ::nowFinaleStarted <- 0
+::nowCrescendoStarted <- 0
 ::nowFinaleScavengeStarted <- 0
 ::nowFinaleStageNum <- 0
 ::nowFinaleStageType <- 0
@@ -63,7 +64,6 @@ IncludeScript ("debug.nut");
 ::TimeTick4BossDefeatedMsg<- 0;
 ::nowPlayerHealer <- ""
 ::nowPlayerHealed <- ""
-//::Client_Count <- 0;
 ::Survivors_Count <- 0;
 ::GameDifficulty <- 0;
 

@@ -207,6 +207,7 @@ switch (execscriptName)
 			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
 			Msg("c1_gunshop_quiet\n");
+			nowCrescendoStarted=1
 			DirectorOptions <-
 			{
 				// This turns off tanks and witches.
@@ -240,6 +241,8 @@ switch (execscriptName)
 				SpecialRespawnInterval = 30-1*nowPlayersinGame
 				SpecialInitialSpawnDelayMin = 2
 				SpecialInitialSpawnDelayMax = 6
+				PreferredSpecialDirection = SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS	
+				PreferredMobDirection =	SPAWN_IN_FRONT_OF_SURVIVORS
 				ZombieSpawnRange=500				
 			}
 			Director.ResetMobTimer()
