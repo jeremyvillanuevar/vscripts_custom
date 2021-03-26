@@ -2,298 +2,13 @@ printl( "\n\n\n\n==============Loaded HOOKS ===============\n\n\n\n");
 //-----------------------------------------------------
 // Creating DirectorOptions on MapScript Scope 
 
-//Ejecutado a cada rato
-function VSLib::EasyLogic::Update::NamesUpdate()
-{
-	//DEBUG
-	//nowActivateBalance=0
 
-	//Msg("DateUpDate \n");
-	if ( (developer() > 0) || (DEBUG == 1))
-	{
-		ClientPrint(null, 3, BLUE+"nowFinaleStageEvent "+nowFinaleStageEvent+"\n");
-	}
-	ShowHUD()
-	
-	
-	if (nowFinaleStarted==1 || nowCrescendoStarted==1)
-	{
-		Time4TimerRusher=99999;
-	}
-	
-	if (nowActivateBalance==1)
-		if (nowFinaleStarted==1)
-		{
-			BalanceFinaleDirectorOptions();
-			nowFinaleStarted==2;
-		}
-		else
-		if (nowFinaleStarted==0)
-		{
-			if (nowFinaleStageEvent==1 || nowFinaleScavengeStarted==1)
-				nowFinaleStarted=1;
-		}
-		
-	Time4Connections--
-	if (nowFinaleStageEvent==1)
-	{
-		nowFinaleStageEvent = 0
-		OnCustomFinaleStageChangeHook()
-	}
-	local flow=-1
-	local countflow=0
-	local survivorlist =[]
-	local flowlist =[]
-	
-	//if (nowPlayersinGame>8)
-	//{
-		Time4TimerWitch--;
-	//}
-	TimeTick4ConnectMsg--;		
-	TimeTick4WitchMsg--;
-	TimeTick4PanicMsg--;
-	TimeTick4BossMsg--;
-	TimeTick4HealMsg--;
-	TimeTick4BossDefeatedMsg--;
-	/*
-	if (Time4TimerWitch<=0)
-	{
-		SpawnWitch();
-		Time4TimerWitch=60-5*nowPlayersinGame;
-		TimeTick4WitchMsg=10;
-		nowSpawnedWitch++;
-	}
-	*/
-	//if (nowPlayersinGame>8)
-	//{
-		Time4TimerRusher--;
-	//}
-	if (Time4TimerRusher<=0 && nowFinaleStageNum==0 && nowFinaleScavengeStarted==0 && nowPlayersinGame > 2)
-	{
-		if ( (developer() > 0) || (DEBUG == 1))
-		{
-			ClientPrint(null, 3, BLUE+"Time4TimerRusher");
-		}
-		foreach ( survivor in ::VSLib.EasyLogic.Players.Survivors() )
-		{
-			flow = survivor.GetFlowDistance();
-			
-			if ( (developer() > 0) || (DEBUG == 1))
-			{
-				ClientPrint(null, 3, BLUE+"survivor.GetFlowDistance() "+flow);	
-			}
-			if( flow && flow != -9999.0 ) // Invalid flows
-			{
-				survivorlist.insert(countflow,survivor.GetIndex());
-				flowlist.insert(countflow,flow);
-				countflow++
-				//index = aList.Push(flow);
-				//aList.Set(index, client, 1);
-			}
-		}
-		countflow=flowlist.len();//deja de ser indice
-		if( countflow >= 2 )
-		{
-			//flowlist.sort(CompareFlow);
-			for (local i = 0; i < flowlist.len()-1; i++ )
-			{	
-				local temp1,temp2;
-					
-				if(flowlist[i]>flowlist[i+1])
-				{
-					/*
-					temp1=flowlist[i+1]
-					temp2=survivorlist[i+1]
-					flowlist[i+1]=flowlist[i]
-					survivorlist[i+1]=survivorlist[i]
-					flowlist[i]=temp1
-					survivorlist[i]=temp2				
-					*/
-				}
-				else 
-				if(flowlist[i]<flowlist[i+1])
-				{
-					temp1=flowlist[i]
-					temp2=survivorlist[i]
-					flowlist[i]=flowlist[i+1]
-					survivorlist[i]=survivorlist[i+1]
-					flowlist[i+1]=temp1
-					survivorlist[i+1]=temp2				
-				}
-			}
-			local clientflowAvg;
-			local clientflowFirst;
-			local clientflowNear;
-			local lastFlow;
-			local distance;		
-			local teleportedahead =false;
-			local client=-1;
-			if ( (developer() > 0) || (DEBUG == 1))
-			{
-				ClientPrint(null, 3, BLUE+"countflow "+countflow);	
-			}				
-			// Loop through survivors from highest flow
-			for( local i = 0; i < flowlist.len(); i++ )//len es tamaño completo no es -1
-			{
-				
-				client = survivorlist[i];
-				local player = ::VSLib.Player(client);	
-				if ( (developer() > 0) || (DEBUG == 1))
-				{
-					ClientPrint(null, 3, BLUE+"player.GetName() "+player.GetName());
-				}				
-				local flowBack = true;
-				// Only check nearest half of survivor pack.
-				if( i < countflow / 2 )
-				{					
-					flow = flowlist[i];
-					if ( (developer() > 0) || (DEBUG == 1))
-					{
-						ClientPrint(null, 3, BLUE+"GetFlowDistance() "+flow);
-					}
-					// Loop through from next survivor to mid-way through the pack.
-					for( local x = i + 1; x <= countflow / 2; x++ )
-					{
-						local player2 = ::VSLib.Player(survivorlist[x]);	
-						if ( (developer() > 0) || (DEBUG == 1))
-						{
-							ClientPrint(null, 3, BLUE+"player2.GetName() "+player2.GetName());
-						}
-						lastFlow = flowlist[x]//aList.Get(x, 0);
-						if ( (developer() > 0) || (DEBUG == 1))
-						{
-							ClientPrint(null, 3, BLUE+"GetFlowDistance() "+lastFlow);
-						}
-						distance = flow - lastFlow;
-						if ( (developer() > 0) || (DEBUG == 1))
-						{
-							ClientPrint(null, 3, BLUE+"flow - lastFlow "+distance);
-						}
-						// Compare higher flow with next survivor, they're rushing
-						if (distance > 1800)//1750 is antirush
-						{
-							// PrintToServer("RUSH: %N %f", client, distance);
-							flowBack = false;							
-							
-							//float vPos[3];
-							//GetClientAbsOrigin(clientflowNear, vPos);
-							//CPrintToChatAll("%s",rawmsg);
-							//TeleportEntity(client, vPos, NULL_VECTOR, NULL_VECTOR);
-							SpawnTank(null,player);
-							nowSpawnedTankRusher++
-							Time4TimerRusher=160
-							TimeTick4BossMsg=10;
-							break;
-						}
-					}
-				}
-			}
-		}		
-	}
-	
-	if(ClearEdicts)
-	{
-		Time4Tick--
-		if(Time4Tick<=0)
-		{
-			printl("MissionLost Clear Edicts prevent  ED_Alloc:no free edicts for some map");
-			foreach( Infected in ::VSLib.EasyLogic.Players.Infected())
-			{
-				Entity(Infected).KillEntity();
-			}
-			if( Director.GetCommonInfectedCount() >= 1 )
-			{
-				z <- null;
-				while( ( z = Entities.FindByClassname( z, "infected" ) ) != null )
-				{
-					DoEntFire( "!self", "kill", "", 0, null, z );
-				}
-			}		
-		}	
-	}
 
-	// Usado para clasificar//用于排序
-	local KillNum = [];
-	// Obtenga el número real de personas con Client_Count//获取实际人数
-	local clientcount =0; 
-	local survivorcount=0;
-	nowPlayersIntensity=0;
-	nowPlayersTimeAveragedIntensity=0;
-	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )
-	{
-		survivorcount++
-		nowPlayersIntensity=nowPlayersIntensity+survivor.GetIntensity()
-		nowPlayersTimeAveragedIntensity=nowPlayersTimeAveragedIntensity+survivor.GetTimeAveragedIntensity()
-		if(survivor.IsBot())
-			continue;	
-		KillNum.insert(clientcount++,survivor.GetIndex());
-		if(!PlayerKillCout.rawin(survivor.GetIndex()))
-		{
-			PlayerKillCout[survivor.GetIndex()] <- 0;	
-			PlayerRandCout[survivor.GetIndex()] <- RandomInt(0,9);	
-		}
-	}	
-	//printl ("Número real de personas:" + clientcount + "\n");
-	// Actualiza los caracteres de visualización realmente necesarios. Evite quedarse
-	// Si la condición es i <KillNum.len () cuando el bot es expulsado. O si el jugador se va, es posible que el elemento de la pantalla no se borre.
-	// Por ejemplo, cuando hay 4 personas, cuando se elimina un bot, KillNum se convierte en 3 y el elemento de visualización en el cuarto salto no se borrará. Se borrará la entrada del jugador con el mismo nombre.
-	// Configure 32 para limpiar todas las entradas al mismo tiempo. Evite el problema de los bots inexistentes o la retención de información del jugador
-	//printl("实际人数:" + Client_Count+"\n");
-	//刷新实际需要的显示字符。避免滞留
-	//如果条件是 i < KillNum.len() 当bot被踢出。或者玩家离开，其显示条目可能不会被清除。
-	//例如4人时，当去掉一个bot，那么KillNum就变成3，第4跳显示条目不会被清空。会出现同名玩家条目的清空。
-	//设置32同时清理所有条目。避免出现不存在bot或者玩家信息滞留的问题
-	for(local i=0;i < 32;i++)
-	{
-		PlayerRankLine[i] = "";
-	}
-
-	// Tamaño de fila//排大小
-	KillNum.sort(RandomFunc);
-	//KillNum.sort(CompareFunc);
-	// Mostrar configuración. El nombre más largo debe expandirse a 20 "caracteres" por línea y 7 caracteres chinos.
-	// Preparar cada cadena de visualización
-	// De acuerdo con el resultado del número real. Aquí, si en realidad hay 4 personas, 
-	//se puede limitar directamente a i <4, pero para que sea automáticamente compatible con 
-	//varias personas, vaya a la parte más grande.
-	//Porque no hay entidad de visualización, la parte extra no se mostrará incluso si hay números.
-	//显示设定。 最长名字应该可以扩展到每行20个"字符" 汉字 7个字。
-	//预备每条显示字符串
-	//按实际数量输出 这里如果实际4人可以直接限制为i < 4，但是为了自动兼容多人，所以去最大，多出来的部分因为没有做显示实体，所以即使有数字也不会显示出来
-	//killcout = 0;
-	for(local i = 0; i < KillNum.len(); i++) // i < 4
-	{
-		if((Show_Player_Rank) == false) break;
-	//	if(null == KillNum.find(i) ) break;	
-
-		
-		local NO = i+1;
-		// Escala para nombres de más de 20 caracteres
-		// 1. XX: 2 solamente
-		//对于名字长度大于20字符的进行缩放 	
-		//1.某某某：2 只
-		if(PlayerInstanceFromIndex(KillNum[i]).GetPlayerName().len()>20)
-			PlayerRankLine[i] = PlayerInstanceFromIndex(KillNum[i]).GetPlayerName().slice(0, 20);//NO+"."+PlayerInstanceFromIndex(KillNum[i]).GetPlayerName().slice(0, 20)+":"+PlayerKillCout[KillNum[i]]+"只";
-		else
-			PlayerRankLine[i] = PlayerInstanceFromIndex(KillNum[i]).GetPlayerName();//NO+"."+PlayerInstanceFromIndex(KillNum[i]).GetPlayerName()+":"+PlayerKillCout[KillNum[i]]+"只";
-		//killcout = killcout + PlayerKillCout[KillNum[i]];
-	
-	}
-	//KillsCout = killcout;
-
-	//Msg("killcout "+killcout+"\n");
-	//Client_Count=clientcount;
-	nowPlayersinGame=clientcount;
-	Survivors_Count=survivorcount;
-	
-}
-
-/*
-function Notifications::OnWitchSpawned(witchid, params)
+function OnGameEvent_witch_spawn(params)
 {	
 	TimeTick4WitchMsg=10;
 }
-*/
+
 ::OnCustomFinaleStageChangeHook <- function ( )
 {
 	TimeTick4Rescue=15
@@ -321,6 +36,49 @@ function VSLib::EasyLogic::OnShutdown::GameShutdown(reason, nextmap)
 {		
 	Msg("OnShutdown"+"\n");	
 	//g_ModeScript.ScriptedMode_RemoveSlowPoll( HoldoutSlowPollUpdate )
+}
+
+//Speeds the game up just fractionally when the saferoom door shuts
+function Notifications::OnMapEnd::speedLoader()
+{
+	Utils.SlowTime(2, 2.0, 1.0, 2.0, false);
+}
+
+//Controls sequence of function execution (re-organise at your own risk)
+function OnGameEvent_round_start_post_nav(params)
+{
+	Utils.ResumeTime();
+	initializeAllFrameworkGlobalVariables();
+	initializeGameMode();
+	initializeDifficulty();
+	establishMapType();
+	Timers.AddTimer(0.1, true, NamesUpdate, params);	
+	mountedBarrierRandomizer(params);
+	hurtKills();
+	spawnForMapSpecificData(params);
+	
+	
+	//Utils.SlowTime(0.5, 2.0, 1.0, 2.0, true);
+	//initializeAllTADMGlobalVariables();
+	// randomisedArrays();
+	// alternateCvars();
+	// randomAlterCvars(params);
+	// checkForChampionTime(params);
+	// multiTankRandomizerIndice(params);
+
+	//Timers.AddTimer(3, false, itemSpawningManager,params);
+	// checkForMapSpecificData(params);
+	Timers.AddTimer(4, false, instaKillEntities, params);
+	 Timers.AddTimer(7, false, entityShifter, params);
+	// Timers.AddTimer(0.1, true, playerAttackMovementManager);
+	// Timers.AddTimer(1, true, oxyTankChase);
+	// Timers.AddTimer(30, true, playerMovementCalculator);
+	// Timers.AddTimer(RandomInt(tRFTR[tODMI],tRFTR[tODMA]), true, timedRandomizerTiered, params);
+	// Timers.AddTimer(RandomInt(tRFTR[tODMI],tRFTR[tODMA]), true, timedRandomiserDifficulty, params);
+	// Timers.AddTimer(45, true, timedProgressUpdate, params);
+	// Timers.AddTimer(120, true, randomAlterCvars, params);
+	// Timers.AddTimer(3, true, timedZombieScaleModifier);
+	
 }
 
 function Notifications::OnDifficultyChanged::DifficultyChanged(diff, olddiff)
@@ -506,17 +264,8 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 function Notifications::OnModeStart::GameStart(gamemode)
 {			
 	Msg("OnModeStart"+"\n");	
-	//Time4Connections=60
-	//Timers.AddTimerByName("ShowHUDTimer", 2.5, true, ShowHUD(),null,0, {});
-	//local witchSpawnTime = 60.0;
-	// By adding a timer by name, any timer that previously existed with the specified name will be overwritten.
-	// The benefit is that you won't need to mess with timer indexes.
-	//Timers.AddTimerByName("SpawnWitchTimer", witchSpawnTime, true, SpawnWitch );
 }
 
-//function Notifications::OnMapFirstStart::MapFirstStart()
-//{			
-//}
 
 function Notifications::OnSurvivorsLeftStartArea::Inicio()
 {			
@@ -717,7 +466,7 @@ function Notifications::OnHealSuccess::completaCuracion ( healee, healer, health
 	}
 	else
 		if (!(healer.IsBot()) &&!(healee.IsBot()) && (healer.GetIndex()!=healee.GetIndex()))
-			TimeTick4HealMsg=10;	
+			TimeTick4HealMsg=10;
 }
 
 
@@ -768,4 +517,169 @@ function Notifications::OnFinaleWin::Final(map_name, diff, params)
 }
 
 
-	
+//Displays the name of the mod at the end of the game
+function Notifications::OnRescueVehicleLeaving::outTheDoor(count, params)
+{
+	if (alreadyPlayed == 0)
+	{
+		Timers.RemoveTimer(NamesUpdate);
+		//Utils.SayToAllDel("You have been playing... ");
+		//Timers.AddTimer(1, false, messageCompleteGame, params);		
+		Utils.SlowTime(1.75, 2.0, 1.0, 1.5, false);
+	}
+	//alreadyPlayed makes sure that the end game message only appears once
+	alreadyPlayed = 1;
+	Msg("Executed: OnRescueVehicleLeaving outTheDoor function\n");
+}
+
+function Notifications::OnVersusMatchFinished::thatGameWas(winners, params)
+{
+	if (alreadyPlayed == 0)
+	{
+		Timers.RemoveTimer(NamesUpdate);
+		//Utils.SayToAllDel("You have been playing... ");
+		//Timers.AddTimer(1, false, messageCompleteGame, params);
+	}
+	alreadyPlayed = 1;
+	Msg("Executed: OnVersusMatchFinished thatGameWas function\n");
+}
+
+
+
+//Uses a convar to record a map restart
+// function OnShutdown()
+// {
+	// if ( SessionState.ShutdownReason == 1 || SessionState.ShutdownReason == 2 )
+	// {
+		// Convars.SetValue("director_short_finale" , "1");
+		// Msg("Executed: OnShutdown function\n");
+	// }
+// }
+
+
+//Returns friction for the adrenaline duration, see playerAttackMovementManager function (atfunc.nut)
+// function Notifications::OnAdrenalineUsed::adrenalineSpeedController(entity, params)
+// {
+	// pFC[entity.GetSurvivorCharacter()] = 100;
+	// entity.SetFriction(1);
+	// Msg("Executed: adrenalineSpeedController function\n");
+// }
+
+// function Notifications::OnHunterPouncedVictim::crawlController(entity, victim, params)
+// {
+	// pFC[victim.GetSurvivorCharacter()] = 100;
+	// victim.SetFriction(50);
+	// Msg("Executed: crawlController function\n");
+// }
+
+// function Notifications::OnHunterPounceStopped::movementReturnController(entity, victim, params)
+// {
+	// pFC[victim.GetSurvivorCharacter()] = 0;
+	// victim.SetFriction(1);
+	// Msg("Executed: movementReturnController function\n");
+// }
+
+// function Notifications::OnHunterPounceFailed::removeFrictionController(player, params)
+// {
+	// pFC[player.GetSurvivorCharacter()] = 0;
+	// player.SetFriction(1);
+	// Msg("Executed: removeFrictionController function\n");
+// }
+
+// function Notifications::OnHunterReleasedVictim::anotherFrictionRemovalController(entity, victim, params)
+// {
+	// pFC[victim.GetSurvivorCharacter()] = 0;
+	// victim.SetFriction(1);
+	// Msg("Executed: anotherFrictionRemovalController function\n");
+// }
+
+//Build custom Special Infected, and Tanks.
+// function Notifications::OnSpawn::spawnManger(player, params)
+// {
+	// alterMonsterIndices(params);
+	// switch (player.GetType())
+	// {
+		// case Z_JOCKEY:
+			// if (dAAN > 2 || gMV == "versus")
+			// {
+				// supplementTankRandomizer(player);
+			// }
+			// if (mINOD == 1 && RandomInt(1,4) == 1)
+			// {
+				// crepuscularJockeyBuilder(player, params)
+			// }
+			// else
+			// {
+				// masterJockeyBuilder(player, params);
+			// }
+			// break;
+		// case Z_SPITTER:
+			// if (dAAN > 2 || gMV == "versus")
+			// {
+				// supplementTankRandomizer(player);
+			// }
+			// if (mINOD == 1 && RandomInt(1,4) == 1)
+			// {
+				// crepuscularSpitterBuilder(player, params)
+			// }
+			// else
+			// {
+				// masterSpitterBuilder(player, params);
+			// }
+			// break;
+		// case Z_HUNTER:
+			// if (dAAN > 2 || gMV == "versus")
+			// {
+				// supplementTankRandomizer(player);
+			// }
+			// alterHunter(player, params);
+			// break;
+		// case Z_CHARGER:
+			// if (dAAN > 2 || gMV == "versus")
+			// {
+				// supplementTankRandomizer(player);
+			// }
+			// alterCharger(player, params);
+			// break;
+		// case Z_SMOKER:
+			// if (dAAN > 2 || gMV == "versus")
+			// {
+				// supplementTankRandomizer(player);
+			// }
+			// alterSmoker(player, params);
+			// break;
+		// case Z_BOOMER:
+			// if (dAAN > 2 || gMV == "versus")
+			// {
+				// supplementTankRandomizer(player);
+			// }
+			// if (championTime == 1 && gMV != "versus")
+			// {
+				// uglySisters(player,params);
+				// pBSL = player.GetLocation();
+				// Timers.AddTimer(1, false, spawnNewSister, player);
+			// }
+			// if (championTime > 1 && lastSister == 0 && gMV != "versus")
+			// {
+				// alterBoomer(player,params);
+			// }
+			// if (championTime > 1 && lastSister == 1 && gMV != "versus")
+			// {
+				// uglySisters(player,params);
+			// }
+			// if (gMV != "versus")
+			// {
+				// Timers.AddTimer(6, false, checkForChampionTime, params);
+			// }
+			// break;
+		// case Z_TANK:
+			// Timers.AddTimer(15, false, tankCheck,player);
+			// multiTankManager(player);
+			// masterTankBuilder(player, params);
+			// break;
+		// default:
+			// Msg("Defaulted: spawnManager\n");
+			// Msg("Detected player: " + player.GetType() + "\n");
+			// break;
+	// }
+// }

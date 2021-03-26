@@ -1,4 +1,4 @@
-printf( "\n\n\n\n==============Loaded SHOWPLAYERS =============== %f\n\n\n\n", __COOP_VERSION__);
+Msg( "\n\n\n\n==============Loaded SHOWPLAYERS =============== \n\n\n\n");
 
 //============================Clasificación de cálculo=计算排行=======================================//
 
@@ -8,11 +8,7 @@ printf( "\n\n\n\n==============Loaded SHOWPLAYERS =============== %f\n\n\n\n", _
 //排行显存最大化初始，求生之路2最大只能是32playerslot。
 //L4DToolZ设置33slot并且编译运行游戏结果是bad 33.。证明求生只能32人，这32人含所有可操作角色，战役模式：无非人多一点特感就少一点，
 //全部初始化，后根据需要使用其中的一部分。否则大于4人或者是服务器空置0玩家，会报红字the index '数字' does not exist
-for(local i=0;i < 32;i++)
-{
-	PlayerRankLine[i] <- "";
-	
-}
+
 
 // Grande-> pequeño//大->小
 ::CompareFunc <- function(a,b)

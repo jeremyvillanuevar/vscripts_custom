@@ -591,23 +591,6 @@ switch (execscriptName)
 				
 				Director.ResetMobTimer()
 				
-				if ( developer() > 0 )
-				{
-					Msg( "\n*****\nMapScript.DirectorOptions:\n" );
-					foreach( key, value in MapScript.DirectorOptions )
-					{
-						Msg( "    " + key + " = " + value + "\n" );
-					}
-
-					if ( LocalScript.rawin( "DirectorOptions" ) )
-					{
-						Msg( "\n*****\nLocalScript.DirectorOptions:\n" );
-						foreach( key, value in LocalScript.DirectorOptions )
-						{
-							Msg( "    " + key + " = " + value + "\n" );
-						}
-					}
-				}
 			}
 
 			//-----------------------------------------------------
@@ -617,6 +600,8 @@ switch (execscriptName)
 			{
 				SharedOptions.ProhibitBosses = false
 			}
+			if (nowNumCansNeeded>13)
+				mapgasScanSpawnerSpawner();
 		}
 		if (nowLocalScriptExec==0)
 		{
@@ -627,29 +612,10 @@ switch (execscriptName)
 			Msg(" atrium map script "+"\n")
 
 			// number of cans needed to escape.
-
-			if ( nowPlayersinGame<2 )
-			{
-				nowNumCansNeeded=8
-				NumCansNeeded <- nowNumCansNeeded
-			}
-			else
-			{
-				nowNumCansNeeded=13
-				NumCansNeeded <- nowNumCansNeeded
-			}
-
-
-			DirectorOptions <-
-			{
-				
-			CommonLimit = 15
-
-			}
+			Timers.AddTimer(60, false, gascansCalculate, null);
 
 			NavMesh.UnblockRescueVehicleNav()
 
-			EntFire( "progress_display", "SetTotalItems", NumCansNeeded )
 
 
 			function GasCanPoured(){}

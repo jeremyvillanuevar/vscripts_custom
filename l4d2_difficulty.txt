@@ -1,0 +1,146 @@
+L4D2: things affected by game difficulty
+research by sigsegv: 2020-01-03
+
+Boomer::ShouldBackOff(void)
+- easy: alters back-off behavior in some manner
+
+BoomerSelfDestruct::OnStart(Boomer *,Action<Boomer> *)
+- determines timer (4.0/2.0/1.0/1.0)
+
+BoomerVomitOnVictim::OnStart(Boomer *,Action<Boomer> *)
+- determines timer (2.0/1.0/0.2/0.0)
+
+CChargerClaw::GetPlayerDamage(CTerrorPlayer *)
+- determines damage (5/10/15/20)
+
+CDirector::GetFinaleTankLimit(void)
+- easy: forces limit to 1
+
+CDirector::GetHunterAttackDamage(void)
+- determines damage (10/10/20/40)
+
+CDirector::GetIntensityRelaxAllowWanderersThreshold(void)
+- determines IntensityRelaxAllowWanderersThreshold base value (0.3/0.3/0.5/0.8)
+
+CDirector::GetMaxPlayerZombies(void)
+- determines MaxSpecials base value (1,1,1,2,2/1,2,2,3,3/1,2,3,3,3/3,3,3,3,3)
+
+CDirector::GetMobSpawnMaxInterval(void)
+- determines MobSpawnMaxTime base value (240/180/180/180)
+
+CDirector::GetMobSpawnMinInterval(void)
+- determines MobSpawnMinTime base value (120/90/90/90)
+
+CDirector::GetTankDamage(CBaseEntity *)
+- (not sure) for versus, determines tank damage to teammates (75/75/75/150)
+- (not sure) for coop, determines base tank damage to survivors (24/24/33/100)
+
+CDirector::GetTankHealth(void)
+- determines tank health base multiplier (0.75/1.0/2.0/2.0)
+
+CDirector::GetZombieAttackDamage(CTerrorPlayer *)
+- determines common infected damage multiplier (1/2/5/20)
+
+CDirectorItemManager::UpdateItems(void)
+- non-expert: allows dynamic conversion of pills to health kits
+
+CInsectSwarm::GetDamagePerSecond(void)
+- easy: reduces spitter spit pool damage by 50%
+
+CSurvivorRescue::InputRescue(inputdata_t &)
+- (not sure) easy/normal: increases intensity for the rescued survivor
+
+CTankClaw::GetPlayerDamage(CTerrorPlayer *)
+- determines tank claw damage (24/24/33/100)
+
+CTerrorPlayer::AllowDamage(CTakeDamageInfo const&)
+- (not sure) expert: allows witches to always kill
+- (not sure) non-easy: allows witches to always kill, but only if z_witch_always_kills 1
+
+CTerrorPlayer::CheckAttackFrequency(CTakeDamageInfo const&,bool)
+- (not sure) determines minimum time between when players can be damaged by infected mobs (0.5/0.33/0.5/1.0)
+
+CTerrorPlayer::Event_Killed(CTakeDamageInfo const&)
+- determines damage taken from boomer detonations (30/30/49/100)
+
+CTerrorPlayer::FireChallengeModeExplanationEvents(void)
+- non-easy: if z_witch_always_kills 1, fires "explain_witch_instant_kill" game event
+
+CTerrorPlayer::GetFriendlyFireScale(CTakeDamageInfo const&)
+- determines which FF general damage multiplier convar to use: survivor_friendly_fire_factor_(easy/normal/hard/expert)
+- determines which FF burn damage multiplier convar to use: survivor_burn_factor_(easy/normal/hard/expert)
+- (not sure) expert: does some other modification to FF damage
+
+CTerrorPlayer::OnAttackSuccess(CBaseCombatCharacter *,bool)
+- (not sure) easy: changes something about animations
+
+CTerrorPlayer::OnFriendlyFire(CTerrorPlayer*,IGameEvent *)
+- (not sure) hard/expert: helps client keep track of FF damage for achievement or something
+
+CTerrorPlayer::OnRevivedByDefibrillator(CTerrorPlayer*,CSurvivorDeathModel *)
+- easy/normal: increases intensity for revived survivor
+
+CTerrorPlayer::OnSlammedSurvivor(CTerrorPlayer*,bool,bool)
+- determines charger slam damage to victim (10/10/15/20)
+
+CTerrorPlayer::OnTakeDamage(CTakeDamageInfo const&)
+- determines how many seconds a burning tank takes to die (75/75/80/85)
+
+CTerrorPlayer::OnTakeDamage_Alive(CTakeDamageInfo const&)
+- (not sure) modifies spit damage based on common DPS (2/6/10/12)
+- determines which incapacitated damage multiplier convar to use: z_hit_incap_factor_(easy/normal/hard/expert)
+
+CTerrorPlayer::UpdateHangingFromTongue(void)
+- determines damage multiplier related to smoker tongue hang (1/1/2/3)
+
+CTerrorPlayer::UpdateLeap(void)
+- determines damage multiplier for jockey leap (1/1/2/3)
+
+CTerrorPlayer::UpdatePounce(void)
+- determines damage multiplier for hunter pounce (1/1/2/3)
+
+ChargerChargeAtVictim::OnStart(Charger *,Action<Charger> *)
+- determines timer (0.2~0.66/0.1~0.33/0.1/0.1)
+
+ForEachPlayer<ProximityCheck>(ProximityCheck &)
+- easy: effectively reduces z_tank_rock_radius by 25%
+
+HunterLungeAtVictim::OnStart(Hunter *,Action<Hunter> *)
+- determines timer (0.2~0.66/0.1~0.33/0.1/0.1)
+
+Infected::Spawn(void)
+- non-easy: multiplies most uncommon infected health by 3
+- non-easy: multiplies uncommon infected Jimmy health by 20
+
+Infected::TraceAttack(CTakeDamageInfo const&,Vector const&,CGameTrace *)
+- determines which non-headshot damage multiplier convar to use: z_non_head_damage_factor_(easy/normal/hard/expert)
+
+JockeyLeap::OnStart(Jockey *,Action<Jockey> *)
+- determines timer (0.2~0.66/0.1~0.33/0.1/0.1)
+
+SmokerTongueVictim::OnStart(Smoker *,Action<Smoker> *)
+- determines timer multiplier (2/1/0/0)
+
+SurvivorBot::SaveFriendsInImmediateTrouble(Action<SurvivorBot> *)
+- determines which SurvivorBot immobilization reaction time convar to use: sb_friend_immobilized_reaction_time_(normal/normal/hard/expert)
+
+SurvivorCheckpointLeaving::Update(SurvivorBot *,float)
+- (not sure) expert: SurvivorBots are less likely to heal themselves when leaving a checkpoint
+
+TankAttack::TryToThrowRock(Tank *)
+- (not sure) determines one or possibly two things about tank rock throwing which are hard to decipher
+
+TankAttack::UpdateThrowAimError(void)
+- easy: tank will have random aim error of up to 45 degrees
+
+ThrowImpactedSurvivor(CTerrorPlayer *,CTerrorPlayer *,float,bool)
+- determines charger charge damage multiplier (0.5/1.0/1.5/2.0)
+
+WitchAngry::Update(Infected *,float)
+- easy: witch rage level increase is reduced by 50%
+
+WitchKillIncapVictim::OnAnimationEvent(Infected *,animevent_t *)
+- determines damage multiplier for witch-attacking-incapacitated-survivor (0.5/1.0/2.0/insta-kill)
+
+WitchSlashEnumerator::EnumElement(IHandleEntity *)
+- non-easy: sets special damage bits if z_witch_always_kills 1
