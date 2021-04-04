@@ -4,7 +4,7 @@
  * Tracks melee weapon entities and allows attaching scipts to them.
  * You shouldn't need to modify this script directly.
  *
- * Copyright (c) 2016 Rectus
+ * Copyright (c) 2016-2020 Rectus
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,32 +35,51 @@ if(!("g_WeaponController" in getroottable()))
 	::g_WeaponController <- this 
 }
 
-weaponDebug <- false
-replaceTable <- {}
-weaponTypes <- {}
-weaponList <- {}
-viewmodelList <- {}
-activeWeapons <- {}
-grabbedPlayers <- {}
-firingStates <- {}
-weaponsReplaced <- false
 
-// Entity to get Think function from.
-controlEntity <- g_ModeScript.CreateSingleSimpleEntityFromTable
-(
-	{
-		targetname = "custom_weapon_controller"
-		classname = "logic_script"
-	}
-)
-
-controlEntity.ValidateScriptScope()
-controlEntity.GetScriptScope().Think <- function()
+function Initialize()
 {
-	g_WeaponController.Think()
+	if(("controlEntity" in this) && controlEntity != null && controlEntity.IsValid())
+	{
+		return
+	}
+	
+	printl("Initializing weapon controller...")
+
+	weaponDebug <- false
+	replaceTable <- {}
+	weaponTypes <- {}
+	weaponList <- {}
+	viewmodelList <- {}
+	activeWeapons <- {}
+	grabbedPlayers <- {}
+	firingStates <- {}
+	weaponsReplaced <- false
+	trackedEntities <- {}
+	MAX_REPLACE_PRECENTAGE <- 50
+
+	// Entity to get Think function from.
+	controlEntity <- SpawnEntityFromTable("logic_script", {targetname = "custom_weapon_controller"})
+
+	controlEntity.ValidateScriptScope()
+	controlEntity.GetScriptScope().Think <- function()
+	{
+		DoEntFire("!self", "CallScriptFunction", "Think", 0.03, self, self)
+		g_WeaponController.Think()
+	}
+
+	controlEntity.GetScriptScope().FixedThink <- function()
+	{
+		g_WeaponController.FixedThink()
+	}
+
+	AddThinkToEnt(controlEntity, "FixedThink")
+	DoEntFire("!self", "CallScriptFunction", "Think", 2, controlEntity, controlEntity)
+	DoEntFire("!self", "RunScriptCode", "g_WeaponController.DelayedInit()", 1.0, controlEntity, controlEntity)
 }
-AddThinkToEnt(controlEntity, "Think")
-DoEntFire("!self", "RunScriptCode", "g_WeaponController.ReplaceMeleeSpawns()", 1.0, controlEntity, controlEntity)
+
+
+Initialize()
+
 
 // Adds a weapon type to track.
 function AddCustomWeapon(viewModel, scriptName)
@@ -72,6 +91,12 @@ function AddCustomWeapon(viewModel, scriptName)
 	{
 		weaponTypes[viewModel] <- scriptName
 		printl("Registered custom weapon script " + scriptName)
+		
+		// Allows precaching of assets as early as possible
+		if("OnPrecache" in testScope)
+		{
+			testScope.OnPrecache(controlEntity)
+		}
 		return true
 	}
 	
@@ -83,6 +108,15 @@ function SetReplacePercentage(weaponName, percentage)
 {
 	replaceTable[weaponName] <- percentage
 }
+
+
+function DelayedInit()
+{
+	// Registers the event callback functions.
+	__CollectEventCallbacks(g_WeaponController, "OnGameEvent_", "GameEventCallbacks", RegisterScriptGameEventListener)
+	ReplaceMeleeSpawns()
+}
+
 
 // Run by the script to do the spawn replacement.
 function ReplaceMeleeSpawns()
@@ -102,9 +136,20 @@ function ReplaceMeleeSpawns()
 		meleeSpawns.append(spawn)
 	}
 	
+	local totalPercent = 0
+	local factor = 1
+	
+	foreach(_, percentage in replaceTable) {totalPercent += percentage}
+	
+	// If the total percentage of weapons to replace is higher than the max, scale each percentage down to fit.
+	if(totalPercent > MAX_REPLACE_PRECENTAGE)
+	{
+		factor = MAX_REPLACE_PRECENTAGE / totalPercent
+	}
+	
 	foreach(weaponName, percentage in replaceTable)
 	{
-		local flamethrowerSpawn =
+		local keyvalues =
 		{
 			classname = "weapon_melee_spawn"
 			angles = Vector(0, 0, 0)
@@ -114,7 +159,7 @@ function ReplaceMeleeSpawns()
 			solid = "6"
 			origin = Vector(0, 0, 0)
 		}
-		local numToConvert = (meleeSpawns.len() * percentage / 100).tointeger();
+		local numToConvert = (meleeSpawns.len() * percentage * factor / 100).tointeger();
 		
 		if(meleeSpawns.len() > numToConvert + 4)
 		{
@@ -125,19 +170,67 @@ function ReplaceMeleeSpawns()
 		{
 			local oldSpawn = meleeSpawns.remove(RandomInt(0, meleeSpawns.len() - 1))
 			
-			flamethrowerSpawn.angles = oldSpawn.GetAngles()
-			flamethrowerSpawn.origin = oldSpawn.GetOrigin()
+			keyvalues.angles = oldSpawn.GetAngles().ToKVString()
+			keyvalues.origin = oldSpawn.GetOrigin()
 			oldSpawn.Kill()		
-			g_ModeScript.CreateSingleSimpleEntityFromTable(flamethrowerSpawn)
-			printl("Replaced spawn at " + flamethrowerSpawn.origin)
+			SpawnEntityFromTable(keyvalues.classname, keyvalues)
+			printl("Replaced spawn at " + keyvalues.origin)
 		}
 	}
 }
 
+// Registers an entity to the watchdog system. If the owner weapon no longer exists, the entity is killed.
+function RegisterTrackedEntity(ent, owner)
+{
+	trackedEntities[ent] <- owner
+}
+
+function UnregisterTrackedEntity(ent, owner)
+{
+	if(ent in trackedEntities)
+	{
+		delete trackedEntities[ent]
+	}
+}
+
+// Removes invalid weapons and kills any of their tracked entities.
+function RunEntityWatchdog()
+{
+	foreach(weapon, script in weaponList)
+	{
+		if(weapon && !weapon.IsValid())
+		{
+			if(weaponDebug)
+			{
+				printl("Weapon controller: Watchdog found invalid weapon: " + weapon)
+			}
+		
+			delete weaponList[weapon]
+		}
+	}
+	
+	foreach(ent, owner in trackedEntities)
+	{
+		if(!(owner in weaponList))
+		{
+			if(ent && ent.IsValid())
+			{
+				if(weaponDebug)
+				{
+					printl("Weapon controller: Watchdog deleting orphaned entity: " + ent)
+				}
+			
+				ent.Kill()
+			}
+			delete trackedEntities[ent]
+		}
+	}
+}
 
 // Game event callback to detect new weapons.
 function OnGameEvent_item_pickup(params)
 {
+	RunEntityWatchdog()
 	OnPlayerFreed(params.userid)
 
 	foreach(viewModel, scriptName in weaponTypes)
@@ -151,8 +244,9 @@ function OnGameEvent_item_pickup(params)
 				ent.ValidateScriptScope()
 				if(DoIncludeScript(scriptName, ent.GetScriptScope()))
 				{
-					weaponList[ent] <- ent.GetScriptScope()
-					ent.GetScriptScope().OnInitialize()
+					weaponList[ent] <- ent.GetScriptScope().weakref()
+					ent.GetScriptScope().weaponController <- this.weakref()
+					ent.GetScriptScope().OnInitialize()			
 				}
 				else
 				{
@@ -167,6 +261,47 @@ function OnGameEvent_item_pickup(params)
 		}
 	}
 }
+
+
+// Check for ammo pile use
+function OnGameEvent_player_use(params)
+{
+	local player = GetPlayerFromUserID(params.userid)
+	if(!player)
+	{
+		return
+	}
+	
+	local target = EntIndexToHScript(params.targetid)
+
+	if(!target || target.GetClassname() != "weapon_ammo_spawn")
+	{
+		return
+	}
+	
+	OnGameEvent_ammo_pickup(params)
+}
+
+function OnGameEvent_ammo_pickup(params)
+{
+	local player = GetPlayerFromUserID(params.userid)
+	if(!player)
+	{
+		return
+	}
+	
+	local invTable = {}
+	GetInvTable(player, invTable)
+	if("slot1" in invTable)
+	{
+		if(invTable.slot1 && invTable.slot1.GetScriptScope() && ("OnAmmoRefilled" in invTable.slot1.GetScriptScope()))
+		{
+			invTable.slot1.GetScriptScope().OnAmmoRefilled()
+		}
+	}
+}
+
+
 
 // Game event callbacks to detect the player being unable to fire.
 function OnGameEvent_tongue_grab(params)
@@ -266,8 +401,6 @@ function OnPlayerFreed(playerIdx)
 	}
 }
 
-// Registers the event callback functions.
-__CollectEventCallbacks(g_WeaponController, "OnGameEvent_", "GameEventCallbacks", RegisterScriptGameEventListener)
 
 // Retruns a tracked viewmodel.
 function GetViewModel(player)
@@ -300,7 +433,7 @@ function Think()
 	
 	while(player = Entities.FindByClassname(player, "player"))
 	{
-		if(player.GetActiveWeapon() in weaponList)
+		if(player.GetActiveWeapon() in weaponList && weaponList[player.GetActiveWeapon()] != null)
 		{
 			if(!(player in activeWeapons) && !(player in grabbedPlayers))
 			{
@@ -308,9 +441,10 @@ function Think()
 				weaponList[activeWeapons[player]].OnEquipped(player, GetViewModel(player))
 			}
 			// If the player switches between tracked weapons.
-			else if((player in activeWeapons) && (activeWeapons[player] != player.GetActiveWeapon())  && !(player in grabbedPlayers))
+			else if((player in activeWeapons) && (activeWeapons[player] != player.GetActiveWeapon())  && !(player in grabbedPlayers) && (activeWeapons[player] in weaponList))
 			{
-				if(weaponList[activeWeapons[player]].currentPlayer == player)
+				if(("currentPlayer" in weaponList[activeWeapons[player]]) && 
+				weaponList[activeWeapons[player]].currentPlayer == player)
 				{
 					firingStates[activeWeapons[player]] <- false
 					weaponList[activeWeapons[player]].OnUnEquipped()
@@ -324,7 +458,10 @@ function Think()
 			if(activeWeapons[player])
 			{
 				firingStates[activeWeapons[player]] <- false
-				weaponList[activeWeapons[player]].OnUnEquipped()
+				if(activeWeapons[player] in weaponList && weaponList[activeWeapons[player]] != null)
+				{
+					weaponList[activeWeapons[player]].OnUnEquipped()
+				}
 			}
 			delete activeWeapons[player]
 		}
@@ -341,12 +478,6 @@ function Think()
 		local mask = user.GetButtonMask()
 		if(mask & DirectorScript.IN_ATTACK && !user.IsIncapacitated() && !user.IsHangingFromLedge())
 		{
-			if(weaponDebug)
-			{	
-				local weaponOrigin = ent.GetOrigin() + Vector(0, 0, 48)
-				local endPoint = weaponOrigin + VectorFromQAngle(ent.GetAngles(), 32)
-				DebugDrawLine(weaponOrigin, endPoint, 255, 0, 0, false, 0.11)
-			}
 			if(!(ent in firingStates) || firingStates[ent] == false)
 			{
 				firingStates[ent] <- true
@@ -354,24 +485,50 @@ function Think()
 			}
 		}
 		else
-		{
-			if(weaponDebug)
-			{	
-				local weaponOrigin = ent.GetOrigin() + Vector(0, 0, 48)
-				local endPoint = weaponOrigin + VectorFromQAngle(ent.GetAngles(), 32)
-				DebugDrawLine(weaponOrigin, endPoint, 0, 255, 0, false, 0.11)
-			}
-			
+		{		
 			if(!(ent in firingStates) || firingStates[ent] == true)
 			{
 				firingStates[ent] <- false
 				weaponList[ent].OnEndFiring()
 			}
 		}
+
+	}
+}
+
+
+// Thinks at a a fixed 0.1s interval.
+function FixedThink()
+{
+	foreach(user, ent in activeWeapons)
+	{
+		if(!user || !user.IsValid() || !ent || !ent.IsValid())
+		{
+			delete activeWeapons[user]
+			continue
+		}
 		
 		if((ent in firingStates) && firingStates[ent] == true)
 		{
+			if(weaponDebug)
+			{	
+				local weaponOrigin = ent.GetOrigin() + Vector(0, 0, 48)
+				local endPoint = weaponOrigin + ent.GetAngles().Forward() * 32
+				DebugDrawLine(weaponOrigin, endPoint, 255, 0, 0, false, 0.11)
+			}
+			local mask = user.GetButtonMask()
 			weaponList[ent].OnFireTick(mask)
 		}
+		else
+		{
+			if(weaponDebug)
+			{	
+				local weaponOrigin = ent.GetOrigin() + Vector(0, 0, 48)
+				local endPoint = weaponOrigin + ent.GetAngles().Forward() * 32
+				DebugDrawLine(weaponOrigin, endPoint, 0, 255, 0, false, 0.11)
+			}
+		}
 	}
+
 }
+

@@ -101,6 +101,22 @@ function ScriptMode_Init( modename, mapname )
 
 	/////////////////////////////////////////////////////////////
 	
+printl("Custom Weapon Base loading...")
+if(!("g_WeaponController" in getroottable()))
+{
+	::g_WeaponController <- {}
+	DoIncludeScript("custom_weapon_controller", g_WeaponController)
+}
+else
+{
+	g_WeaponController.Initialize()
+}
+
+
+		if(g_WeaponController.AddCustomWeapon("models/weapons/melee/v_riotshield.mdl", "custom_riotshield"))
+		{
+			g_WeaponController.SetReplacePercentage("riotshield", 10)
+		}
 	//::g_WeaponController <- {}
 	//DoIncludeScript("custom_weapon_controller", g_WeaponController)
 	
@@ -108,11 +124,11 @@ function ScriptMode_Init( modename, mapname )
 	//{
 	//	g_WeaponController.SetReplacePercentage("template_weapon", 15)
 	//}
-	::g_WeaponController <- 
-	::G_WeaponController <- {}
-	DoIncludeScript("custom_weapon_controller", g_WeaponController)
-	DoIncludeScript("custom_weapon_controller_Firebreath", G_WeaponController)
-	IncludeScript("true_way_of_musou");
+	//::g_WeaponController <- 
+	//::G_WeaponController <- {}
+	//DoIncludeScript("custom_weapon_controller", g_WeaponController)
+	//DoIncludeScript("custom_weapon_controller_Firebreath", G_WeaponController)
+	//IncludeScript("true_way_of_musou");
 	/////////////////////////////////////////////////////////////
 	// printl("In scripted Init, gonna try with for map " + mapname + " in mode " + modename );
 	

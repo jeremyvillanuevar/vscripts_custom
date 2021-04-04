@@ -12,11 +12,11 @@ if ( DirectorScript.MapScript.ChallengeScript.rawin( "DirectorOptions") )
 	if ( (developer() > 0) || (DEBUG == 1))
 	{
 		ClientPrint(null, 3, BLUE+"DirectorOptions on MapScript.ChallengeScript Scope Exists");
-		delete	DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnSetRule;
-		delete	DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnDirectionCount;
-		delete	DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnDirectionMask;
-		delete	DirectorScript.MapScript.ChallengeScript.DirectorOptions.ScriptedStageValue;
-		delete	DirectorScript.MapScript.ChallengeScript.DirectorOptions.ScriptedStageType;
+		//delete	DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnSetRule;
+		//delete	DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnDirectionCount;
+		//delete	DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnDirectionMask;
+		//delete	DirectorScript.MapScript.ChallengeScript.DirectorOptions.ScriptedStageValue;
+		//delete	DirectorScript.MapScript.ChallengeScript.DirectorOptions.ScriptedStageType;
 		//delete	DirectorScript.MapScript.ChallengeScript.DirectorOptions.PreferredMobDirection;
 		//delete	DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials;
 	}
@@ -64,7 +64,7 @@ else
 		JockeyLimit=1
 		ChargerLimit=1
 		WitchLimit=1
-		SurvivorMaxIncapacitatedCount =6
+		//SurvivorMaxIncapacitatedCount =6
 		
 		CommonLimit=18
 		MobMinSize = 5
@@ -116,6 +116,9 @@ else
 
 ::BalanceDirectorOptions <- function ()
 {
+	//Changed to Heartbeat Plugin
+	//DirectorScript.MapScript.DirectorOptions.SurvivorMaxIncapacitatedCount <-6
+
 	//0: default.  1: wandering zombies don't sit/lie down.  -1: wandering zombies always sit/lie down.
 	Convars.SetValue("z_must_wander" ,	"-1");
 	
@@ -147,11 +150,24 @@ else
 	//NO SPECIALS SETTINGS
 	//DisallowThreatType=SI Disallowed
 	//ex. ZOMBIE_TANK = 8, ZOMBIE_WITCH = 7
+	
+	
+	if (nowPlayersinGame>6)
+	{
+		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 1
+	}
+	else
+	if (nowPlayersinGame>4)
+	{
+		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 0
+	}
+	else	
 	if (nowPlayersinGame>3)
 	{
 		DirectorScript.MapScript.DirectorOptions.ProhibitBosses				 <-	false
 		DirectorScript.MapScript.DirectorOptions.ShouldAllowSpecialsWithTank <- true	
 		DirectorScript.MapScript.DirectorOptions.ShouldAllowMobsWithTank <- true
+		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 1
 	}
 	else
 	if (nowPlayersinGame>2)
@@ -163,6 +179,10 @@ else
 		if ( DirectorScript.MapScript.DirectorOptions.rawin( "DisallowThreatType")  )
 			delete DirectorScript.MapScript.DirectorOptions.DisallowThreatType 
 	}
+	if (nowPlayersinGame>1)
+	{				
+		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 1
+	}	
 	else //2 o 1 jugador
 	{	
 		DirectorScript.MapScript.DirectorOptions.ProhibitBosses				 <-	false
@@ -371,14 +391,14 @@ else
 	//SpawnDirectionMask = 0
 	if ( "SpawnDirectionMask" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
 		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnDirectionMask <- 0
-	if (nowPlayersinGame>2)
-	{
-		DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <- 	1	
-	}
-	else
-	{
-		DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <-  0	
-	}
+	//if (nowPlayersinGame>2)
+	//{
+	//	DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <- 	1	
+	//}
+	//else
+	//{
+	//	DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <-  0	
+	//}
 	
 	//PANIC WAVES AND COMMON SETTINGS
 	//A Panic lasts until MegaMobSize commons spawn
@@ -729,8 +749,8 @@ else
 		local finalelimitscale=3
 		DirectorScript.MapScript.DirectorOptions.SpecialRespawnInterval <- 90-4*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 30+4*nowPlayersinGame*finalelimit/finalelimitscale
-		DirectorScript.MapScript.DirectorOptions.MaxSpecials <-  2+1*nowPlayersinGame*3/2*finalelimit/finalelimitscale
-		DirectorScript.MapScript.DirectorOptions.DominatorLimit <-  2+1*nowPlayersinGame*3/2*finalelimit/finalelimitscale
+		DirectorScript.MapScript.DirectorOptions.MaxSpecials <-  2+1*nowPlayersinGame*1/4*finalelimit/finalelimitscale
+		DirectorScript.MapScript.DirectorOptions.DominatorLimit <-  2+1*nowPlayersinGame*1/4*finalelimit/finalelimitscale
 		DirectorScript.MapScript.DirectorOptions.ChargerLimit <- 2
 		DirectorScript.MapScript.DirectorOptions.BoomerLimit <- 3
 		DirectorScript.MapScript.DirectorOptions.HunterLimit <- 2
@@ -746,8 +766,8 @@ else
 		local finalelimitscale=4
 		DirectorScript.MapScript.DirectorOptions.SpecialRespawnInterval <- 90-4*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 10+3*nowPlayersinGame*finalelimit/finalelimitscale
-		DirectorScript.MapScript.DirectorOptions.MaxSpecials <-  2+1*nowPlayersinGame*3/2*finalelimit/finalelimitscale
-		DirectorScript.MapScript.DirectorOptions.DominatorLimit <-  2+1*nowPlayersinGame*3/2*finalelimit/finalelimitscale
+		DirectorScript.MapScript.DirectorOptions.MaxSpecials <-  2+1*nowPlayersinGame*1/4*finalelimit/finalelimitscale
+		DirectorScript.MapScript.DirectorOptions.DominatorLimit <-  2+1*nowPlayersinGame*1/4*finalelimit/finalelimitscale
 		DirectorScript.MapScript.DirectorOptions.ChargerLimit <- 3
 		DirectorScript.MapScript.DirectorOptions.BoomerLimit <- 2
 		DirectorScript.MapScript.DirectorOptions.HunterLimit <- 2
@@ -763,8 +783,8 @@ else
 		local finalelimitscale=8
 		DirectorScript.MapScript.DirectorOptions.SpecialRespawnInterval <- 70-3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 10+3*nowPlayersinGame*finalelimit/finalelimitscale
-		DirectorScript.MapScript.DirectorOptions.MaxSpecials <-  2+1*nowPlayersinGame*4/8*finalelimit/finalelimitscale
-		DirectorScript.MapScript.DirectorOptions.DominatorLimit <-  2+1*nowPlayersinGame*4/8*finalelimit/finalelimitscale
+		DirectorScript.MapScript.DirectorOptions.MaxSpecials <-  2+1*nowPlayersinGame*1/4*finalelimit/finalelimitscale
+		DirectorScript.MapScript.DirectorOptions.DominatorLimit <-  2+1*nowPlayersinGame*1/4*finalelimit/finalelimitscale
 		DirectorScript.MapScript.DirectorOptions.ChargerLimit <- 2
 		DirectorScript.MapScript.DirectorOptions.BoomerLimit <- 2
 		DirectorScript.MapScript.DirectorOptions.HunterLimit <- 2
@@ -828,13 +848,27 @@ else
 	//	DirectorScript.MapScript.DirectorOptions.HordeEscapeCommonLimit <- 15+3*nowPlayersinGame
 	
 	//Other Finale
+	if (nowPlayersinGame>6)
+	{
+		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 1
+	}
+	else
+	if (nowPlayersinGame>4)
+	{
+		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 0
+	}
+	else
 	if (nowPlayersinGame>2)
 	{				
 		DirectorScript.MapScript.DirectorOptions.ShouldConstrainLargeVolumeSpawn	<- 	false
 		DirectorScript.MapScript.DirectorOptions.ShouldAllowSpecialsWithTank <- true
 		DirectorScript.MapScript.DirectorOptions.ShouldAllowMobsWithTank <- true		
 		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 1
-	}				
+	}
+	if (nowPlayersinGame>1)
+	{				
+		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 1
+	}					
 	else
 	{
 		
@@ -1131,16 +1165,16 @@ else
 	if ( "SpawnDirectionMask" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
 		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnDirectionMask <- 0
 	
-	if (nowPlayersinGame>2)
-	{
+	//if (nowPlayersinGame>2)
+	//{
 		//if ( "cm_AggressiveSpecials" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
-			DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <- 	1	
-	}
-	else
-	{
+	//		DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <- 	1	
+	//}
+	//else
+	//{
 		//if ( "cm_AggressiveSpecials" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
-			DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <-  0	
-	}
+	//		DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <-  0	
+	//}
 	if ( (developer() > 0) || (DEBUG == 1))
 		IncludeScript ("debug_directoroptions.nut");	
 		

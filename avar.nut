@@ -5,7 +5,6 @@
 //Programming Language: VScript
 //File Description: This is a data file that initialises most of the global variables used by TADM
 
-
 ::initializeAllFrameworkGlobalVariables <- function()
 {
 	::__COOP_VERSION__ <- 9.3;
@@ -33,16 +32,15 @@
 	::nowFinaleStageNum <- 0
 	::nowFinaleStageType <- 0
 	::nowFinaleStageEvent <- 0
-	::nowLocalScriptExec <- 0
 	::nowFirstPlayerinGame <- 0
 	::nowSpawnedTankRusher <- 0
 	::nowSpawnedWitch <- 0
-	::nowexecScriptName <- ""
 	::nowStartConnectionsnum <- 0
 	::nowStartConnections <-  []
 	::nowPlayerEvent <- ""
 	::nowPlayerJoined <- ""
 	::nowPlayerLeft <- ""
+	::nowMatchEnded <- 0
 	//ShowPlayerState now
 	::PlayerKillCout <- {}; 
 	::PlayerRandCout <- {}; 

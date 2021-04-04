@@ -208,13 +208,13 @@ switch (execscriptName)
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
 			Msg("c1_gunshop_quiet\n");
 			nowCrescendoStarted=1
-			DirectorOptions <-
-			{
+			//DirectorOptions <-
+			//{
 				// This turns off tanks and witches.
-				ProhibitBosses = false
-				PreferredMobDirection = SPAWN_BEHIND_SURVIVORS
-				PreferredSpecialDirection = SPAWN_SPECIALS_ANYWHERE
-			}
+			//	ProhibitBosses = false
+			//	PreferredMobDirection = SPAWN_BEHIND_SURVIVORS
+			//	PreferredSpecialDirection = SPAWN_SPECIALS_ANYWHERE
+			//}
 			Director.ResetMobTimer()
 			Director.PlayMegaMobWarningSounds()
 		}
@@ -235,9 +235,9 @@ switch (execscriptName)
 				SmokerLimit = 0
 				HunterLimit = 0
 				ChargerLimit = tempChargerLimit
-				SpitterLimit = 1
+				SpitterLimit = 0
 				JockeyLimit = 0
-				LockTempo = true
+				LockTempo = false
 				SpecialRespawnInterval = 30-1*nowPlayersinGame
 				SpecialInitialSpawnDelayMin = 2
 				SpecialInitialSpawnDelayMax = 6
@@ -246,14 +246,14 @@ switch (execscriptName)
 				ZombieSpawnRange=500				
 			}
 			Director.ResetMobTimer()
-			Director.PlayMegaMobWarningSounds()
+			//Director.PlayMegaMobWarningSounds()
 		}
 		break;
 	}
 	case "c1m3_mall":
 	case "c1m4_atrium":
 	{	
-		if (nowLocalScriptExec==1)
+		if (nowLocalScriptExec>0)
 		{
 			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
@@ -2282,6 +2282,7 @@ switch (execscriptName)
 				A_CustomFinaleValue4 	= StageDelay
 				A_CustomFinale5			= ONSLAUGHT
 				A_CustomFinaleValue5 	= "c14m2_gauntlet"
+				A_CustomFinaleMusic5	= "Event.FinaleWave4"	//NEW
 				A_CustomFinale6 		= DELAY
 				A_CustomFinaleValue6 	= StageDelay
 				A_CustomFinale7			= TANK
@@ -2321,12 +2322,14 @@ switch (execscriptName)
 			{
 				if ( difficulty == "hard" || difficulty == "impossible" )
 				{
+					DirectorOptions.rawdelete("A_CustomFinaleMusic5");		//NEW
 					DirectorOptions.rawdelete("A_CustomFinaleMusic7");
 					DirectorOptions.A_CustomFinale_StageCount = 12;
 					DirectorOptions.A_CustomFinaleValue7 = 1;
 					DirectorOptions.A_CustomFinaleValue8 = StageDelay;
 					DirectorOptions.A_CustomFinale9 <- PANIC;
 					DirectorOptions.A_CustomFinaleValue9 <- 2;
+					DirectorOptions.A_CustomFinaleMusic9 <- "Event.FinaleWave4"	//NEW
 					DirectorOptions.A_CustomFinale10 <- DELAY;
 					DirectorOptions.A_CustomFinaleValue10 <- StageDelay;
 					DirectorOptions.A_CustomFinale11 <- TANK;

@@ -11,8 +11,14 @@ getroottable()["GREEN"]		<- "\x05"
 IncludeScript ("debug.nut");
 //sm_vs_exec debug_directoroptions
 
+::initializeBeforeAllFrameworkGlobalVariables <- function()
+{
+	::nowexecScriptName <- ""
+	::nowLocalScriptExec <- 0
+}
 
 if ( (developer() > 0) || (DEBUG == 1))
 {
 	ClientPrint(null, 3, BLUE+"Scripted Mode");
 }
+initializeBeforeAllFrameworkGlobalVariables();

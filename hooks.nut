@@ -6,7 +6,9 @@ printl( "\n\n\n\n==============Loaded HOOKS ===============\n\n\n\n");
 
 function OnGameEvent_witch_spawn(params)
 {	
-	TimeTick4WitchMsg=10;
+	//TimeTick4WitchMsg=10;
+	local mensaje="Aparece una Witch, ataquen en grupo!!!"
+	ShowHUDTicker(4,"Witch",mensaje)
 }
 
 ::OnCustomFinaleStageChangeHook <- function ( )
@@ -35,6 +37,7 @@ function VSLib::EasyLogic::OnActivate::RoundStart(modename, mapname)
 function VSLib::EasyLogic::OnShutdown::GameShutdown(reason, nextmap)
 {		
 	Msg("OnShutdown"+"\n");	
+	nowMatchEnded=1;
 	//g_ModeScript.ScriptedMode_RemoveSlowPoll( HoldoutSlowPollUpdate )
 }
 
@@ -52,7 +55,7 @@ function OnGameEvent_round_start_post_nav(params)
 	initializeGameMode();
 	initializeDifficulty();
 	establishMapType();
-	Timers.AddTimer(0.1, true, NamesUpdate, params);	
+	Timers.AddTimer(1, true, NamesUpdate, params);	
 	mountedBarrierRandomizer(params);
 	hurtKills();
 	spawnForMapSpecificData(params);
@@ -86,7 +89,9 @@ function Notifications::OnDifficultyChanged::DifficultyChanged(diff, olddiff)
 	GameDifficulty = diff
 }
 
-function Notifications::OnEnterSaferoom::ClearScores ( client, params )
+//function Notifications::OnEnterSaferoom::ClearScores ( client, params )
+
+::ClearScores <- function()
 {
 	//local player = ::VSLib.Player(client);
 	
@@ -164,7 +169,7 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 					}
 				}
 			break;
-		}	
+		}
 		case "player":
 		{
 			if(victim.GetType() == Z_TANK) 
@@ -173,7 +178,11 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 				{
 					local achTemp ="achievedT"
 					AttachParticle(survivor,achTemp, 3.0);
-					TimeTick4BossDefeatedMsg=10;
+					
+					local mensaje="Bien!! Derrota al Boss y avanza!";					
+					//TimeTick4BossDefeatedMsg=10;
+					ShowHUDTicker(4,"Tank",mensaje);
+					
 					// No configures, la sangre se llena//不设置 虚血变成实血
 					//survivor.SwitchHealth("perm");
 					//HealthReg(survivor,tankgiveheal);	
@@ -197,12 +206,20 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 				{
 					if(!attacker.IsBot())
 					{
-						PlayerKillCout[attacker.GetIndex()]++;
+						if(!PlayerKillCout.rawin(attacker.GetIndex()))
+						{
+							PlayerKillCout[attacker.GetIndex()] <- 1;		
+						}else
+							PlayerKillCout[attacker.GetIndex()]++;
 						KillsCout++;
 					}
 				}
 				else
-					PlayerKillCout[attacker.GetIndex()]++;	
+					if(!PlayerKillCout.rawin(attacker.GetIndex()))
+					{
+						PlayerKillCout[attacker.GetIndex()] <- 1;		
+					}else
+						PlayerKillCout[attacker.GetIndex()]++;	
 				//local _randHeal =RandomInt(healreg[0],healreg[1]);	
 				//attacker.Speak("nicejob01");	
 				if(!attacker.IsIncapacitated() && params["headshot"])
@@ -239,21 +256,33 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 				//attacker.SwitchHealth("perm");
 				//HealthReg(attacker,witchgiveheal);
 				
+				local mensaje="Bien!! Derrotaron a la Witch!"
+				ShowHUDTicker(4,"Witch",mensaje);
+					
 				if(!::AllowShowBotSurvivor)
 				{
 					if(!attacker.IsBot())
 					{
-						PlayerKillCout[attacker.GetIndex()]++;
+						if(!PlayerKillCout.rawin(attacker.GetIndex()))
+						{
+							PlayerKillCout[attacker.GetIndex()] <- 1;		
+						}else
+							PlayerKillCout[attacker.GetIndex()]++;
 						KillsCout++;
 					}
 				}
 				else
-					PlayerKillCout[attacker.GetIndex()]++;
+					if(!PlayerKillCout.rawin(attacker.GetIndex()))
+					{
+						PlayerKillCout[attacker.GetIndex()] <- 1;		
+					}else
+						PlayerKillCout[attacker.GetIndex()]++;
+				
 				if(!attacker.IsIncapacitated())
 				{
 					local achTemp ="achieved"
 					AttachParticle(attacker,achTemp, 3.0);					
-				}		
+				}
 			}
 			break;		
 		}	
@@ -273,8 +302,9 @@ function Notifications::OnSurvivorsLeftStartArea::Inicio()
 	if (nowPlayersinGame>4)
 	{	
 		SpawnWitch();
-		Time4TimerWitch=60-5*nowPlayersinGame;
-		TimeTick4WitchMsg=10;
+		Timers.AddTimer(60-5*nowPlayersinGame, true, SpawnWitch);
+		//Time4TimerWitch=60-5*nowPlayersinGame;
+		
 	}
 	if ( (developer() > 0) || (DEBUG == 1))
 		IncludeScript ("debug_directoroptions.nut");	
@@ -337,11 +367,12 @@ function Notifications::OnPlayerLeft::ModifyDirectorLeft (client, name, steamID,
 		( player.GetPlayerType()==Z_SURVIVOR && ((developer() > 0) || (DEBUG == 1)) )
 		)
 	{
-		if (!esta)
-			TimeTick4ConnectMsg=9
 		CalculateNumberofPlayers()
 		nowPlayerEvent="Left"
 		nowPlayerLeft=player.GetName();
+		if (!esta)
+			//TimeTick4ConnectMsg=9
+			ShowHUDTicker(4,nowPlayerEvent,nowPlayerLeft)
 		if (nowActivateBalance==1)
 			if (nowFinaleStarted==0 && nowFinaleScavengeStarted==0)
 				BalanceDirectorOptions()
@@ -431,12 +462,13 @@ function Notifications::OnPlayerJoined::ModifyDirectorJoin (client, name, ipAddr
 		( player.GetPlayerType()==Z_SURVIVOR && ((developer() > 0) || (DEBUG == 1)) )
 		)
 	{
-		if (!esta)
-			TimeTick4ConnectMsg=9
 		
 		CalculateNumberofPlayers()
 		nowPlayerEvent="Join"
 		nowPlayerJoined=player.GetName();
+		if (!esta)
+			ShowHUDTicker(4,nowPlayerEvent,nowPlayerJoined)
+			//TimeTick4ConnectMsg=9
 		if (nowActivateBalance==1)
 			if (nowFinaleStageEvent==0 && nowFinaleScavengeStarted==0)
 				BalanceDirectorOptions()
@@ -448,11 +480,14 @@ function Notifications::OnPlayerJoined::ModifyDirectorJoin (client, name, ipAddr
 function Notifications::OnNextMap::NextMap(nextmap)
 {			
 	Msg("OnNextMap"+"\n");	
-	Timers.RemoveTimerByName ( "SpawnWitchTimer" );
+	//Timers.RemoveTimerByName ( "SpawnWitchTimer" );
 }
 function Notifications::OnPanicEvent::Iniciado(entity, params)
 {
-	TimeTick4PanicMsg=10;
+//	TimeTick4PanicMsg=10;
+	local mensaje = "PANIC: Derroten juntos a la horda!!!";
+	ShowHUDTicker(4,"PANIC",mensaje)
+	
 }
 
 function Notifications::OnHealSuccess::completaCuracion ( healee, healer, health, params )
@@ -462,11 +497,13 @@ function Notifications::OnHealSuccess::completaCuracion ( healee, healer, health
 	if ( (developer() > 0) || (DEBUG == 1))
 	{
 		if (healer.GetIndex()!=healee.GetIndex())
-			TimeTick4HealMsg=10;
+			//TimeTick4HealMsg=10;
+			ShowHUDTicker(4,"Heal",healer.GetName(),healee.GetName())
 	}
 	else
 		if (!(healer.IsBot()) &&!(healee.IsBot()) && (healer.GetIndex()!=healee.GetIndex()))
-			TimeTick4HealMsg=10;
+			ShowHUDTicker(4,"Heal",healer.GetName(),healee.GetName())
+			//TimeTick4HealMsg=10;
 }
 
 
@@ -523,6 +560,7 @@ function Notifications::OnRescueVehicleLeaving::outTheDoor(count, params)
 	if (alreadyPlayed == 0)
 	{
 		Timers.RemoveTimer(NamesUpdate);
+		Timers.RemoveTimer(SpawnWitch);
 		//Utils.SayToAllDel("You have been playing... ");
 		//Timers.AddTimer(1, false, messageCompleteGame, params);		
 		Utils.SlowTime(1.75, 2.0, 1.0, 1.5, false);
@@ -537,6 +575,7 @@ function Notifications::OnVersusMatchFinished::thatGameWas(winners, params)
 	if (alreadyPlayed == 0)
 	{
 		Timers.RemoveTimer(NamesUpdate);
+		Timers.RemoveTimer(SpawnWitch);
 		//Utils.SayToAllDel("You have been playing... ");
 		//Timers.AddTimer(1, false, messageCompleteGame, params);
 	}
@@ -594,11 +633,11 @@ function Notifications::OnVersusMatchFinished::thatGameWas(winners, params)
 // }
 
 //Build custom Special Infected, and Tanks.
-// function Notifications::OnSpawn::spawnManger(player, params)
-// {
+function Notifications::OnSpawn::spawnManager(player, params)
+{
 	// alterMonsterIndices(params);
-	// switch (player.GetType())
-	// {
+	switch (player.GetType())
+	{
 		// case Z_JOCKEY:
 			// if (dAAN > 2 || gMV == "versus")
 			// {
@@ -672,14 +711,14 @@ function Notifications::OnVersusMatchFinished::thatGameWas(winners, params)
 				// Timers.AddTimer(6, false, checkForChampionTime, params);
 			// }
 			// break;
-		// case Z_TANK:
+		case Z_TANK:
 			// Timers.AddTimer(15, false, tankCheck,player);
 			// multiTankManager(player);
 			// masterTankBuilder(player, params);
-			// break;
-		// default:
-			// Msg("Defaulted: spawnManager\n");
-			// Msg("Detected player: " + player.GetType() + "\n");
-			// break;
-	// }
-// }
+			break;
+		default:
+			Msg("Defaulted: spawnManager\n");
+			Msg("Detected player: " + player.GetType() + "\n");
+			break;
+	}
+}

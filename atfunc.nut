@@ -16,7 +16,7 @@
 		NumCansNeeded <- nowNumCansNeeded
 	}
 	else	
-	if ( nowPlayersinGame>8 )
+	if ( nowPlayersinGame>7 )
 	{
 		nowNumCansNeeded=20
 		NumCansNeeded <- nowNumCansNeeded
@@ -218,7 +218,7 @@
 							ClientPrint(null, 3, BLUE+"flow - lastFlow "+distance);
 						}
 						// Compare higher flow with next survivor, they're rushing
-						if ((distance > 1800) && spawnedTank==0)//1750 is antirush
+						if ((distance > 1810) && spawnedTank==0)//1750 is antirush
 						{
 							// PrintToServer("RUSH: %N %f", client, distance);
 							flowBack = false;							
@@ -230,8 +230,14 @@
 							SpawnTank(null,player);
 							spawnedTank=1;
 							nowSpawnedTankRusher++
-							Time4TimerRusher=160
-							TimeTick4BossMsg=10;
+							Time4TimerRusher=1600
+							local mensaje;
+							if (nowPlayersinGame>1)
+								mensaje="Aparece un Tank, derrotenlo!!!";
+							else
+								mensaje="Aparece un Tank Boss!!!";
+							ShowHUDTicker(4,"Tank",mensaje);
+							//TimeTick4BossMsg=10;
 							break;
 						}
 					}
@@ -268,6 +274,7 @@
 	local survivorcount=0;
 	nowPlayersIntensity=0;
 	nowPlayersTimeAveragedIntensity=0;
+	
 	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )
 	{
 		survivorcount++
@@ -292,11 +299,12 @@
 	//如果条件是 i < KillNum.len() 当bot被踢出。或者玩家离开，其显示条目可能不会被清除。
 	//例如4人时，当去掉一个bot，那么KillNum就变成3，第4跳显示条目不会被清空。会出现同名玩家条目的清空。
 	//设置32同时清理所有条目。避免出现不存在bot或者玩家信息滞留的问题
+	
+	
 	for(local i=0;i < 32;i++)
 	{
-		PlayerRankLine[i] = "";
+		PlayerRankLine[i] = "";		
 	}
-
 	// Tamaño de fila//排大小
 	KillNum.sort(RandomFunc);
 	//KillNum.sort(CompareFunc);

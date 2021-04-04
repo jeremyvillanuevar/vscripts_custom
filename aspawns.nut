@@ -252,7 +252,7 @@
 ::mapEntitiesSpawner <- function(params)
 {
 	local currentMap = SessionState.MapName;
-	local tableToUse = null;
+	local tableToUse = {};
 
 	switch (currentMap)
 	{
@@ -593,16 +593,16 @@
 				haybale_002				=	[146,153,-173.226,86.6123,179.222,179.241,256,"haybale"]
 				haybale_003				=	[204,-520,-173.226,86.6123,197.722,179.241,256,"haybale"]
 				haybale_004				=	[102,-651,-173.226,-0.612655,32.046,0.0171361,256,"haybale"]
-				haybails_001			=	[-2215.5 110.299 -190.559 0 169 0,256,"haybails"]
-				haybails_002			=	[-1686 -105 -167 -2.3614 270.938 56.9698,261,"haybails"]
-				haybails_003			=	[-1006.84 -468.572 -186.348 0 169 0,256,"haybails"]
-				haybails_004			=	[-2162 157 -128 0 169 0,256,"haybails"]
-				haybails_005			=	[-1903.48 209.871 -190.559 0 169 0,256,"haybails"]
-				haybails_006			=	[-1109.95 -228.567 -62.5586 0 169 0,256,"haybails"]
-				haybails_007			=	[-919.256 -479.963 -148.559 0 219 0,256,"haybails"]
-				haybails_008			=	[-1032 -7.38014 -148.559 -78.9552 84.8695 95.2268,256,"haybails"]
-				haybails_009			=	[-2077 -438 -118.598 0 169 0,256,"haybails"]
-				haybails_010			=	[-1376.37 301.411 -190.559 0 218 0,256,"haybails"]
+//				haybails_001			=	[-2215.5 110.299 -190.559 0 169 0,256,"haybails"]
+//				haybails_002			=	[-1686 -105 -167 -2.3614 270.938 56.9698,261,"haybails"]
+//				haybails_003			=	[-1006.84 -468.572 -186.348 0 169 0,256,"haybails"]
+//				haybails_004			=	[-2162 157 -128 0 169 0,256,"haybails"]
+//				haybails_005			=	[-1903.48 209.871 -190.559 0 169 0,256,"haybails"]
+//				haybails_006			=	[-1109.95 -228.567 -62.5586 0 169 0,256,"haybails"]
+//				haybails_007			=	[-919.256 -479.963 -148.559 0 219 0,256,"haybails"]
+//				haybails_008			=	[-1032 -7.38014 -148.559 -78.9552 84.8695 95.2268,256,"haybails"]
+//				haybails_009			=	[-2077 -438 -118.598 0 169 0,256,"haybails"]
+//				haybails_010			=	[-1376.37 301.411 -190.559 0 218 0,256,"haybails"]
 			}
 			Msg("from amap found: " + currentMap + "\n");
 			break;
@@ -663,7 +663,7 @@
 				garbage_can_003			=	[2225,2358,50,0,0,0,4,"can"]
 				garbage_can_004			=	[2441,1753,50,0,0,0,4,"can"]
 				garbage_can_005			=	[2573,2371,50,0,0,0,4,"can"]
-				paper_streets_001		=	[1585,1113,531,-82.5,269.5,-0.5,0,"paper_streets"]
+//				paper_streets_001		=	[1585,1113,531,-82.5,269.5,-0.5,0,"paper_streets"]
 			}
 			Msg("from amap found: " + currentMap + "\n");
 			break;
@@ -716,6 +716,7 @@
 			break;
 		}
 		case "c8m5_rooftop":
+		//IncludeScript("anomercy");
 		{				
 			tableToUse =
 			{
@@ -731,8 +732,8 @@
 		case "c9m1_alleys":
 		case "c9m2_lots":
 		{
-			IncludeScript("acrashcourse");
-			Msg("from amap found: " + currentMap + "\n");
+//			IncludeScript("acrashcourse");
+//			Msg("from amap found: " + currentMap + "\n");
 			break;
 		}
 		case "c10m1_caves":
@@ -741,8 +742,8 @@
 		case "c10m4_mainstreet":
 		case "c10m5_boathouse":
 		{
-			IncludeScript("adeathtoll");
-			Msg("from amap found: " + currentMap + "\n");
+//			IncludeScript("adeathtoll");
+//			Msg("from amap found: " + currentMap + "\n");
 			break;
 		}
 		case "c11m1_greenhouse":
@@ -751,8 +752,8 @@
 		case "c11m4_terminal":
 		case "c11m5_runway":
 		{
-			IncludeScript("adeadair");
-			Msg("from amap found: " + currentMap + "\n");
+//			IncludeScript("adeadair");
+//			Msg("from amap found: " + currentMap + "\n");
 			break;
 		}
 		case "c12m1_hilltop":
@@ -761,8 +762,8 @@
 		case "c12m4_barn":
 		case "c12m5_cornfield":
 		{
-			tableToUse = fiMEGT;
-			Msg("running table: " + tableToUse + " from map: " + currentMap + "\n");
+//			IncludeScript("a");
+//			Msg("running table: " + tableToUse + " from map: " + currentMap + "\n");
 			break;
 		}
 		case "c13m1_alpinecreek":
@@ -771,6 +772,7 @@
 		case "c13m4_cutthroatcreek":
 		case "c14m1_junkyard":
 		case "c14m2_lighthouse":	
+//			IncludeScript("alaststand");
 		default:
 			Msg("defaulted mapEntitesSpawner switch\n");
 			break;
