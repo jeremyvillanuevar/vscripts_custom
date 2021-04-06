@@ -32,58 +32,6 @@ Msg( "\n\n\n\n==============Loaded SHOWPLAYERS =============== \n\n\n\n");
 	return 0;
 } 
 
-/* en modifydirector
-function Notifications::OnModeStart::GameStart(gamemode)
-{			
-}
-*/
-
-
-//==================================RankingTop3=======排行显示前4名玩家==============================================//
-::ShowRank <- function()
-{	
-	local hudtip1 = HUD.Item("{rank01}\n{rank02}\n{rank03}\nde {clientcount} amigos | D:{difficulty}");//\n{rank04}\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
-	hudtip1.SetValue("rank01", rank01);
-	hudtip1.SetValue("rank02", rank02);
-	hudtip1.SetValue("rank03", rank03);
-	hudtip1.SetValue("clientcount", fnclientcount);
-	hudtip1.SetValue("difficulty", fndifficulty);
-	/*
-	hudtip1.SetValue("rank04", rank04);
-	hudtip1.SetValue("rank05", rank05);
-	hudtip1.SetValue("rank06", rank06);
-	hudtip1.SetValue("rank07", rank07);
-	hudtip1.SetValue("rank08", rank08);
-	*/
-	hudtip1.AttachTo(HUD_FAR_LEFT);
-	hudtip1.ChangeHUDNative(0, 0, 380, 110, 1280, 720);//(x, y, width, height, resx, resy)
-	hudtip1.SetTextPosition(TextAlign.Left);
-	hudtip1.AddFlag(HUD_FLAG_NOBG|HUD_FLAG_BLINK); 
-	local hudtip2 = HUD.Item("33 B: {killcout}");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
-	hudtip2.SetValue("killcout", fnkillcout);
-	hudtip2.AttachTo(HUD_FAR_RIGHT);
-	hudtip2.ChangeHUDNative(1100, 0, 180, 20, 1280, 720);//(x, y, width, height, resx, resy)
-	hudtip2.SetTextPosition(TextAlign.Left);
-	hudtip2.AddFlag(HUD_FLAG_NOBG|HUD_FLAG_BLINK); 		
-	/*
-::HUD_RIGHT_TOP <- g_ModeScript.HUD_RIGHT_TOP;
-::HUD_RIGHT_BOT igual arriba
-::HUD_MID_TOP <- g_ModeScript.HUD_MID_TOP;
-::HUD_MID_BOT igual arriba
-::HUD_LEFT_TOP <- g_ModeScript.HUD_LEFT_TOP;
-::HUD_LEFT_BOT igual arriba
-::HUD_TICKER EN EL CENTRO DE LA PANTALLA ARRIBA DEBAJO DE MIDBOX
-::HUD_MID_BOX EN EL CENTRO DE LA PANTALLA ARRIBOTA
-::HUD_FAR_LEFT <- g_ModeScript.HUD_FAR_LEFT;
-::HUD_FAR_RIGHT <- g_ModeScript.HUD_FAR_RIGHT;
-::HUD_SCORE_TITLE EN EL CENTRO DE LA PANTALLA MEDIO
-::HUD_SCORE_1 <- g_ModeScript.HUD_SCORE_1;
-::HUD_SCORE_2 <- g_ModeScript.HUD_SCORE_2;
-::HUD_SCORE_3 <- g_ModeScript.HUD_SCORE_3;
-::HUD_SCORE_4 <- g_ModeScript.HUD_SCORE_4;
-*/
-	
-}
 
 ::rank01 <- function ()
 {
@@ -219,12 +167,12 @@ g_ModeScript.HoldoutHUD <- {}
 			local playersText
 			local serverText
 			
-			local hudtip1 = HUD.Item("{rank01}\n{rank02}\n{rank03}\nde {clientcount} amigos | D:{difficulty}");//\n{rank04}\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
-			hudtip1.SetValue("rank01", rank01);
-			hudtip1.SetValue("rank02", rank02);
-			hudtip1.SetValue("rank03", rank03);
-			hudtip1.SetValue("clientcount", fnclientcount);
-			hudtip1.SetValue("difficulty", fndifficulty);
+			//local hudtip1 = HUD.Item("{rank01}\n{rank02}\n{rank03}\nde {clientcount} amigos | D:{difficulty}");//\n{rank04}\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+			//hudtip1.SetValue("rank01", rank01);
+			//hudtip1.SetValue("rank02", rank02);
+			//hudtip1.SetValue("rank03", rank03);
+			//hudtip1.SetValue("clientcount", fnclientcount);
+			//hudtip1.SetValue("difficulty", fndifficulty);
 			/*
 			hudtip1.SetValue("rank04", rank04);
 			hudtip1.SetValue("rank05", rank05);
@@ -232,24 +180,46 @@ g_ModeScript.HoldoutHUD <- {}
 			hudtip1.SetValue("rank07", rank07);
 			hudtip1.SetValue("rank08", rank08);
 			*/
-			hudtip1.AttachTo(HUD_FAR_LEFT);
-			hudtip1.ChangeHUDNative(0, 0, 380, 110, 1280, 720);//(x, y, width, height, resx, resy)
-			hudtip1.SetTextPosition(TextAlign.Left);
-			hudtip1.AddFlag(HUD_FLAG_NOBG|HUD_FLAG_BLINK); 
-			local hudtip2 = HUD.Item("33 B: {killcout}");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+			//hudtip1.AttachTo(HUD_FAR_LEFT);
+			//hudtip1.ChangeHUDNative(0, 0, 380, 110, 1280, 720);//(x, y, width, height, resx, resy)
+			//hudtip1.SetTextPosition(TextAlign.Left);
+			//hudtip1.AddFlag(HUD_FLAG_NOBG|HUD_FLAG_BLINK); 
+			local hudtip2 = HUD.Item("33 F:{clientcount} | B: {killcout}");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+			hudtip2.SetValue("clientcount", fnclientcount);
 			hudtip2.SetValue("killcout", fnkillcout);
 			hudtip2.AttachTo(HUD_FAR_RIGHT);
-			hudtip2.ChangeHUDNative(1100, 0, 180, 20, 1280, 720);//(x, y, width, height, resx, resy)
+			hudtip2.ChangeHUDNative(1100, 0, 240, 20, 1280, 720);//(x, y, width, height, resx, resy)
 			hudtip2.SetTextPosition(TextAlign.Left);
-			hudtip2.AddFlag(HUD_FLAG_NOBG|HUD_FLAG_BLINK); 		
-			local hudtip3 = HUD.Item("I: {inten} | TAI: {tai}");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
-			hudtip3.SetValue("inten", fninten);
-			hudtip3.SetValue("tai", fntai);
-			hudtip3.AttachTo(HUD_MID_TOP);
-			//hudtip3.ChangeHUDNative(1100, 0, 180, 20, 1280, 720);//(x, y, width, height, resx, resy)
-			hudtip3.SetTextPosition(TextAlign.Left);
-			hudtip3.AddFlag(HUD_FLAG_NOBG|HUD_FLAG_BLINK); 		
+			//hudtip2.AddFlag();
+			//printl("CTick: @ " + Time() + " c " + infStats.Commons + " s " + infStats.Specials + " tw" + infStats.Tanks+infStats.Witches )	
+			//CTick: @ 36.7849 c 54 s 1 t0	
+			//local hudtip3 = HUD.Item("C:" + infStats.Commons+"|S:" + infStats.Specials +"|T:" + infStats.Tanks);//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+			//local hudtip3 = HUD.Item("I: {inten} | TAI: {tai}");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+			//hudtip3.SetValue("inten", fninten);
+			//hudtip3.SetValue("tai", fntai);
+			//hudtip3.AttachTo(HUD_MID_TOP);
+			//hudtip3.ChangeHUDNative(550, 0, 180, 20, 1280, 720);//(x, y, width, height, resx, resy)
+			//hudtip3.SetTextPosition(TextAlign.Left);
+			//hudtip3.AddFlag(HUD_FLAG_NOBG|HUD_FLAG_BLINK); 		
 			
+			/*
+			::HUD_RIGHT_TOP <- g_ModeScript.HUD_RIGHT_TOP;
+			::HUD_RIGHT_BOT igual arriba
+			::HUD_MID_TOP <- g_ModeScript.HUD_MID_TOP;
+			::HUD_MID_BOT igual arriba
+			::HUD_LEFT_TOP <- g_ModeScript.HUD_LEFT_TOP;
+			::HUD_LEFT_BOT igual arriba
+			::HUD_TICKER EN EL CENTRO DE LA PANTALLA ARRIBA DEBAJO DE MIDBOX
+			::HUD_MID_BOX EN EL CENTRO DE LA PANTALLA ARRIBOTA
+			::HUD_FAR_LEFT <- g_ModeScript.HUD_FAR_LEFT;
+			::HUD_FAR_RIGHT <- g_ModeScript.HUD_FAR_RIGHT;
+			::HUD_SCORE_TITLE EN EL CENTRO DE LA PANTALLA MEDIO
+			::HUD_SCORE_1 <- g_ModeScript.HUD_SCORE_1;
+			::HUD_SCORE_2 <- g_ModeScript.HUD_SCORE_2;
+			::HUD_SCORE_3 <- g_ModeScript.HUD_SCORE_3;
+			::HUD_SCORE_4 <- g_ModeScript.HUD_SCORE_4;
+			*/
+				
 			/*
 			local hudtip4 = HUD.Item("I: {inten} | TAI: {tai}");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
 			hudtip4.SetValue("inten", fninten);
@@ -434,53 +404,63 @@ g_ModeScript.HoldoutHUD <- {}
 	}
 }
 
-::ShowHUDTicker <- function(numero,tipo, mensaje1,mensaje2="")
+::ShowHUDTicker <- function(numero,tipo, mensaje1="",mensaje2="")
 {
 	if ( (developer() > 0) || (DEBUG == 1))
 	{
 		ClientPrint(null, 3, BLUE+"ShowHUDTicker\n");
 	}		
-	if (numero ==4)
+	//if (numero ==4)
+	//{
+	local hudtip4 = HUD.Item("{name}");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
+	hudtip4.AttachTo(HUD_TICKER);
+	switch(tipo)
 	{
-		local hudtip4 = HUD.Item("{name}");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
-		hudtip4.AttachTo(HUD_TICKER);
-		switch(tipo)
+		case "Tank":
 		{
-			case "Tank":
-			{
-				hudtip4.SetValue("name", mensaje1);
-				break;
-			}
-			case "PANIC":
-			{
-				hudtip4.SetValue("name", mensaje1);
-				break;
-			}
-			case "Witch":
-			{
-				hudtip4.SetValue("name", mensaje1);
-				break;
-			}
-			case "Heal":
-			{
-				hudtip4.SetValue("name", mensaje1+" curó a "+mensaje2+"!!");
-				break;
-			}		
-			case "Join":
-			{
-				hudtip4.SetValue("name","Bienvenido "+mensaje1+"!!!");
-				break;
-			}		
-			case "Left":
-			{
-				hudtip4.SetValue("name",mensaje1+" tuvo que irse");
-				break;
-			}
+			hudtip4.SetValue("name", mensaje1);
+			break;
 		}
-		hudtip4.SetTextPosition(TextAlign.Center); //文本对齐参数，Left=左对齐，Center=中心对齐，Right=右对齐
-		hudtip4.AddFlag(HUD_FLAG_BLINK);
-		Timers.AddTimer(6.0, false, CloseHud, hudtip4 ); //添加计时器关闭HUD
+		case "PANIC":
+		{
+			hudtip4.SetValue("name", mensaje1);
+			break;
+		}
+		case "Witch":
+		{
+			hudtip4.SetValue("name", mensaje1);
+			break;
+		}
+		case "Heal":
+		{
+			hudtip4.SetValue("name", mensaje1+" curó a "+mensaje2+"!!");
+			break;
+		}		
+		case "Join":
+		{
+			hudtip4.SetValue("name","Bienvenido "+mensaje1+"!!!");
+			break;
+		}		
+		case "Left":
+		{
+			hudtip4.SetValue("name",mensaje1+" tuvo que irse");
+			break;
+		}
+		case "Ad":
+		{
+			hudtip4.SetValue("name",mensaje1);
+			break;
+		}
+		case "Mention":
+		{
+			hudtip4.SetValue("name","Gracias por pasarte "+rank01()+"!!!");
+			break;
+		}		
 	}
+	hudtip4.SetTextPosition(TextAlign.Center); //文本对齐参数，Left=左对齐，Center=中心对齐，Right=右对齐
+	hudtip4.AddFlag(HUD_FLAG_BLINK);
+	Timers.AddTimer(numero, false, CloseHud, hudtip4 ); //添加计时器关闭HUD
+	//}
 }
 
 

@@ -60,6 +60,7 @@
 		ClientPrint(null, 3, BLUE+"nowFinaleStageEvent "+nowFinaleStageEvent+"\n");
 	}
 	if (Show_Player_Hud==true)
+		
 		ShowHUD();
 	
 	
@@ -138,7 +139,6 @@
 				//aList.Set(index, client, 1);
 			}
 		}
-		local spawnedTank=0;
 		countflow=flowlist.len();//deja de ser indice
 		if( countflow >= 2 )
 		{
@@ -192,7 +192,7 @@
 				}				
 				local flowBack = true;
 				// Only check nearest half of survivor pack.
-				if (( i < countflow / 2 )&&spawnedTank==0)
+				if (( i < countflow / 2 ))
 				{					
 					flow = flowlist[i];
 					if ( (developer() > 0) || (DEBUG == 1))
@@ -218,7 +218,7 @@
 							ClientPrint(null, 3, BLUE+"flow - lastFlow "+distance);
 						}
 						// Compare higher flow with next survivor, they're rushing
-						if ((distance > 1810) && spawnedTank==0)//1750 is antirush
+						if ((distance > 1810))//1750 is antirush
 						{
 							// PrintToServer("RUSH: %N %f", client, distance);
 							flowBack = false;							
@@ -227,15 +227,24 @@
 							//GetClientAbsOrigin(clientflowNear, vPos);
 							//CPrintToChatAll("%s",rawmsg);
 							//TeleportEntity(client, vPos, NULL_VECTOR, NULL_VECTOR);
-							SpawnTank(null,player);
-							spawnedTank=1;
-							nowSpawnedTankRusher++
+							
+							GetInfectedStats( nowinfStats )
+							if (infStats.Tanks==0)
+							{
+								SpawnTank(null,player);
+								if (nowPlayersinGame>1)
+									mensaje="Aparece un Tank, derrotenlo!!!";
+								else
+									mensaje="Aparece un Tank Boss!!!";
+								nowSpawnedTankRusher++
+							}
+							else
+							if (infStats.Tanks==1)
+								mensaje="Para avanzar derrota al Tank!";
+							else 
+								mensaje="Para avanzar derrota a los Tanks!";
 							Time4TimerRusher=1600
 							local mensaje;
-							if (nowPlayersinGame>1)
-								mensaje="Aparece un Tank, derrotenlo!!!";
-							else
-								mensaje="Aparece un Tank Boss!!!";
 							ShowHUDTicker(4,"Tank",mensaje);
 							//TimeTick4BossMsg=10;
 							break;

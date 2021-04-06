@@ -72,7 +72,7 @@ function OnGameEvent_round_start_post_nav(params)
 	//Timers.AddTimer(3, false, itemSpawningManager,params);
 	// checkForMapSpecificData(params);
 	Timers.AddTimer(4, false, instaKillEntities, params);
-	 Timers.AddTimer(7, false, entityShifter, params);
+	Timers.AddTimer(7, false, entityShifter, params);
 	// Timers.AddTimer(0.1, true, playerAttackMovementManager);
 	// Timers.AddTimer(1, true, oxyTankChase);
 	// Timers.AddTimer(30, true, playerMovementCalculator);
@@ -82,6 +82,14 @@ function OnGameEvent_round_start_post_nav(params)
 	// Timers.AddTimer(120, true, randomAlterCvars, params);
 	// Timers.AddTimer(3, true, timedZombieScaleModifier);
 	
+	//Timers.AddTimer(60,true,ShowHUDTicker,
+	//	{
+	//	numero = 5
+	//	tipo="Mention"
+	//	})
+		
+	//local mensaje = "Bienvenidos a 33"
+	//ShowHUDTicker(4,"Ad",mensaje);
 }
 
 function Notifications::OnDifficultyChanged::DifficultyChanged(diff, olddiff)
@@ -181,7 +189,7 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 					
 					local mensaje="Bien!! Derrota al Boss y avanza!";					
 					//TimeTick4BossDefeatedMsg=10;
-					ShowHUDTicker(4,"Tank",mensaje);
+					ShowHUDTicker(5,"Tank",mensaje);
 					
 					// No configures, la sangre se llena//不设置 虚血变成实血
 					//survivor.SwitchHealth("perm");
@@ -257,7 +265,7 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 				//HealthReg(attacker,witchgiveheal);
 				
 				local mensaje="Bien!! Derrotaron a la Witch!"
-				ShowHUDTicker(4,"Witch",mensaje);
+				ShowHUDTicker(5,"Witch",mensaje);
 					
 				if(!::AllowShowBotSurvivor)
 				{
@@ -372,7 +380,7 @@ function Notifications::OnPlayerLeft::ModifyDirectorLeft (client, name, steamID,
 		nowPlayerLeft=player.GetName();
 		if (!esta)
 			//TimeTick4ConnectMsg=9
-			ShowHUDTicker(4,nowPlayerEvent,nowPlayerLeft)
+			ShowHUDTicker(10,nowPlayerEvent,nowPlayerLeft)
 		if (nowActivateBalance==1)
 			if (nowFinaleStarted==0 && nowFinaleScavengeStarted==0)
 				BalanceDirectorOptions()
@@ -467,7 +475,7 @@ function Notifications::OnPlayerJoined::ModifyDirectorJoin (client, name, ipAddr
 		nowPlayerEvent="Join"
 		nowPlayerJoined=player.GetName();
 		if (!esta)
-			ShowHUDTicker(4,nowPlayerEvent,nowPlayerJoined)
+			ShowHUDTicker(10,nowPlayerEvent,nowPlayerJoined)
 			//TimeTick4ConnectMsg=9
 		if (nowActivateBalance==1)
 			if (nowFinaleStageEvent==0 && nowFinaleScavengeStarted==0)
@@ -486,7 +494,7 @@ function Notifications::OnPanicEvent::Iniciado(entity, params)
 {
 //	TimeTick4PanicMsg=10;
 	local mensaje = "PANIC: Derroten juntos a la horda!!!";
-	ShowHUDTicker(4,"PANIC",mensaje)
+	ShowHUDTicker(3,"PANIC",mensaje)
 	
 }
 
@@ -498,11 +506,11 @@ function Notifications::OnHealSuccess::completaCuracion ( healee, healer, health
 	{
 		if (healer.GetIndex()!=healee.GetIndex())
 			//TimeTick4HealMsg=10;
-			ShowHUDTicker(4,"Heal",healer.GetName(),healee.GetName())
+			ShowHUDTicker(5,"Heal",healer.GetName(),healee.GetName())
 	}
 	else
 		if (!(healer.IsBot()) &&!(healee.IsBot()) && (healer.GetIndex()!=healee.GetIndex()))
-			ShowHUDTicker(4,"Heal",healer.GetName(),healee.GetName())
+			ShowHUDTicker(5,"Heal",healer.GetName(),healee.GetName())
 			//TimeTick4HealMsg=10;
 }
 
@@ -561,6 +569,7 @@ function Notifications::OnRescueVehicleLeaving::outTheDoor(count, params)
 	{
 		Timers.RemoveTimer(NamesUpdate);
 		Timers.RemoveTimer(SpawnWitch);
+		Timers.RemoveTimer(ShowHUDTicker)
 		//Utils.SayToAllDel("You have been playing... ");
 		//Timers.AddTimer(1, false, messageCompleteGame, params);		
 		Utils.SlowTime(1.75, 2.0, 1.0, 1.5, false);
@@ -576,6 +585,7 @@ function Notifications::OnVersusMatchFinished::thatGameWas(winners, params)
 	{
 		Timers.RemoveTimer(NamesUpdate);
 		Timers.RemoveTimer(SpawnWitch);
+		Timers.RemoveTimer(ShowHUDTicker)
 		//Utils.SayToAllDel("You have been playing... ");
 		//Timers.AddTimer(1, false, messageCompleteGame, params);
 	}
@@ -718,7 +728,7 @@ function Notifications::OnSpawn::spawnManager(player, params)
 			break;
 		default:
 			Msg("Defaulted: spawnManager\n");
-			Msg("Detected player: " + player.GetType() + "\n");
+			Msg("Detected player type: " + player.GetType() + "\n");
 			break;
 	}
 }

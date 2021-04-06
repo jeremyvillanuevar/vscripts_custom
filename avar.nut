@@ -7,7 +7,8 @@
 
 ::initializeAllFrameworkGlobalVariables <- function()
 {
-	::__COOP_VERSION__ <- 9.3;
+	::__COOP_VERSION__ <- 9.3;		
+	::nowinfStats <- {};
 	::nowActivateBalance <- 1
 	/// Mostrar muertes de jugadores ///// Por razones de exhibición, solo se muestran los cuatro primeros
 	///////////////////////////////////显示玩家击杀/////因为显示原因所以只显示前四名///////////////////////////
