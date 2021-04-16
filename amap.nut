@@ -245,7 +245,7 @@ switch (execscriptName)
 				PreferredMobDirection =	SPAWN_IN_FRONT_OF_SURVIVORS
 				ZombieSpawnRange=500				
 			}
-			Director.ResetMobTimer()
+			//Director.ResetMobTimer()
 			//Director.PlayMegaMobWarningSounds()
 		}
 		break;
@@ -437,6 +437,7 @@ switch (execscriptName)
 			//-----------------------------------------------------
 
 			// number of cans needed to escape.
+			gascansCalculate(null);
 			NumCansNeeded <- nowNumCansNeeded
 			//NumCansNeeded <- 13
 
@@ -515,7 +516,7 @@ switch (execscriptName)
 
 				if ( GasCansPoured == NumCansNeeded )
 				{
-					Msg(" needed: " + NumCansNeeded + "\n") 
+					Msg("car ready\n") 
 					EntFire( "relay_car_ready", "trigger" )
 				}
 
@@ -526,6 +527,7 @@ switch (execscriptName)
 			{
 				TouchedOrPoured <- GasCansPoured + GasCansTouched
 				Msg(" Poured or touched: " + TouchedOrPoured + "\n")
+				Msg(" needed: " + NumCansNeeded + "\n") 
 
 				DelayTouchedOrPoured++
 				Msg(" DelayTouchedOrPoured: " + DelayTouchedOrPoured + "\n")
@@ -539,6 +541,7 @@ switch (execscriptName)
 				switch( TouchedOrPoured )
 				{
 					case GimmeThreshold:
+						Msg(" TouchedOrPoured: GimmeThreshold = " + GimmeThreshold + "\n")
 						EntFire( "@director", "EndCustomScriptedStage" )
 						break
 				}
@@ -612,7 +615,7 @@ switch (execscriptName)
 			Msg(" atrium map script "+"\n")
 
 			// number of cans needed to escape.
-			Timers.AddTimer(60, false, gascansCalculate, null);
+			Timers.AddTimer(15, false, gascansCalculate, null);
 
 			NavMesh.UnblockRescueVehicleNav()
 

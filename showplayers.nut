@@ -188,7 +188,14 @@ g_ModeScript.HoldoutHUD <- {}
 			hudtip2.SetValue("clientcount", fnclientcount);
 			hudtip2.SetValue("killcout", fnkillcout);
 			hudtip2.AttachTo(HUD_FAR_RIGHT);
-			hudtip2.ChangeHUDNative(1100, 0, 240, 20, 1280, 720);//(x, y, width, height, resx, resy)
+			local scoreWidth = 170;
+			if (fnclientcount()>9)
+				scoreWidth=scoreWidth+15;
+			if (fnkillcout()>99)
+				scoreWidth=scoreWidth+30;
+			else if (fnkillcout()>9)
+				scoreWidth=scoreWidth+15;
+			hudtip2.ChangeHUDNative(1000, 0, scoreWidth, 20, 1280, 720);//(x, y, width, height, resx, resy)
 			hudtip2.SetTextPosition(TextAlign.Left);
 			//hudtip2.AddFlag();
 			//printl("CTick: @ " + Time() + " c " + infStats.Commons + " s " + infStats.Specials + " tw" + infStats.Tanks+infStats.Witches )	

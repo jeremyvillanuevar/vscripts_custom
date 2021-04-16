@@ -115,16 +115,296 @@ else
 }
 
 ::BalanceDirectorOptions <- function ()
-{
-	//Changed to Heartbeat Plugin
-	//DirectorScript.MapScript.DirectorOptions.SurvivorMaxIncapacitatedCount <-6
+{	
+		local sv_steamgroup = "39464742,2508707,36547718,964095,938619,554109,2450706,883,1240452,1850,5195189,3402923,1582249,10639590,3483,6112039,707962,1651917,1210106,1789698,4311062,37215448,707962,4189851,1909444";
+		local scuffle_duration = "6.0";
+		//Tanks
+		// If 1, Enable Tank Demolition, server will spawn one tank before door open
+		local lockdown_systemtdb = "1";
+		//Tanke Luego de Abrir
+		local lockdown_systemtda = "0";
+		//Time Interval to spawn a tank when door is opening (0=off)
+		local lockdown_systemoti = "1500";
+		//Mutant Tanks
+		local mt_pluginenabled = "1";
+		
+		//Witches
+		// Amount of damage the Witch causes when she hits a Survivor.
+		local l4d_pwm_psychoticchargedamage = "1";
+		// Power a Survivor is hit with during Psychotic Charge. (Def 300)
+		local l4d_pwm_psychoticchargepower = "1";
+		// How close a Survivor has to be to be hit by the Psychotic Charge. (Def 200)
+		local l4d_pwm_psychoticchargerange = "5";
 
-	//0: default.  1: wandering zombies don't sit/lie down.  -1: wandering zombies always sit/lie down.
-	Convars.SetValue("z_must_wander" ,	"-1");
+		//Speciales
+		//Explosion de Boomer
+		local l4d_nbm_bileblast = "0";
+		// Enable/Disable the Special Infected Slap/Shove Ability Plugin.
+		//Convars.ExecuteConCommand("sm_cvar l4d_si_ability_enabled 0")
+		local l4d_si_ability_enabled = "0";
+		//(5/10/15/20)
+		local charger_dmg_punch = "5";
+		//(5/10/15/20)
+		local charger_dmg_firstpunch = "10";
+		//(10/10/15/20)
+		local charger_dmg_impact = "10";
+		//
+		local charger_dmg_stumble = "4";
+		//
+		local charger_dmg_pound = "5";
+     
+		//Commons
+		// Common uncommon chance
+		local l4d2_spawn_uncommons_autochance = "4";
+		//default 19, binary flag of allowed autoshuffle zombies. 1 = riot, 2 = ceda, 4 = clown, 8 = mudman, 16 = roadcrew, 32 = jimmy, 64 = fallen); riot + ceda + roadcrew = 19
+		local l4d2_spawn_uncommons_autotypes = "64";
+		//default -1 or health value (set to health value if you want something nonstandard)
+		local l4d2_spawn_uncommons_healthoverride = "21";
+
+		local l4d_shot_warns_common_enable = "0";
+		local l4d_shot_warns_common_safe_area = "0";
+		local l4d_shot_warns_common_tank_alive = "0";
+
+		// ConVars for plugin "balancer_hp.smx"
+		// 0: Check all players survivor in game, 1: Ignore check idle survivors, 2: Ignore check survivors bot, 4: Ignore check dead survivors, 7: Set all ignore check modes
+		local balancer_hp_check_mode = "6";
+		//  0: Disable boomer increment/decrement balance HP, (Value < 1): Set factor percent of HP base [example:0.1 = 1] to increment/decrement per players), (Value >= 1): Set HP value to increment/decrement per players
+		//balancer_hp_factor_boomer "2"
+		//balancer_hp_factor_charger "10"
+		//balancer_hp_factor_hunter "13"
+		//balancer_hp_factor_jockey "8"
+		//balancer_hp_factor_smoker "2"
+		//balancer_hp_factor_spitter "5"
+		local balancer_hp_factor_tank="358";
+		local balancer_hp_factor_witch="257";
+		local l4d_super_HPmultiple_boomer="22.0";
+		local l4d_super_HPmultiple_charger="12.0";
+		local l4d_super_HPmultiple_hunter="43.0";
+		local l4d_super_HPmultiple_jockey="12.0";
+		local l4d_super_HPmultiple_smoker="53.0";
+		local l4d_super_HPmultiple_spitter="12.0";
+		local l4d_super_HPmultiple_tank="1.2";
+		//  0: Disable boomer limit max HP, (Value > 0): Set increment limit HP
+		local balancer_hp_max_boomer= "0";
+		local balancer_hp_max_charger= "0";
+		local balancer_hp_max_hunter= "0";
+		local balancer_hp_max_jockey= "0";
+		local balancer_hp_max_smoker ="0";
+		local balancer_hp_max_spitter= "0";
+		local balancer_hp_max_tank ="0";
+		local balancer_hp_max_witch ="0";
+		// Set survivor players default to set hp base
+		local balancer_hp_players_base="0";
+	
+	
+		
+	if (nowPlayersinGame>7)
+	{
+		l4d_si_ability_enabled = "1";
+	}
+	else
+	if (nowPlayersinGame>5)
+	{
+		sv_steamgroup="39464742,848708,2450706,36972120,4438486,37582986,2240651,2207220,29834576,16793326,2930925,34515242,33766243,1689987,4789854,31758229,4555105";
+		
+
+		scuffle_duration= "8.0";
+		
+		
+		//Tanks
+		//Time Interval to spawn a tank when door is opening (0=off)
+		lockdown_systemoti = "600";
+
+		//Witches
+		// Amount of damage the Witch causes when she hits a Survivor.
+		l4d_pwm_psychoticchargedamage = "1";
+		// Power a Survivor is hit with during Psychotic Charge. (Def 300)
+		l4d_pwm_psychoticchargepower = "1";
+		// How close a Survivor has to be to be hit by the Psychotic Charge. (Def 200)
+		l4d_pwm_psychoticchargerange = "5";
+
+		//Speciales
+		//Explosion de Boomer
+		l4d_nbm_bileblast = "1";
+		// Enable/Disable the Special Infected Slap/Shove Ability Plugin.
+		//Convars.ExecuteConCommand("sm_cvar l4d_si_ability_enabled 0")
+		l4d_si_ability_enabled = "0";
+		//(5/10/15/20)
+		charger_dmg_punch = "5";
+		//(5/10/15/20)
+		charger_dmg_firstpunch = "10";
+		//(10/10/15/20)
+		charger_dmg_impact = "10";
+		//
+		charger_dmg_stumble = "4";
+		//
+		charger_dmg_pound = "5";
+     
+		//Commons
+		// Common uncommon chance
+		l4d2_spawn_uncommons_autochance = "4";
+		//default 19, binary flag of allowed autoshuffle zombies. 1 = riot, 2 = ceda, 4 = clown, 8 = mudman, 16 = roadcrew, 32 = jimmy, 64 = fallen); riot + ceda + roadcrew = 19
+		l4d2_spawn_uncommons_autotypes = "64";
+		//default -1 or health value (set to health value if you want something nonstandard)
+		l4d2_spawn_uncommons_healthoverride = "21";
+
+		l4d_shot_warns_common_enable = "0";
+		l4d_shot_warns_common_safe_area = "0";
+		l4d_shot_warns_common_tank_alive = "0";
+
+		//  0: Disable boomer increment/decrement balance HP, (Value < 1): Set factor percent of HP base [example:0.1 = 1] to increment/decrement per players), (Value >= 1): Set HP value to increment/decrement per players
+		// balancer_hp_factor_boomer "2"
+		// balancer_hp_factor_charger "6"
+		// balancer_hp_factor_hunter "10"
+		// balancer_hp_factor_jockey "5"
+		// balancer_hp_factor_smoker "2"
+		// balancer_hp_factor_spitter "5"
+		balancer_hp_factor_tank="440";
+		balancer_hp_factor_witch="110";
+		l4d_super_HPmultiple_boomer="33.0";
+		l4d_super_HPmultiple_charger="16.0";
+		l4d_super_HPmultiple_hunter="45.0";
+		l4d_super_HPmultiple_jockey="14.0";
+		l4d_super_HPmultiple_smoker="22.0";
+		l4d_super_HPmultiple_spitter="22.0";
+		l4d_super_HPmultiple_tank="1";
+		// 0: Disable boomer limit max HP, (Value > 0): Set increment limit HP
+		// balancer_hp_max_boomer= "0";
+		// balancer_hp_max_charger= "0";
+		// balancer_hp_max_hunter= "0";
+		// balancer_hp_max_jockey= "0";
+		// balancer_hp_max_smoker ="0";
+		// balancer_hp_max_spitter= "0";
+		// balancer_hp_max_tank ="0";
+		// balancer_hp_max_witch ="0";
+		//Set survivor players default to set hp base
+		// balancer_hp_players_base="0";
+
+
+
+		//Mutants
+		// l4d_super_probability_boomer "16.0"
+		// l4d_super_probability_charger "16.0"
+		// l4d_super_probability_hunter "16.0"
+		// l4d_super_probability_jockey "16.0"
+		// l4d_super_probability_smoker "16.0"
+		// l4d_super_probability_spitter "16.0"
+		// l4d_super_probability_tank "15.0"
+		
+	}
+	else //2 o 1 jugador
+	{	
+	
+		
+	}
+	
+		Convars.SetValue("sv_steamgroup" ,	sv_steamgroup);
+																																							 //aca no llega
+		//Reaparicion
+		//l4d_survivorrespawn_respawntimeout "30"
+		//sm_clear_dead_body_time "45"
+		//Convars.ExecuteConCommand("sm_cvar scuffle_duration 6.0")
+		Convars.SetValue("scuffle_duration" ,	scuffle_duration);
+
+		//Tanks
+		// If 1, Enable Tank Demolition, server will spawn one tank before door open
+		Convars.SetValue("lockdown_system-l4d2_tank_demolition_before" ,	lockdown_systemtdb);		
+		//Tanke Luego de Abrir
+		Convars.SetValue("lockdown_system-l4d2_tank_demolition_after" ,	lockdown_systemtda);
+		//Time Interval to spawn a tank when door is opening (0=off)
+		Convars.SetValue("lockdown_system-l4d2_opening_tank_interval" ,	lockdown_systemoti);
+		
+		//Mutant Tanks
+		Convars.SetValue("mt_pluginenabled" ,	mt_pluginenabled);
+		
+
+		//Witches
+		// Amount of damage the Witch causes when she hits a Survivor. 
+		Convars.SetValue("l4d_pwm_psychoticchargedamage" ,	l4d_pwm_psychoticchargedamage);
+		// Power a Survivor is hit with during Psychotic Charge. (Def 300)
+		Convars.SetValue("l4d_pwm_psychoticchargepower" ,	l4d_pwm_psychoticchargepower);
+		// How close a Survivor has to be to be hit by the Psychotic Charge. (Def 200)
+		Convars.SetValue("l4d_pwm_psychoticchargerange" ,	l4d_pwm_psychoticchargerange);
+
+
+		//Speciales
+		//Explosion de Boomer
+		Convars.SetValue("l4d_nbm_bileblast" ,	l4d_nbm_bileblast);
+		// Enable/Disable the Special Infected Slap/Shove Ability Plugin.
+		//Convars.ExecuteConCommand("sm_cvar l4d_si_ability_enabled 0")
+		Convars.SetValue("l4d_si_ability_enabled" ,	l4d_si_ability_enabled);
+		//(5/10/15/20)
+		Convars.SetValue("charger_dmg_punch" ,	charger_dmg_punch);
+		//(5/10/15/20)
+		Convars.SetValue("charger_dmg_firstpunch" ,	charger_dmg_firstpunch);
+		//(10/10/15/20)
+		Convars.SetValue("charger_dmg_impact" ,	charger_dmg_impact);
+		//
+		Convars.SetValue("charger_dmg_stumble" ,	charger_dmg_stumble);
+		//
+		Convars.SetValue("charger_dmg_pound" ,	charger_dmg_pound);
+     
+		//Commons
+		// Common uncommon chance
+		Convars.SetValue("l4d2_spawn_uncommons_autochance" ,	l4d2_spawn_uncommons_autochance);
+		//default 19, binary flag of allowed autoshuffle zombies. 1 = riot, 2 = ceda, 4 = clown, 8 = mudman, 16 = roadcrew, 32 = jimmy, 64 = fallen); riot + ceda + roadcrew = 19
+		Convars.SetValue("l4d2_spawn_uncommons_autotypes" ,	l4d2_spawn_uncommons_autotypes);
+		//default -1 or health value (set to health value if you want something nonstandard)
+		Convars.SetValue("l4d2_spawn_uncommons_healthoverride" ,	l4d2_spawn_uncommons_healthoverride);
+
+		Convars.SetValue("l4d_shot_warns_common_enable" ,	l4d_shot_warns_common_enable);
+		Convars.SetValue("l4d_shot_warns_common_safe_area" ,	l4d_shot_warns_common_safe_area);
+		Convars.SetValue("l4d_shot_warns_common_tank_alive" ,	l4d_shot_warns_common_tank_alive);
+
+
+
+		// ConVars for plugin "balancer_hp.smx"
+		// 0: Check all players survivor in game, 1: Ignore check idle survivors, 2: Ignore check survivors bot, 4: Ignore check dead survivors, 7: Set all ignore check modes
+		Convars.SetValue("balancer_hp_check_mode" ,	balancer_hp_check_mode);
+		//  0: Disable boomer increment/decrement balance HP, (Value < 1): Set factor percent of HP base [example:0.1 = 1] to increment/decrement per players), (Value >= 1): Set HP value to increment/decrement per players
+		//balancer_hp_factor_boomer "2"
+		//balancer_hp_factor_charger "10"
+		//balancer_hp_factor_hunter "13"
+		//balancer_hp_factor_jockey "8"
+		//balancer_hp_factor_smoker "2"
+		//balancer_hp_factor_spitter "5"
+		Convars.SetValue("balancer_hp_factor_tank" ,	balancer_hp_factor_tank);
+		Convars.SetValue("balancer_hp_factor_witch" ,	balancer_hp_factor_witch);
+		Convars.SetValue("l4d_super_HPmultiple_boomer" ,	l4d_super_HPmultiple_boomer);
+		Convars.SetValue("l4d_super_HPmultiple_charger" ,	l4d_super_HPmultiple_charger);
+		Convars.SetValue("l4d_super_HPmultiple_hunter" ,	l4d_super_HPmultiple_hunter);
+		Convars.SetValue("l4d_super_HPmultiple_jockey" ,	l4d_super_HPmultiple_jockey);
+		Convars.SetValue("l4d_super_HPmultiple_smoker" ,	l4d_super_HPmultiple_smoker);
+		Convars.SetValue("l4d_super_HPmultiple_spitter" ,	l4d_super_HPmultiple_spitter);
+		Convars.SetValue("l4d_super_HPmultiple_tank" ,	l4d_super_HPmultiple_tank);
+		//  0: Disable boomer limit max HP, (Value > 0): Set increment limit HP
+		//balancer_hp_max_boomer "0"
+		//balancer_hp_max_charger "0"
+		//balancer_hp_max_hunter "0"
+		//balancer_hp_max_jockey "0"
+		//balancer_hp_max_smoker "0"
+		//balancer_hp_max_spitter "0"
+		//balancer_hp_max_tank "0"
+		//balancer_hp_max_witch "0"
+		// Set survivor players default to set hp base
+		Convars.SetValue("balancer_hp_players_base" ,	balancer_hp_players_base);
+
+		//Mutants
+		// Convars.SetValue("l4d_super_probability_boomer" ,	l4d_super_probability_boomer);
+		// Convars.SetValue("l4d_super_probability_charger" ,	l4d_super_probability_charger);
+		// Convars.SetValue("l4d_super_probability_hunter" ,	l4d_super_probability_hunter);
+		// Convars.SetValue("l4d_super_probability_jockey" ,	l4d_super_probability_jockey);
+		// Convars.SetValue("l4d_super_probability_smoker" ,	l4d_super_probability_smoker);
+		// Convars.SetValue("l4d_super_probability_spitter" ,	l4d_super_probability_spitter);
+		// Convars.SetValue("l4d_super_probability_tank" ,	l4d_super_probability_tank);
+	
 	
 	if (nowFirstPlayerinGame==0)
 		Director.ResetMobTimer()	
 
+	//Changed to Heartbeat Plugin
+	//DirectorScript.MapScript.DirectorOptions.SurvivorMaxIncapacitatedCount <-6
+	
 	local sizeHordeModifier;
 	//Modifier from Area of Map
 	if (mASMOL=="small")
@@ -138,7 +418,7 @@ else
 	}
 	else
 	{
-		sizeHordeModifier=1.5;
+		sizeHordeModifier=1.4;
 	}
 
 	//You can only assign DirectorOptions with <-
@@ -529,6 +809,10 @@ else
 	
 	
 	//WANDERING SETTINGS
+
+	//0: default.  1: wandering zombies don't sit/lie down.  -1: wandering zombies always sit/lie down.
+	Convars.SetValue("z_must_wander" ,	"-1");
+	
 	//Wanderer count (N) is zeroed:
 	//When an area becomes visible to any Survivor
 	//When the Director is in Relax mode
@@ -713,9 +997,11 @@ else
 ::CalculateNumberofPlayers <- function ()
 {
 	//if ( (developer() > 0) || (DEBUG == 1))
+	nowSurvivorsinGame=0;
 	nowPlayersinGame = 0;
 	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )
 	{
+		nowSurvivorsinGame++;
 		if ((developer() > 0) || (DEBUG == 1))
 		{
 			if(survivor.IsBot())

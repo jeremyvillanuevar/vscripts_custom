@@ -228,8 +228,9 @@
 							//CPrintToChatAll("%s",rawmsg);
 							//TeleportEntity(client, vPos, NULL_VECTOR, NULL_VECTOR);
 							
+							local mensaje;
 							GetInfectedStats( nowinfStats )
-							if (infStats.Tanks==0)
+							if (nowinfStats.Tanks==0 && nowSpawnedTankRusher==0)
 							{
 								SpawnTank(null,player);
 								if (nowPlayersinGame>1)
@@ -239,12 +240,11 @@
 								nowSpawnedTankRusher++
 							}
 							else
-							if (infStats.Tanks==1)
+							if (nowinfStats.Tanks==1 || nowSpawnedTankRusher==1)
 								mensaje="Para avanzar derrota al Tank!";
 							else 
 								mensaje="Para avanzar derrota a los Tanks!";
 							Time4TimerRusher=1600
-							local mensaje;
 							ShowHUDTicker(4,"Tank",mensaje);
 							//TimeTick4BossMsg=10;
 							break;
@@ -254,6 +254,8 @@
 			}
 		}		
 	}
+	else
+	nowSpawnedTankRusher=0;
 	
 	if(ClearEdicts)
 	{
@@ -351,7 +353,7 @@
 	//Client_Count=clientcount;
 	nowPlayersinGame=clientcount;
 	Survivors_Count=survivorcount;
-	
+	nowSurvivorsinGame=Survivors_Count;
 }
 
 ::spawnForMapSpecificData <- function(params)

@@ -41,11 +41,103 @@ function VSLib::EasyLogic::OnShutdown::GameShutdown(reason, nextmap)
 	//g_ModeScript.ScriptedMode_RemoveSlowPoll( HoldoutSlowPollUpdate )
 }
 
-//Speeds the game up just fractionally when the saferoom door shuts
+//Speeds the game up just fractionally when the map transition starts
 function Notifications::OnMapEnd::speedLoader()
-{
-	Utils.SlowTime(2, 2.0, 1.0, 2.0, false);
+{	
+	survivorsParticleHead();
+	survivorsYellCelebration();
+	survivorsYellCelebration();
+	Utils.SlowTime(0.2);
+	//Utils.SlowTime(2, 2.0, 1.0, 2.0, false);
+	local mensaje="Felicidades! Están a salvo y limpiaron la zona!";
+	ShowHUDTicker(4,"Ad",mensaje);
+	Utils.SayToAll(mensaje);
+	local nombres = "Bien Hecho a cada uno de ustedes "+nowSurvivorsinGame+": ";
+	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )//gives a Player
+	{		
+		nombres=nombres+survivor.GetName()+" ";
+		if (survivor.IsHuman())
+		{
+			survivor.Print("Zombis Eliminados: "+fnkillcout());
+			survivor.ShowHint("Bien Hecho "+survivor.GetName());
+		}
+	}
+	survivorsPrint(nombres);
 }
+
+::survivorsPrint <- function (mensaje)
+{	
+	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )//gives a Player
+	{		
+		if (survivor.IsHuman())
+		{
+			survivor.Print(mensaje);
+		}
+	}
+}	
+::survivorsHint <- function (mensaje)
+{	
+	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )//gives a Player
+	{		
+		if (survivor.IsHuman())
+		{
+			survivor.ShowHint(mensaje);
+		}
+	}
+}	
+
+::survivorsParticleHead <- function ( )
+{	
+	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )//gives a Player
+	{		
+		//if(survivor.IsBot())
+		//	continue;
+		local achTemp="achieved"
+		AttachParticleCongrats(survivor,achTemp, 3.0);
+	}
+}	
+	
+::survivorsYellCelebration <- function ( )
+{
+	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )//gives a Player
+	{		
+		if (survivor.GetCharacterName() =="Zoey")
+			survivor.Speak( "hurrah54", 0 )
+		else
+		if (survivor.GetCharacterName() =="Bill")
+			survivor.Speak( "hurrah02", 0 )
+		else
+			survivor.Speak( "hurrah01", 0 )
+	}
+	/*
+player <- null;
+while(player = Entities.FindByClassname(player, "player"))   // Iterate through the script handles of the players.
+{
+    DoEntFire("!self", "speakresponseconcept", "PlayerLaugh", 0, null, player); // Make each player laugh.
+}
+*/
+}
+
+
+//Any door shuts
+// function Notifications::OnRescueDoorOpened::cerrarSafeDoor(entity, door, params)
+// {
+		// ShowHUDTicker(4,"Ad","OnRescueDoorOpened");
+// }
+
+//AnyDoor
+// function Notifications::OnDoorClosed::cerrarSafeDoor(entity, checkpoint, params)
+// {
+	// if (entity)//Door Closed
+	// {
+		// ShowHUDTicker(4,"Ad","Si entran 75%, cerrar se tpearán!");
+	// }
+	// else//Map Starts Door Spawns
+	// {
+	// }
+// }
+
+
 
 //Controls sequence of function execution (re-organise at your own risk)
 function OnGameEvent_round_start_post_nav(params)
@@ -105,7 +197,7 @@ function Notifications::OnDifficultyChanged::DifficultyChanged(diff, olddiff)
 	
 
 	foreach ( survivor in ::VSLib.EasyLogic.Players.Survivors() )
-	{			
+	{	
 		if(survivor.IsHuman())
 		{
 			survivor.SetNetProp( "m_checkpointZombieKills", 1699 );
@@ -139,7 +231,7 @@ function Notifications::OnDifficultyChanged::DifficultyChanged(diff, olddiff)
 		}
 		
 	}
-	
+
 }
 function Notifications::OnSurvivorsDead::MissionLost()
 {
@@ -157,7 +249,12 @@ function Notifications::OnSurvivorsDead::MissionLost()
 	//该事件之后addtimer函数无效？
 }
 
-
+	
+function Notifications::OnChargerCarryVictim::pruebaCharger( entity, victim, params)
+{
+	Utils.SlowTime(0.5)
+}
+	
 function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 {
 	if (!victim || !attacker || victim.GetIndex() == attacker.GetIndex())
@@ -187,9 +284,10 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 					local achTemp ="achievedT"
 					AttachParticle(survivor,achTemp, 3.0);
 					
-					local mensaje="Bien!! Derrota al Boss y avanza!";					
+					local mensaje="Bien!! Derrotaste al Boss, avanza!";					
 					//TimeTick4BossDefeatedMsg=10;
 					ShowHUDTicker(5,"Tank",mensaje);
+					Utils.SlowTime(0.5);
 					
 					// No configures, la sangre se llena//不设置 虚血变成实血
 					//survivor.SwitchHealth("perm");
@@ -266,6 +364,7 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 				
 				local mensaje="Bien!! Derrotaron a la Witch!"
 				ShowHUDTicker(5,"Witch",mensaje);
+				Utils.SlowTime(0.5);
 					
 				if(!::AllowShowBotSurvivor)
 				{
@@ -518,27 +617,9 @@ function Notifications::OnHealSuccess::completaCuracion ( healee, healer, health
 function Notifications::OnPanicEventFinished::Finalizado()
 {
 	ClientPrint(null, 3, BLUE+"YEAH! Ustedes derrotaron la horda!!");
-	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )//gives a Player
-	{		
-		//if(survivor.IsBot())
-		//	continue;
-		local achTemp="achieved"
-		AttachParticleCongrats(survivor,achTemp, 3.0);
-		if (survivor.GetCharacterName() =="Zoey")
-			survivor.Speak( "hurrah54", 0 )
-		else
-		if (survivor.GetCharacterName() =="Bill")
-			survivor.Speak( "hurrah02", 0 )
-		else
-			survivor.Speak( "hurrah01", 0 )
-	}	
-	/*
-player <- null;
-while(player = Entities.FindByClassname(player, "player"))   // Iterate through the script handles of the players.
-{
-    DoEntFire("!self", "speakresponseconcept", "PlayerLaugh", 0, null, player); // Make each player laugh.
-}
-*/
+		survivorsParticleHead();		
+		survivorsYellCelebration();
+		survivorsYellCelebration();
 }
 
 
