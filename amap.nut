@@ -32,169 +32,204 @@ switch (execscriptName)
 {	
 //Scripts Names or Map Names Controlled by nowLocalScriptExec Times
 	case "c1m1_hotel":
-	{	
-		if (nowLocalScriptExec==0)
+	{
+		switch (nowLocalScriptExec)
 		{
-			nowLocalScriptExec++;
-			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
-			Msg("Replacing c1m1_reserved_wanderers\n");
-			Msg("Initiating Reserved Wanderers\n");
-
-			/*DirectorOptions <-
+			case 0:
 			{
-				// Turn always wanderer on
-				AlwaysAllowWanderers = true
+				Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+				nowLocalScriptExec++;
+				Msg("Replacing c1m1_reserved_wanderers\n");
+				Msg("Initiating Reserved Wanderers\n");
 
-				// Set the number of infected that cannot be absorbed
-				NumReservedWanderers = 5
-
-				// This turns off tanks and witches.
-				//ProhibitBosses = true
-
-			}*/
-
-			Msg("Initiating relay buttons timers\n");
-
-			local buttonelevRelaytop = Entities.FindByName( null, "relay_top_button" ) 
-
-			local buttonelevRelaybot = Entities.FindByName( null, "relay_elevator_reached_bottom" ) 
-
-
-			local hndc5m5timer1 = Entities.FindByName( null, "jeremytimer1" ) 
-			local hndc5m5timer2 = Entities.FindByName( null, "jeremytimer2" ) 
-
-			local hndzombie1 = Entities.FindByName( null, "c1m1jeremy1" ) 
-
-			if ( hndzombie1==null)
-			{	
-				Msg("SpawnEntityFromTable hndzombie1\n");		
-				hndzombie1 =SpawnEntityFromTable( "info_zombie_spawn",
+				/*DirectorOptions <-
 				{
-					targetname	= "c1m1jeremy1",
-					origin = "2151.114257 5562.124023 1184",
-					angles= "0 0 0",
-					population	= "default"
-				} );
-			}
+					// Turn always wanderer on
+					AlwaysAllowWanderers = true
 
-			if ( hndc5m5timer1!=null )
-			{
-				Msg("kill hndc5m5timer1\n");
-				kill_entity(hndc5m5timer1);
-				//EntFire( "jeremytimer1", "Kill")
-				hndc5m5timer1=null;
-			}
+					// Set the number of infected that cannot be absorbed
+					NumReservedWanderers = 5
 
-			if ( hndc5m5timer1==null)
-			{	
-				Msg("SpawnEntityFromTable hndc5m5timer1\n");	
-				
-				hndc5m5timer1 =SpawnEntityFromTable( "logic_timer",
-				{
-					targetname	= "jeremytimer1",
-					//RefireTime	= user_intKillTimer,
-					origin = "1824.022460 5728.031250 1336.031250"
-					StartDisabled	= 1,
-					UseRandomTime	= 1,
-					UpperRandomBound	= 1,
-					spawnflags	= 0,
-					LowerRandomBound	= 2,
-					//origin = Vector(-11762,6341,459),
-					connections =
+					// This turns off tanks and witches.
+					//ProhibitBosses = true
+
+				}*/
+
+				Msg("Initiating relay buttons timers\n");
+
+				local buttonelevRelaytop = Entities.FindByName( null, "relay_top_button" ) 
+
+				local buttonelevRelaybot = Entities.FindByName( null, "relay_elevator_reached_bottom" ) 
+
+
+				local hndc5m5timer1 = Entities.FindByName( null, "jeremytimer1" ) 
+				local hndc5m5timer2 = Entities.FindByName( null, "jeremytimer2" ) 
+
+				local hndzombie1 = Entities.FindByName( null, "c1m1jeremy1" ) 
+
+				if ( hndzombie1==null)
+				{	
+					Msg("SpawnEntityFromTable hndzombie1\n");		
+					hndzombie1 =SpawnEntityFromTable( "info_zombie_spawn",
 					{
-						OnTimer =
-						{
-							cmd1 = "c1m1jeremy1SpawnZombie0-1"
-						}
-					}
-				} );
-					
-			}
-			if ( hndc5m5timer2!=null )
-			{
-				Msg("kill hndc5m5timer2\n");	
-				//kill_entity(hndc5m5timer2);
-				EntFire( "jeremytimer2", "Kill")
-				hndc5m5timer2=null;
+						targetname	= "c1m1jeremy1",
+						origin = "2151.114257 5562.124023 1184",
+						angles= "0 0 0",
+						population	= "default"
+					} );
+				}
 
-			}
-
-			if ( hndc5m5timer2==null)
-			{		
-				Msg("SpawnEntityFromTable hndc5m5timer2\n");	
-				hndc5m5timer2=SpawnEntityFromTable( "logic_timer",
+				if ( hndc5m5timer1!=null )
 				{
-					targetname	= "jeremytimer2",
-					//RefireTime	= user_intKillTimer,
-					origin = "-1824.022460 5728.031250 1336.031250"
-					StartDisabled	= 1,
-					UseRandomTime	= 1,
-					UpperRandomBound	= 1,
-					spawnflags	= 0,
-					LowerRandomBound	= 2,
-					//origin = Vector(-11762,6341,459),
-					connections =
-					{
-						OnTimer =
-						{
-							cmd1 = "c1m1jeremy1SpawnZombie0-1"
-						}
-					}
-				} );
-			}
+					Msg("kill hndc5m5timer1\n");
+					kill_entity(hndc5m5timer1);
+					//EntFire( "jeremytimer1", "Kill")
+					hndc5m5timer1=null;
+				}
 
-
-
-			if ( hndc5m5timer1!=null )
-			{
-				Msg("start the timer c5m5timer1\n");		
-				// start the timer c5m5timer1
-				//EntFireByHandle(handle target, string action, string value, float delay, handle activator, handle caller)
-				//EntFire( "jeremytimer1", "Enable")
-				//c5m5timer1.Destroy()
-			}
-				
-			if ( hndc5m5timer2!=null )
-			{
+				if ( hndc5m5timer1==null)
+				{	
+					Msg("SpawnEntityFromTable hndc5m5timer1\n");	
 					
-				Msg("start the timer c5m5timer2\n");		
-				// start the timer c5m5timer2
-				//DoEntFire(string target, string action, string value, float delay, handle activator, handle caller)
-				//DoEntFire( "jeremytimer2", "Enable", "", 0, null, null )
-				//c5m5timer1.Destroy()
-			}
-				
-			if ( buttonelevRelaytop!=null )
-			{
-				Msg("mod the buttonelevRelaytop\n");		
-				local entbuttonelevRelaytop = ::VSLib.Entity(buttonelevRelaytop);
-				//AddOutput( output, target, input, parameter = "", delay = 0, timesToFire = -1 )
-				//<output name> <targetname>:<inputname>:<parameter>:<delay>:<max times to fire, 1 means once and -1 means infinite>
-				//"OnHealthChange" "!self,AddOutput,targetname prop9001"
-				//OutputName TargetName:Color:255 255 255:0:-1
-				//"OnMapSpawn" "team_round_timer_red,AddOutput,OnFinished game_round_win:RoundWin::0:-1,0,-1"
-				//DELAY SIEMPRE ES FLOAT
-				entbuttonelevRelaytop.AddOutput("OnTrigger", "jeremytimer1", "Enable", "", 0.0, -1 )			
-				entbuttonelevRelaytop.AddOutput("OnTrigger", "jeremytimer2", "Enable", "", 0.0, -1 )			
-				//DoEntFire("!self", "AddOutput", "OnTrigger jeremytimer1:Enable::0:-1", 0.0, null, entbuttonelevRelaytop);
-				//DoEntFire("!self", "AddOutput", "OnTrigger jeremytimer2:Enable::0:-1", 0.0, null, entbuttonelevRelaytop);
-				//ALTERNATIVA
-				//DoEntFire( "entbuttonelevRelaytop", "AddOutput", "OnTrigger jeremytimer1:Enable::0:-1", 0.0, null, null);
-				//DoEntFire( "entbuttonelevRelaytop", "AddOutput", "OnTrigger jeremytimer2:Enable::0:-1", 0.0, null, null);
+					hndc5m5timer1 =SpawnEntityFromTable( "logic_timer",
+					{
+						targetname	= "jeremytimer1",
+						//RefireTime	= user_intKillTimer,
+						origin = "1824.022460 5728.031250 1336.031250"
+						StartDisabled	= 1,
+						UseRandomTime	= 1,
+						UpperRandomBound	= 1,
+						spawnflags	= 0,
+						LowerRandomBound	= 2,
+						//origin = Vector(-11762,6341,459),
+						connections =
+						{
+							OnTimer =
+							{
+								cmd1 = "c1m1jeremy1SpawnZombie0-1"
+							}
+						}
+					} );
+						
+				}
+				if ( hndc5m5timer2!=null )
+				{
+					Msg("kill hndc5m5timer2\n");	
+					//kill_entity(hndc5m5timer2);
+					EntFire( "jeremytimer2", "Kill")
+					hndc5m5timer2=null;
 
-			}
-			if ( buttonelevRelaybot!=null )
-			{
-				Msg("mod the buttonelevRelaybot\n");		
-				local entbuttonelevRelaybot = ::VSLib.Entity(buttonelevRelaybot);
-				entbuttonelevRelaybot.AddOutput("OnTrigger", "jeremytimer1", "Disable", "", 10.0, -1 )			
-				entbuttonelevRelaybot.AddOutput("OnTrigger", "jeremytimer2", "Disable", "", 10.0, -1 )	
-				//DoEntFire("!self", "AddOutput", "OnTrigger jeremytimer1:Disable::0:-1", 0.0, null, entbuttonelevRelaybot);
-				//DoEntFire("!self", "AddOutput", "OnTrigger jeremytimer2:Disable::0:-1", 0.0, null, entbuttonelevRelaybot);
+				}
 
+				if ( hndc5m5timer2==null)
+				{		
+					Msg("SpawnEntityFromTable hndc5m5timer2\n");	
+					hndc5m5timer2=SpawnEntityFromTable( "logic_timer",
+					{
+						targetname	= "jeremytimer2",
+						//RefireTime	= user_intKillTimer,
+						origin = "-1824.022460 5728.031250 1336.031250"
+						StartDisabled	= 1,
+						UseRandomTime	= 1,
+						UpperRandomBound	= 1,
+						spawnflags	= 0,
+						LowerRandomBound	= 2,
+						//origin = Vector(-11762,6341,459),
+						connections =
+						{
+							OnTimer =
+							{
+								cmd1 = "c1m1jeremy1SpawnZombie0-1"
+							}
+						}
+					} );
+				}
+
+
+
+				if ( hndc5m5timer1!=null )
+				{
+					Msg("start the timer c5m5timer1\n");		
+					// start the timer c5m5timer1
+					//EntFireByHandle(handle target, string action, string value, float delay, handle activator, handle caller)
+					//EntFire( "jeremytimer1", "Enable")
+					//c5m5timer1.Destroy()
+				}
+					
+				if ( hndc5m5timer2!=null )
+				{
+						
+					Msg("start the timer c5m5timer2\n");		
+					// start the timer c5m5timer2
+					//DoEntFire(string target, string action, string value, float delay, handle activator, handle caller)
+					//DoEntFire( "jeremytimer2", "Enable", "", 0, null, null )
+					//c5m5timer1.Destroy()
+				}
+					
+				if ( buttonelevRelaytop!=null )
+				{
+					Msg("mod the buttonelevRelaytop\n");		
+					local entbuttonelevRelaytop = ::VSLib.Entity(buttonelevRelaytop);
+					//AddOutput( output, target, input, parameter = "", delay = 0, timesToFire = -1 )
+					//<output name> <targetname>:<inputname>:<parameter>:<delay>:<max times to fire, 1 means once and -1 means infinite>
+					//"OnHealthChange" "!self,AddOutput,targetname prop9001"
+					//OutputName TargetName:Color:255 255 255:0:-1
+					//"OnMapSpawn" "team_round_timer_red,AddOutput,OnFinished game_round_win:RoundWin::0:-1,0,-1"
+					//DELAY SIEMPRE ES FLOAT
+					entbuttonelevRelaytop.AddOutput("OnTrigger", "jeremytimer1", "Enable", "", 0.0, -1 )			
+					entbuttonelevRelaytop.AddOutput("OnTrigger", "jeremytimer2", "Enable", "", 0.0, -1 )			
+					//DoEntFire("!self", "AddOutput", "OnTrigger jeremytimer1:Enable::0:-1", 0.0, null, entbuttonelevRelaytop);
+					//DoEntFire("!self", "AddOutput", "OnTrigger jeremytimer2:Enable::0:-1", 0.0, null, entbuttonelevRelaytop);
+					//ALTERNATIVA
+					//DoEntFire( "entbuttonelevRelaytop", "AddOutput", "OnTrigger jeremytimer1:Enable::0:-1", 0.0, null, null);
+					//DoEntFire( "entbuttonelevRelaytop", "AddOutput", "OnTrigger jeremytimer2:Enable::0:-1", 0.0, null, null);
+
+				}
+				if ( buttonelevRelaybot!=null )
+				{
+					Msg("mod the buttonelevRelaybot\n");		
+					local entbuttonelevRelaybot = ::VSLib.Entity(buttonelevRelaybot);
+					entbuttonelevRelaybot.AddOutput("OnTrigger", "jeremytimer1", "Disable", "", 10.0, -1 )			
+					entbuttonelevRelaybot.AddOutput("OnTrigger", "jeremytimer2", "Disable", "", 10.0, -1 )	
+					//DoEntFire("!self", "AddOutput", "OnTrigger jeremytimer1:Disable::0:-1", 0.0, null, entbuttonelevRelaybot);
+					//DoEntFire("!self", "AddOutput", "OnTrigger jeremytimer2:Disable::0:-1", 0.0, null, entbuttonelevRelaybot);
+
+				}
+				break;
 			}
-		}		
-		break;		
+			case 1:
+			{
+				Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+				nowLocalScriptExec++;
+				Msg("sky_event_c1m1_hotel.nut\n");
+				Msg("Initiating Sky Elevator Event \n");
+
+				EntFire( "director", "PanicEvent", 0 )
+
+				DirectorOptions <-
+				{
+					// This turns off tanks and witches.
+					ProhibitBosses = true
+
+					PreferredMobDirection = SPAWN_BEHIND_SURVIVORS
+					MobSpawnMinTime = 1
+					MobSpawnMaxTime = 2
+					MobMaxPending = 20
+					MobMinSize = 20
+					MobMaxSize = 20
+					SustainPeakMinTime = 1
+					SustainPeakMaxTime = 3
+					IntensityRelaxThreshold = 0.90
+					RelaxMinInterval = 3
+					RelaxMaxInterval = 3
+					RelaxMaxFlowTravel = 200
+				}
+
+				Director.ResetMobTimer()
+				break;
+			}		
+		}
+		break;
 	}
 	case "c1m2_streets":
 	//c1_3_trafficmessage_frequency
@@ -204,8 +239,8 @@ switch (execscriptName)
 	{			
 		if (nowLocalScriptExec==1)
 		{
-			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;
 			Msg("c1_gunshop_quiet\n");
 			nowCrescendoStarted=1
 			//DirectorOptions <-
@@ -220,8 +255,8 @@ switch (execscriptName)
 		}
 		if (nowLocalScriptExec==0)
 		{
-			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;
 			Msg("c1_streets_ambush\n");
 			Msg("Initiating Ambush\n");
 			local tempChargerLimit=2+1*nowPlayersinGame/4
@@ -255,8 +290,8 @@ switch (execscriptName)
 	{	
 		if (nowLocalScriptExec>0)
 		{
-			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;
 			Msg("----------------------FINALE SCRIPT------------------\n")
 			nowFinaleScavengeStarted=1
 			//-----------------------------------------------------
@@ -608,8 +643,8 @@ switch (execscriptName)
 		}
 		if (nowLocalScriptExec==0)
 		{
-			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;
 			Msg("c1m4_atrium\n");
 						
 			Msg(" atrium map script "+"\n")
@@ -633,8 +668,8 @@ switch (execscriptName)
 	{	
 		if (nowLocalScriptExec==0)
 		{
-			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;
 			//A stage can be one of 4 types (other values will break the finale and go right to ESCAPE):
 			//-----------------------------------------------------------------------------
 			PANIC <- 0//FINALE_CUSTOM_PANIC <- 7
@@ -770,9 +805,9 @@ switch (execscriptName)
 	case "c3m4_plantation":
 	{
 		if (nowLocalScriptExec==0)
-		{
-			nowLocalScriptExec++;						
+		{				
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;		
 			//-----------------------------------------------------
 			local PANIC = 0
 			local TANK = 1
@@ -828,9 +863,9 @@ switch (execscriptName)
 	case "c4m5_milltown_escape":
 	{
 		if (nowLocalScriptExec==0)
-		{
-			nowLocalScriptExec++;						
-			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");						
+		{			
+			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");	
+			nowLocalScriptExec++;								
 			//-----------------------------------------------------
 			local PANIC = 0
 			local TANK = 1
@@ -929,8 +964,8 @@ switch (execscriptName)
 	{	
 		if (nowLocalScriptExec==0)
 		{
-			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;
 			Msg("Initiating c5m5_bridge_coop Script\n");
 			local hndc5m5timer1 = Entities.FindByName( null, "jeremytimer1" ) 
 			local hndc5m5timer2 = Entities.FindByName( null, "jeremytimer2" ) 
@@ -1046,8 +1081,8 @@ switch (execscriptName)
 	{	
 		if (nowLocalScriptExec==0)
 		{
-			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;
 			nowFinaleScavengeStarted=1
 
 			Msg("----------------------FINALE SCRIPT------------------\n")
@@ -1493,8 +1528,8 @@ switch (execscriptName)
 	{	
 		if (nowLocalScriptExec==0)
 		{
-			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;
 			//-----------------------------------------------------
 			// This script handles the logic for the Port / Bridge
 			// finale in the River Campaign. 
@@ -1786,8 +1821,8 @@ switch (execscriptName)
 	{
 		if (nowLocalScriptExec==0)
 		{
-			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;
 			//-----------------------------------------------------
 			//
 			//
@@ -1874,8 +1909,8 @@ switch (execscriptName)
 	{	
 		if (nowLocalScriptExec==0)
 		{
-			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;
 			//-----------------------------------------------------
 			//
 			//
@@ -1960,8 +1995,8 @@ switch (execscriptName)
 	{	
 		if (nowLocalScriptExec==0)
 		{
-			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;
 			//-----------------------------------------------------
 			//
 			//
@@ -2081,8 +2116,8 @@ switch (execscriptName)
 	{	
 		if (nowLocalScriptExec==0)
 		{
-			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;
 			//-----------------------------------------------------
 			//
 			//
@@ -2166,8 +2201,8 @@ switch (execscriptName)
 	{	
 		if (nowLocalScriptExec==0)
 		{
-			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;
 			//-----------------------------------------------------
 			//
 			//
@@ -2257,8 +2292,8 @@ switch (execscriptName)
 	{	
 		if (nowLocalScriptExec==0)
 		{
-			nowLocalScriptExec++;
 			Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+			nowLocalScriptExec++;
 			Msg("Initiating c14m2_lighthouse_finale script\n");
 
 			StageDelay <- 15

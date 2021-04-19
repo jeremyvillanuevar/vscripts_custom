@@ -9,63 +9,63 @@
 //mAAN, mINOD, physicsMapTarget, miniFinalDirectorNoSet, whichMapHasCanGames, isAFinale, noCSWeps,mSMOL
 ::eMTVT <-
 {
-	c1m1_hotel				=	["clsd",0,0,0,00,0,0.25,"small"]
-	c1m2_streets			=	["clsd",0,0,0,00,0,0,"small"]
-	c1m3_mall				=	["clsd",0,0,0,00,0,0.25,"medium"]
-	c1m4_atrium				=	["clsd",0,0,0,14,1,0.25,"large"]
-	c2m1_highway			=	["open",1,0,0,00,0,0.25,"large"]
-	c2m2_fairgrounds		=	["open",1,1,0,00,0,0.25,"large"]
-	c2m3_coaster			=	["clsd",1,0,0,00,0,0.25,"large"]
-	c2m4_barns				=	["clsd",1,0,1,00,0,0.25,"large"]
-	c2m5_concert			=	["clsd",1,0,0,00,1,0.25,"large"]
-	c3m1_plankcountry		=	["open",1,2,1,00,0,0.25,"large"]
-	c3m2_swamp				=	["open",1,2,0,00,0,0.25,"large"]
-	c3m3_shantytown			=	["open",1,2,0,00,0,0.25,"large"]
-	c3m4_plantation			=	["clsd",0,2,5,00,1,0,"large"]
-	c4m1_milltown_a			=	["open",0,0,0,00,0,0.25,"large"]
-	c4m2_sugarmill_a		=	["open",1,0,0,00,0,0.25,"large"]
-	c4m3_sugarmill_b		=	["open",1,0,0,00,0,0.25,"large"]
-	c4m4_milltown_b			=	["open",1,0,0,00,0,0.25,"large"]
-	c4m5_milltown_escape	=	["clsd",1,0,0,00,1,0.25,"large"]
-	c5m1_waterfront			=	["clsd",0,0,0,00,0,0.25,"small"]
-	c5m2_park				=	["open",0,0,0,00,0,0.25,"large"]
-	c5m3_cemetery			=	["open",0,3,0,00,0,0.25,"large"]
-	c5m4_quarter			=	["clsd",0,3,0,00,0,0.25,"small"]
-	c5m5_bridge				=	["clsd",0,0,0,00,0,0.25,"large"]
-	c6m1_riverbank			=	["clsd",1,2,0,00,0,0.25,"small"]
-	c6m2_bedlam				=	["clsd",1,0,0,00,0,0.25,"small"]
-	c6m3_port				=	["clsd",1,0,1,17,1,0.25,"small"]
-	c7m1_docks				=	["clsd",0,0,0,00,0,0.25,"small"]
-	c7m2_barge				=	["open",0,0,0,00,0,0.25,"large"]
-	c7m3_port				=	["clsd",0,0,0,00,1,0.25,"large"]
-	c8m1_apartment			=	["clsd",1,0,0,00,0,0.25,"medium"]
-	c8m2_subway				=	["clsd",1,0,0,00,0,0.25,"medium"]
-	c8m3_sewers				=	["clsd",1,0,0,00,0,0.25,"medium"]
-	c8m4_interior			=	["clsd",1,0,0,00,0,0.25,"medium"]
-	c8m5_rooftop			=	["clsd",1,0,0,00,1,0.25,"large"]
-	c9m1_alleys				=	["open",1,0,1,00,0,0.25,"large"]
-	c9m2_lots				=	["clsd",1,0,0,00,0,0.25,"large"]
-	c10m1_caves				=	["clsd",1,0,0,00,0,0.25,"small"]
-	c10m2_drainage			=	["clsd",1,0,0,00,0,0.25,"small"]
-	c10m3_ranchhouse		=	["open",1,0,1,00,0,0.25,"large"]
-	c10m4_mainstreet		=	["open",1,0,0,00,0,0.25,"large"]
-	c10m5_houseboat			=	["clsd",1,0,0,00,1,0.25,"large"]
-	c11m1_greenhouse		=	["clsd",1,0,0,00,0,0.25,"large"]
-	c11m2_offices			=	["clsd",1,0,0,00,0,0.25,"large"]
-	c11m3_garage			=	["clsd",1,0,0,00,0,0.25,"large"]
-	c11m4_terminal			=	["clsd",1,0,0,00,0,0.25,"large"]
-	c11m5_runway			=	["clsd",1,0,0,00,1,0.25,"large"]
-	c12m1_hilltop			=	["clsd",1,0,0,00,0,0.25,"large"]
-	c12m2_traintunnel		=	["clsd",1,0,0,00,0,0.25,"large"]
-	c12m3_bridge			=	["clsd",1,0,0,00,0,0.25,"large"]
-	c12m4_barn				=	["clsd",1,0,0,00,0,0.25,"large"]
-	c12m5_cornfield			=	["open",1,0,0,00,1,0.25,"large"]
-	c13m1_alpinecreek		=	["open",1,0,0,00,1,0.25,"large"]
-	c13m2_southpinestream	=	["open",1,0,0,00,0,0.25,"large"]
-	c13m3_memorialbridge	=	["open",1,0,0,00,0,0.25,"large"]
-	c13m4_cutthroatcreek	=	["open",1,0,0,00,0,0.25,"large"]
-	c14m1_junkyard			=	["open",0,0,0,00,0,0.25,"large"]
-	c14m2_lighthouse		=	["open",0,0,0,00,1,0.25,"large"]	
+	c1m1_hotel				=	["clsd",0,0,0,00,0,0.25,"small",1]
+	c1m2_streets			=	["clsd",0,0,0,00,0,0,"small",1]
+	c1m3_mall				=	["clsd",0,0,0,00,0,0.25,"medium",1]
+	c1m4_atrium				=	["clsd",0,0,0,14,1,0.25,"large",1]
+	c2m1_highway			=	["open",1,0,0,00,0,0.25,"large",1]
+	c2m2_fairgrounds		=	["open",1,1,0,00,0,0.25,"large",1]
+	c2m3_coaster			=	["clsd",1,0,0,00,0,0.25,"large",1]
+	c2m4_barns				=	["clsd",1,0,1,00,0,0.25,"large",1]
+	c2m5_concert			=	["clsd",1,0,0,00,1,0.25,"large",1]
+	c3m1_plankcountry		=	["open",1,2,1,00,0,0.25,"large",1]
+	c3m2_swamp				=	["open",1,2,0,00,0,0.25,"large",1]
+	c3m3_shantytown			=	["open",1,2,0,00,0,0.25,"large",1]
+	c3m4_plantation			=	["clsd",0,2,5,00,1,0,"large",1]
+	c4m1_milltown_a			=	["open",0,0,0,00,0,0.25,"large",1]
+	c4m2_sugarmill_a		=	["open",1,0,0,00,0,0.25,"large",1]
+	c4m3_sugarmill_b		=	["open",1,0,0,00,0,0.25,"large",1]
+	c4m4_milltown_b			=	["open",1,0,0,00,0,0.25,"large",1]
+	c4m5_milltown_escape	=	["clsd",1,0,0,00,1,0.25,"large",1]
+	c5m1_waterfront			=	["clsd",0,0,0,00,0,0.25,"small",1]
+	c5m2_park				=	["open",0,0,0,00,0,0.25,"large",1]
+	c5m3_cemetery			=	["open",0,3,0,00,0,0.25,"large",1]
+	c5m4_quarter			=	["clsd",0,3,0,00,0,0.25,"small",1]
+	c5m5_bridge				=	["clsd",0,0,0,00,0,0.25,"large",1]
+	c6m1_riverbank			=	["clsd",1,2,0,00,0,0.25,"small",1]
+	c6m2_bedlam				=	["clsd",1,0,0,00,0,0.25,"small",1]
+	c6m3_port				=	["clsd",1,0,1,17,1,0.25,"small",1]
+	c7m1_docks				=	["clsd",0,0,0,00,0,0.25,"small",1]
+	c7m2_barge				=	["open",0,0,0,00,0,0.25,"large",1]
+	c7m3_port				=	["clsd",0,0,0,00,1,0.25,"large",1]
+	c8m1_apartment			=	["clsd",1,0,0,00,0,0.25,"medium",1]
+	c8m2_subway				=	["clsd",1,0,0,00,0,0.25,"medium",1]
+	c8m3_sewers				=	["clsd",1,0,0,00,0,0.25,"medium",1]
+	c8m4_interior			=	["clsd",1,0,0,00,0,0.25,"medium",1]
+	c8m5_rooftop			=	["clsd",1,0,0,00,1,0.25,"large",1]
+	c9m1_alleys				=	["open",1,0,1,00,0,0.25,"large",1]
+	c9m2_lots				=	["clsd",1,0,0,00,0,0.25,"large",1]
+	c10m1_caves				=	["clsd",1,0,0,00,0,0.25,"small",1]
+	c10m2_drainage			=	["clsd",1,0,0,00,0,0.25,"small",1]
+	c10m3_ranchhouse		=	["open",1,0,1,00,0,0.25,"large",1]
+	c10m4_mainstreet		=	["open",1,0,0,00,0,0.25,"large",1]
+	c10m5_houseboat			=	["clsd",1,0,0,00,1,0.25,"large",1]
+	c11m1_greenhouse		=	["clsd",1,0,0,00,0,0.25,"large",1]
+	c11m2_offices			=	["clsd",1,0,0,00,0,0.25,"large",1]
+	c11m3_garage			=	["clsd",1,0,0,00,0,0.25,"large",1]
+	c11m4_terminal			=	["clsd",1,0,0,00,0,0.25,"large",1]
+	c11m5_runway			=	["clsd",1,0,0,00,1,0.25,"large",1]
+	c12m1_hilltop			=	["clsd",1,0,0,00,0,0.25,"large",1]
+	c12m2_traintunnel		=	["clsd",1,0,0,00,0,0.25,"large",1]
+	c12m3_bridge			=	["clsd",1,0,0,00,0,0.25,"large",1]
+	c12m4_barn				=	["clsd",1,0,0,00,0,0.25,"large",1]
+	c12m5_cornfield			=	["open",1,0,0,00,1,0.25,"large",1]
+	c13m1_alpinecreek		=	["open",1,0,0,00,1,0.25,"large",1]
+	c13m2_southpinestream	=	["open",1,0,0,00,0,0.25,"large",1]
+	c13m3_memorialbridge	=	["open",1,0,0,00,0,0.25,"large",1]
+	c13m4_cutthroatcreek	=	["open",1,0,0,00,0,0.25,"large",1]
+	c14m1_junkyard			=	["open",0,0,0,00,0,0.25,"large",1]
+	c14m2_lighthouse		=	["open",0,0,0,00,1,0.25,"large",1]
 }
 
 ::initializeAllFrameworkGlobalVariables <- function()
@@ -212,9 +212,11 @@
 	::mSTTDMI <- 0
 	::mAAN <- "open"
 	::mINOD <- 0
-	//Area on the Map is for Small Fights
-	::mASMOL <- "small"
-
+	//Flow Size on the Map
+	::mFSoM <- "small"
+	//SizeHordeModifierforMap
+	::mSHMfM <- 0
+	
 	//tOD means tier of difficulty, tOD MAx & MIn (for randomizers), tOD Non-Randomized
 	::tOD <- 0
 	::tODMA <- 0
@@ -277,7 +279,10 @@
 	//Broken mounted guns
 	::brokenGunCounter <- "noGun"	
 	
-	
+		
+	//flowDistanceCalculatorArray
+	::fDCA		<-	[1,7500,15000,22500,30000]
+	::gFDA		<-	[7500,15000,22500,30000,100000]
 	
 	
 	Msg("Executed: initializeAllTADMGlobalVariables function\n");

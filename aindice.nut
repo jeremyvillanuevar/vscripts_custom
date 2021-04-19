@@ -46,6 +46,7 @@
 	Msg("Executed: initializeTierOfDifficulty function\n");
 }
 
+
 //a basic breakpoint system that compares the current average distance (gASFD) through a map to defined distances in an array (fDCA). The index is used as the breakpoint for average player flow
 ::flowDistanceCalculator <- function(params)
 {
@@ -75,6 +76,8 @@
 		whichMapHasCanGames = eMTVT[thisMapNameIs][4]
 		isAFinale = eMTVT[thisMapNameIs][5]
 		noCSWeps = eMTVT[thisMapNameIs][6]
+		mFSoM= eMTVT[thisMapNameIs][7]
+		mSHMfM= eMTVT[thisMapNameIs][8]
 	}
 	Msg("Executed: establishMapType function\n");
 }

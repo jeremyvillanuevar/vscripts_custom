@@ -116,12 +116,13 @@ else
 
 ::BalanceDirectorOptions <- function ()
 {	
+	Msg("BalanceDirectorOptions"+"\n");
 		local sv_steamgroup = "39464742,2508707,36547718,964095,938619,554109,2450706,883,1240452,1850,5195189,3402923,1582249,10639590,3483,6112039,707962,1651917,1210106,1789698,4311062,37215448,707962,4189851,1909444";
 		local scuffle_duration = "6.0";
 		//Tanks
 		// If 1, Enable Tank Demolition, server will spawn one tank before door open
 		local lockdown_systemtdb = "1";
-		//Tanke Luego de Abrir
+		//Tanke Luego de Abrir en Horda de 4!!!
 		local lockdown_systemtda = "0";
 		//Time Interval to spawn a tank when door is opening (0=off)
 		local lockdown_systemoti = "1500";
@@ -201,6 +202,9 @@ else
 	if (nowPlayersinGame>7)
 	{
 		l4d_si_ability_enabled = "1";
+		//Speciales
+		//Explosion de Boomer
+		l4d_nbm_bileblast = "1";
 	}
 	else
 	if (nowPlayersinGame>5)
@@ -224,8 +228,6 @@ else
 		l4d_pwm_psychoticchargerange = "5";
 
 		//Speciales
-		//Explosion de Boomer
-		l4d_nbm_bileblast = "1";
 		// Enable/Disable the Special Infected Slap/Shove Ability Plugin.
 		//Convars.ExecuteConCommand("sm_cvar l4d_si_ability_enabled 0")
 		l4d_si_ability_enabled = "0";
@@ -298,105 +300,105 @@ else
 		
 	}
 	
-		Convars.SetValue("sv_steamgroup" ,	sv_steamgroup);
-																																							 //aca no llega
-		//Reaparicion
-		//l4d_survivorrespawn_respawntimeout "30"
-		//sm_clear_dead_body_time "45"
-		//Convars.ExecuteConCommand("sm_cvar scuffle_duration 6.0")
-		Convars.SetValue("scuffle_duration" ,	scuffle_duration);
+	Convars.SetValue("sv_steamgroup" ,	sv_steamgroup);
+																																						 //aca no llega
+	//Reaparicion
+	//l4d_survivorrespawn_respawntimeout "30"
+	//sm_clear_dead_body_time "45"
+	//Convars.ExecuteConCommand("sm_cvar scuffle_duration 6.0")
+	Convars.SetValue("scuffle_duration" ,	scuffle_duration);
 
-		//Tanks
-		// If 1, Enable Tank Demolition, server will spawn one tank before door open
-		Convars.SetValue("lockdown_system-l4d2_tank_demolition_before" ,	lockdown_systemtdb);		
-		//Tanke Luego de Abrir
-		Convars.SetValue("lockdown_system-l4d2_tank_demolition_after" ,	lockdown_systemtda);
-		//Time Interval to spawn a tank when door is opening (0=off)
-		Convars.SetValue("lockdown_system-l4d2_opening_tank_interval" ,	lockdown_systemoti);
-		
-		//Mutant Tanks
-		Convars.SetValue("mt_pluginenabled" ,	mt_pluginenabled);
-		
+	//Tanks
+	// If 1, Enable Tank Demolition, server will spawn one tank before door open
+	Convars.SetValue("lockdown_system-l4d2_tank_demolition_before" ,	lockdown_systemtdb);	
+	//Tanke Luego de Abrir en Horda de 4!!!
+	Convars.SetValue("lockdown_system-l4d2_tank_demolition_after" ,	lockdown_systemtda);
+	//Time Interval to spawn a tank when door is opening (0=off)
+	Convars.SetValue("lockdown_system-l4d2_opening_tank_interval" ,	lockdown_systemoti);
+	
+	//Mutant Tanks
+	Convars.SetValue("mt_pluginenabled" ,	mt_pluginenabled);
+	
 
-		//Witches
-		// Amount of damage the Witch causes when she hits a Survivor. 
-		Convars.SetValue("l4d_pwm_psychoticchargedamage" ,	l4d_pwm_psychoticchargedamage);
-		// Power a Survivor is hit with during Psychotic Charge. (Def 300)
-		Convars.SetValue("l4d_pwm_psychoticchargepower" ,	l4d_pwm_psychoticchargepower);
-		// How close a Survivor has to be to be hit by the Psychotic Charge. (Def 200)
-		Convars.SetValue("l4d_pwm_psychoticchargerange" ,	l4d_pwm_psychoticchargerange);
-
-
-		//Speciales
-		//Explosion de Boomer
-		Convars.SetValue("l4d_nbm_bileblast" ,	l4d_nbm_bileblast);
-		// Enable/Disable the Special Infected Slap/Shove Ability Plugin.
-		//Convars.ExecuteConCommand("sm_cvar l4d_si_ability_enabled 0")
-		Convars.SetValue("l4d_si_ability_enabled" ,	l4d_si_ability_enabled);
-		//(5/10/15/20)
-		Convars.SetValue("charger_dmg_punch" ,	charger_dmg_punch);
-		//(5/10/15/20)
-		Convars.SetValue("charger_dmg_firstpunch" ,	charger_dmg_firstpunch);
-		//(10/10/15/20)
-		Convars.SetValue("charger_dmg_impact" ,	charger_dmg_impact);
-		//
-		Convars.SetValue("charger_dmg_stumble" ,	charger_dmg_stumble);
-		//
-		Convars.SetValue("charger_dmg_pound" ,	charger_dmg_pound);
-     
-		//Commons
-		// Common uncommon chance
-		Convars.SetValue("l4d2_spawn_uncommons_autochance" ,	l4d2_spawn_uncommons_autochance);
-		//default 19, binary flag of allowed autoshuffle zombies. 1 = riot, 2 = ceda, 4 = clown, 8 = mudman, 16 = roadcrew, 32 = jimmy, 64 = fallen); riot + ceda + roadcrew = 19
-		Convars.SetValue("l4d2_spawn_uncommons_autotypes" ,	l4d2_spawn_uncommons_autotypes);
-		//default -1 or health value (set to health value if you want something nonstandard)
-		Convars.SetValue("l4d2_spawn_uncommons_healthoverride" ,	l4d2_spawn_uncommons_healthoverride);
-
-		Convars.SetValue("l4d_shot_warns_common_enable" ,	l4d_shot_warns_common_enable);
-		Convars.SetValue("l4d_shot_warns_common_safe_area" ,	l4d_shot_warns_common_safe_area);
-		Convars.SetValue("l4d_shot_warns_common_tank_alive" ,	l4d_shot_warns_common_tank_alive);
+	//Witches
+	// Amount of damage the Witch causes when she hits a Survivor. 
+	Convars.SetValue("l4d_pwm_psychoticchargedamage" ,	l4d_pwm_psychoticchargedamage);
+	// Power a Survivor is hit with during Psychotic Charge. (Def 300)
+	Convars.SetValue("l4d_pwm_psychoticchargepower" ,	l4d_pwm_psychoticchargepower);
+	// How close a Survivor has to be to be hit by the Psychotic Charge. (Def 200)
+	Convars.SetValue("l4d_pwm_psychoticchargerange" ,	l4d_pwm_psychoticchargerange);
 
 
+	//Speciales
+	//Explosion de Boomer
+	Convars.SetValue("l4d_nbm_bileblast" ,	l4d_nbm_bileblast);
+	// Enable/Disable the Special Infected Slap/Shove Ability Plugin.
+	//Convars.ExecuteConCommand("sm_cvar l4d_si_ability_enabled 0")
+	Convars.SetValue("l4d_si_ability_enabled" ,	l4d_si_ability_enabled);
+	//(5/10/15/20)
+	Convars.SetValue("charger_dmg_punch" ,	charger_dmg_punch);
+	//(5/10/15/20)
+	Convars.SetValue("charger_dmg_firstpunch" ,	charger_dmg_firstpunch);
+	//(10/10/15/20)
+	Convars.SetValue("charger_dmg_impact" ,	charger_dmg_impact);
+	//
+	Convars.SetValue("charger_dmg_stumble" ,	charger_dmg_stumble);
+	//
+	Convars.SetValue("charger_dmg_pound" ,	charger_dmg_pound);
+ 
+	//Commons
+	// Common uncommon chance
+	Convars.SetValue("l4d2_spawn_uncommons_autochance" ,	l4d2_spawn_uncommons_autochance);
+	//default 19, binary flag of allowed autoshuffle zombies. 1 = riot, 2 = ceda, 4 = clown, 8 = mudman, 16 = roadcrew, 32 = jimmy, 64 = fallen); riot + ceda + roadcrew = 19
+	Convars.SetValue("l4d2_spawn_uncommons_autotypes" ,	l4d2_spawn_uncommons_autotypes);
+	//default -1 or health value (set to health value if you want something nonstandard)
+	Convars.SetValue("l4d2_spawn_uncommons_healthoverride" ,	l4d2_spawn_uncommons_healthoverride);
 
-		// ConVars for plugin "balancer_hp.smx"
-		// 0: Check all players survivor in game, 1: Ignore check idle survivors, 2: Ignore check survivors bot, 4: Ignore check dead survivors, 7: Set all ignore check modes
-		Convars.SetValue("balancer_hp_check_mode" ,	balancer_hp_check_mode);
-		//  0: Disable boomer increment/decrement balance HP, (Value < 1): Set factor percent of HP base [example:0.1 = 1] to increment/decrement per players), (Value >= 1): Set HP value to increment/decrement per players
-		//balancer_hp_factor_boomer "2"
-		//balancer_hp_factor_charger "10"
-		//balancer_hp_factor_hunter "13"
-		//balancer_hp_factor_jockey "8"
-		//balancer_hp_factor_smoker "2"
-		//balancer_hp_factor_spitter "5"
-		Convars.SetValue("balancer_hp_factor_tank" ,	balancer_hp_factor_tank);
-		Convars.SetValue("balancer_hp_factor_witch" ,	balancer_hp_factor_witch);
-		Convars.SetValue("l4d_super_HPmultiple_boomer" ,	l4d_super_HPmultiple_boomer);
-		Convars.SetValue("l4d_super_HPmultiple_charger" ,	l4d_super_HPmultiple_charger);
-		Convars.SetValue("l4d_super_HPmultiple_hunter" ,	l4d_super_HPmultiple_hunter);
-		Convars.SetValue("l4d_super_HPmultiple_jockey" ,	l4d_super_HPmultiple_jockey);
-		Convars.SetValue("l4d_super_HPmultiple_smoker" ,	l4d_super_HPmultiple_smoker);
-		Convars.SetValue("l4d_super_HPmultiple_spitter" ,	l4d_super_HPmultiple_spitter);
-		Convars.SetValue("l4d_super_HPmultiple_tank" ,	l4d_super_HPmultiple_tank);
-		//  0: Disable boomer limit max HP, (Value > 0): Set increment limit HP
-		//balancer_hp_max_boomer "0"
-		//balancer_hp_max_charger "0"
-		//balancer_hp_max_hunter "0"
-		//balancer_hp_max_jockey "0"
-		//balancer_hp_max_smoker "0"
-		//balancer_hp_max_spitter "0"
-		//balancer_hp_max_tank "0"
-		//balancer_hp_max_witch "0"
-		// Set survivor players default to set hp base
-		Convars.SetValue("balancer_hp_players_base" ,	balancer_hp_players_base);
+	Convars.SetValue("l4d_shot_warns_common_enable" ,	l4d_shot_warns_common_enable);
+	Convars.SetValue("l4d_shot_warns_common_safe_area" ,	l4d_shot_warns_common_safe_area);
+	Convars.SetValue("l4d_shot_warns_common_tank_alive" ,	l4d_shot_warns_common_tank_alive);
 
-		//Mutants
-		// Convars.SetValue("l4d_super_probability_boomer" ,	l4d_super_probability_boomer);
-		// Convars.SetValue("l4d_super_probability_charger" ,	l4d_super_probability_charger);
-		// Convars.SetValue("l4d_super_probability_hunter" ,	l4d_super_probability_hunter);
-		// Convars.SetValue("l4d_super_probability_jockey" ,	l4d_super_probability_jockey);
-		// Convars.SetValue("l4d_super_probability_smoker" ,	l4d_super_probability_smoker);
-		// Convars.SetValue("l4d_super_probability_spitter" ,	l4d_super_probability_spitter);
-		// Convars.SetValue("l4d_super_probability_tank" ,	l4d_super_probability_tank);
+
+
+	// ConVars for plugin "balancer_hp.smx"
+	// 0: Check all players survivor in game, 1: Ignore check idle survivors, 2: Ignore check survivors bot, 4: Ignore check dead survivors, 7: Set all ignore check modes
+	Convars.SetValue("balancer_hp_check_mode" ,	balancer_hp_check_mode);
+	//  0: Disable boomer increment/decrement balance HP, (Value < 1): Set factor percent of HP base [example:0.1 = 1] to increment/decrement per players), (Value >= 1): Set HP value to increment/decrement per players
+	//balancer_hp_factor_boomer "2"
+	//balancer_hp_factor_charger "10"
+	//balancer_hp_factor_hunter "13"
+	//balancer_hp_factor_jockey "8"
+	//balancer_hp_factor_smoker "2"
+	//balancer_hp_factor_spitter "5"
+	Convars.SetValue("balancer_hp_factor_tank" ,	balancer_hp_factor_tank);
+	Convars.SetValue("balancer_hp_factor_witch" ,	balancer_hp_factor_witch);
+	Convars.SetValue("l4d_super_HPmultiple_boomer" ,	l4d_super_HPmultiple_boomer);
+	Convars.SetValue("l4d_super_HPmultiple_charger" ,	l4d_super_HPmultiple_charger);
+	Convars.SetValue("l4d_super_HPmultiple_hunter" ,	l4d_super_HPmultiple_hunter);
+	Convars.SetValue("l4d_super_HPmultiple_jockey" ,	l4d_super_HPmultiple_jockey);
+	Convars.SetValue("l4d_super_HPmultiple_smoker" ,	l4d_super_HPmultiple_smoker);
+	Convars.SetValue("l4d_super_HPmultiple_spitter" ,	l4d_super_HPmultiple_spitter);
+	Convars.SetValue("l4d_super_HPmultiple_tank" ,	l4d_super_HPmultiple_tank);
+	//  0: Disable boomer limit max HP, (Value > 0): Set increment limit HP
+	//balancer_hp_max_boomer "0"
+	//balancer_hp_max_charger "0"
+	//balancer_hp_max_hunter "0"
+	//balancer_hp_max_jockey "0"
+	//balancer_hp_max_smoker "0"
+	//balancer_hp_max_spitter "0"
+	//balancer_hp_max_tank "0"
+	//balancer_hp_max_witch "0"
+	// Set survivor players default to set hp base
+	Convars.SetValue("balancer_hp_players_base" ,	balancer_hp_players_base);
+
+	//Mutants
+	// Convars.SetValue("l4d_super_probability_boomer" ,	l4d_super_probability_boomer);
+	// Convars.SetValue("l4d_super_probability_charger" ,	l4d_super_probability_charger);
+	// Convars.SetValue("l4d_super_probability_hunter" ,	l4d_super_probability_hunter);
+	// Convars.SetValue("l4d_super_probability_jockey" ,	l4d_super_probability_jockey);
+	// Convars.SetValue("l4d_super_probability_smoker" ,	l4d_super_probability_smoker);
+	// Convars.SetValue("l4d_super_probability_spitter" ,	l4d_super_probability_spitter);
+	// Convars.SetValue("l4d_super_probability_tank" ,	l4d_super_probability_tank);
 	
 	
 	if (nowFirstPlayerinGame==0)
@@ -405,21 +407,7 @@ else
 	//Changed to Heartbeat Plugin
 	//DirectorScript.MapScript.DirectorOptions.SurvivorMaxIncapacitatedCount <-6
 	
-	local sizeHordeModifier;
-	//Modifier from Area of Map
-	if (mASMOL=="small")
-	{
-		sizeHordeModifier=1;
-	}
-	else
-	if (mASMOL=="medium")
-	{
-		sizeHordeModifier=1.2;
-	}
-	else
-	{
-		sizeHordeModifier=1.4;
-	}
+	local sizeHordeModifier = mSHMfM;
 
 	//You can only assign DirectorOptions with <-
 	 //Warning: NEVER use the = operator when trying to influence the director. 
@@ -447,7 +435,7 @@ else
 		DirectorScript.MapScript.DirectorOptions.ProhibitBosses				 <-	false
 		DirectorScript.MapScript.DirectorOptions.ShouldAllowSpecialsWithTank <- true	
 		DirectorScript.MapScript.DirectorOptions.ShouldAllowMobsWithTank <- true
-		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 1
+		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 0
 	}
 	else
 	if (nowPlayersinGame>2)
@@ -455,21 +443,21 @@ else
 		DirectorScript.MapScript.DirectorOptions.ProhibitBosses				 <-	false
 		DirectorScript.MapScript.DirectorOptions.ShouldAllowSpecialsWithTank <- false
 		DirectorScript.MapScript.DirectorOptions.ShouldAllowMobsWithTank <- true
-		DirectorScript.DirectorOptions.AggressiveSpecials <- 1
+		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 0
 		if ( DirectorScript.MapScript.DirectorOptions.rawin( "DisallowThreatType")  )
 			delete DirectorScript.MapScript.DirectorOptions.DisallowThreatType 
 	}
 	if (nowPlayersinGame>1)
 	{				
-		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 1
+		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 0
 	}	
 	else //2 o 1 jugador
 	{	
 		DirectorScript.MapScript.DirectorOptions.ProhibitBosses				 <-	false
 		DirectorScript.MapScript.DirectorOptions.ShouldAllowSpecialsWithTank <- false
-		DirectorScript.MapScript.DirectorOptions.ShouldAllowMobsWithTank <- false		
-		DirectorScript.DirectorOptions.AggressiveSpecials <- 0
-		DirectorScript.DirectorOptions.DisallowThreatType <- 8
+		DirectorScript.MapScript.DirectorOptions.ShouldAllowMobsWithTank <- false
+		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 0
+		DirectorScript.MapScript.DirectorOptions.DisallowThreatType <- 8
 		//Default Paceful Mode Stop
 		if (nowFirstPlayerinGame==0)
 			nowFirstPlayerinGame++;			
@@ -671,14 +659,9 @@ else
 	//SpawnDirectionMask = 0
 	if ( "SpawnDirectionMask" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
 		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnDirectionMask <- 0
-	//if (nowPlayersinGame>2)
-	//{
+	
 	//	DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <- 	1	
-	//}
-	//else
-	//{
-	//	DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <-  0	
-	//}
+	
 	
 	//PANIC WAVES AND COMMON SETTINGS
 	//A Panic lasts until MegaMobSize commons spawn
@@ -708,45 +691,45 @@ else
 	//Only works if scripted mode is enabled, a custom finale is active, or a scavenge finale is active.
 	if (nowPlayersinGame>12)
 	{
-		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+3*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (5+3*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (40+4*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+4*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (10-5+4*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)*sizeHordeModifier
+		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (5+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (40+4*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+4*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (10-5+4*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)
 	}
 	else
 	if (nowPlayersinGame>8)
 	{
-		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+2*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (5+3*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (45+3*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+3*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (10-5+3*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)*sizeHordeModifier
+		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+2*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (5+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (45+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (10-5+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)
 	}
 	else
 	if (nowPlayersinGame>4)
 	{
-		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+1*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (5+3*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (45+3*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+3*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (10-5+3*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)*sizeHordeModifier
+		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+1*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (5+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (45+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (10-5+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)
 	}
 		else
 	{
 		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15)*sizeHordeModifier
 		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (5)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (55+1*nowPlayersinGame*10/2)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (17-10+1*nowPlayersinGame*10/2)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (17-5+1*nowPlayersinGame*10/2)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36)*sizeHordeModifier
+		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (55+sizeHordeModifier*1*nowPlayersinGame*10/2)
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (17-10+sizeHordeModifier*1*nowPlayersinGame*10/2)
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (17-5+sizeHordeModifier*1*nowPlayersinGame*10/2)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36)
 	}	
 	
 	
@@ -843,7 +826,7 @@ else
 	}				
 	else
 	{
-		DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- (30+3*nowPlayersinGame)*sizeHordeModifier;		
+		DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- (30+3*nowPlayersinGame*sizeHordeModifier);		
 		DirectorScript.MapScript.DirectorOptions.FarAcquireTime <- 5.0
 		DirectorScript.MapScript.DirectorOptions.FarAcquireRange <- 2500
 		DirectorScript.MapScript.DirectorOptions.NearAcquireTime <- 0.5
@@ -994,37 +977,9 @@ else
 }
 
 
-::CalculateNumberofPlayers <- function ()
-{
-	//if ( (developer() > 0) || (DEBUG == 1))
-	nowSurvivorsinGame=0;
-	nowPlayersinGame = 0;
-	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )
-	{
-		nowSurvivorsinGame++;
-		if ((developer() > 0) || (DEBUG == 1))
-		{
-			if(survivor.IsBot())
-				ClientPrint(null, 3, BLUE+"Contando Bot");
-			else				
-				ClientPrint(null, 3, BLUE+"Contando Humano");
-			nowPlayersinGame++;	
-			continue;	
-		}
-		else
-		{
-			if(survivor.IsBot())
-				continue;	
-			nowPlayersinGame++;	
-		}
-	}	
-	if (nowPlayerEvent=="Left")
-		nowPlayersinGame=nowPlayersinGame-1
-}
-
-
 ::BalanceFinaleDirectorOptions <- function ()
 {
+	Msg("BalanceFinaleDirectorOptions"+"\n");
 	
 	if (nowFirstPlayerinGame==0)
 		Director.ResetMobTimer()	
@@ -1086,7 +1041,7 @@ else
 		DirectorScript.MapScript.DirectorOptions.SpecialRespawnInterval <- 35-1*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.SpecialInitialSpawnDelayMin <- 25
 		DirectorScript.MapScript.DirectorOptions.SpecialInitialSpawnDelayMax <- 35
-		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 17+1*nowPlayersinGame*10/2*finalelimit/finalelimitscale
+		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 17+1*nowPlayersinGame*finalelimit/finalelimitscale
 		DirectorScript.MapScript.DirectorOptions.MaxSpecials <-  1+1*nowPlayersinGame*finalelimit/finalelimitscale
 		DirectorScript.MapScript.DirectorOptions.DominatorLimit <-  1+1*nowPlayersinGame*finalelimit/finalelimitscale
 		DirectorScript.MapScript.DirectorOptions.ChargerLimit <- 2
@@ -1149,11 +1104,11 @@ else
 		DirectorScript.MapScript.DirectorOptions.ShouldConstrainLargeVolumeSpawn	<- 	false
 		DirectorScript.MapScript.DirectorOptions.ShouldAllowSpecialsWithTank <- true
 		DirectorScript.MapScript.DirectorOptions.ShouldAllowMobsWithTank <- true		
-		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 1
+		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 0
 	}
 	if (nowPlayersinGame>1)
 	{				
-		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 1
+		DirectorScript.MapScript.DirectorOptions.AggressiveSpecials <- 0
 	}					
 	else
 	{
@@ -1451,16 +1406,6 @@ else
 	if ( "SpawnDirectionMask" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
 		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnDirectionMask <- 0
 	
-	//if (nowPlayersinGame>2)
-	//{
-		//if ( "cm_AggressiveSpecials" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
-	//		DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <- 	1	
-	//}
-	//else
-	//{
-		//if ( "cm_AggressiveSpecials" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
-	//		DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <-  0	
-	//}
 	if ( (developer() > 0) || (DEBUG == 1))
 		IncludeScript ("debug_directoroptions.nut");	
 		
@@ -1519,11 +1464,14 @@ else
 	Convars.SetValue("intensity_enemy_death_far_range" ,		"750");		//was 500
 	Convars.SetValue("intensity_enemy_death_near_range" ,		"225");		//was 150
 
+	//use general
 	Convars.SetValue("z_reload_chatter_nearby_friend_range" ,	"400");		//was 600 A friend needs to be this close to say Reloading
+	//use general
 	Convars.SetValue("z_reload_chatter_intensity" ,				zRCIA[dAANNR]);
 	Convars.SetValue("cola_bottles_use_duration" ,				cBUDA[dAANNR]);
 
 	//B. SURVIVOR HEALTHCARE PLAN
+	//use situation
 	Convars.SetValue("first_aid_kit_use_duration" ,				fAKUDGMT[gMV][dAAW][gFD]);
 	Convars.SetValue("first_aid_heal_percent" ,					"0.96");	//was 0.8
 	Convars.SetValue("first_aid_kit_max_heal" ,					"96");		//was 100
@@ -1549,6 +1497,7 @@ else
 
 	Convars.SetValue("survivor_ledge_grab_health" ,				sLGHT[dAAW][gFD]);
 	Convars.SetValue("survivor_revive_health" ,					"40");					//was 30
+	//use situation
 	Convars.SetValue("survivor_revive_duration" ,				sRDT[gMV][dAAW][gFD]);
 
 	
@@ -1612,6 +1561,7 @@ else
 	Convars.SetValue("z_gun_swing_interval" ,					zGSIT[dAAW][gFD]);
 
 	Convars.SetValue("gascan_throw_force" ,						"476");					//was 32
+	//use situation
 	Convars.SetValue("gas_can_use_duration" ,					gCUDA[dAANNR]);
 
 	Convars.SetValue("upgrade_explosive_slug_force" ,			"0.3");		//was 4
@@ -1715,6 +1665,126 @@ else
 	Convars.SetValue("director_sustain_peak_min_time" ,			RandomInt	(dSPMITT[mAAN][tODMI],dSPMITT[mAAN][tODMA]));
 	Convars.SetValue("intensity_factor" ,						RandomFloat	(iFA[dAANMI],iFA[dAANMA]));
 	Convars.SetValue("intensity_decay_time" ,					RandomInt	(iDTA[dAANMI],iDTA[dAANMA]));	
+	
+	//O. ZOMBIES ALERTNESS
+	//these all dictate the distance and probability that zombies will notice you.
+	//the zombie has a much better chance of seeing you if you are in "near" range, and if you are beyond "far" range it won't notice you at all, even if you get boomed/pipe bombed.
+	//the alert range seems to deal with the zombies overall awareness and the probability a zombie will notice you between the
+	local z_acquire_far_range = 2500;
+	local z_acquire_far_time =5;
+	local z_acquire_near_range =200;
+	local z_acquire_near_time =0;
+	
+	
+	local z_acquire_time_variance_factor ="0";
+	local z_alert_range =1000;
+	local z_alert_dot ="0";
+
+	// these deal with how likely a zombie will notice you if things are happening. for example, if you get close to a zombie who is running for someone else, it is likely to turn and smack you (which is why if you're surrounded by a horde and throw a pipe bomb some will keep attacking you).
+	// zombies who are close to you will notice gunfire, but at that range they will likely notice you anyway.
+	// Running attracts zombies a lot more than walking does, but the running aggro range is shorter than the zombie seeing you range.
+	local z_close_target_notice_distance =60;
+	local z_hear_gunfire_range= 200;
+	local z_hear_runner_far_range =750;
+	local z_hear_runner_near_range =500;
+	
+
+	// How far a Zombie can see.
+	local z_vision_range ="500";
+	// How far a Zombie can see when alert.
+	local z_vision_range_alert ="1500";
+	// How far a Zombie can see in daylight
+	local z_vision_range_daylight ="2400";
+	// How far a Zombie can see in OBSCURED areas.
+	local z_vision_range_obscured ="500";
+	// How far a Zombie can see in OBSCURED areas when alert.
+	local z_vision_range_obscured_alert ="750";
+	//z_use_tolerance = "0";
+	//z_view_distance = "0";
+
+	// How far an attacking zombie
+	//will look for a nearby target on their way to their chosen victim.
+	local z_close_target_notice_distance= "60";
+	
+	
+	local z_force_attack_from_sound_range= 750;
+	// Show noise levels on players?
+	local z_noise_level_display= "0";
+	// after hold_time expires.
+	local z_noise_level_fade_rate= "40";
+	// How much noise we make with a footstep.
+	local z_noise_level_footstep= "135";
+	// How long we hold a given noise level before it starts to fade.
+	local z_noise_level_hold_time= "0";
+	// The highest the noise level can go.
+	local z_noise_level_max= "135";
+	// How much noise we make when we say things.
+	local z_noise_level_vocalize= "135";
+
+
+	//whenever a console command refers to it, they mean someone who has been boomered.
+	//note that being boomered will draw zombies beyond the alert range.
+	local z_notice_it_range= 1500;
+	local z_notice_near_range= "100";
+
+
+	Convars.SetValue("z_acquire_far_range" ,z_acquire_far_range);
+	Convars.SetValue("z_acquire_far_time" ,z_acquire_far_time);
+	Convars.SetValue("z_acquire_near_range" ,z_acquire_near_range);
+	Convars.SetValue("z_acquire_near_time" ,z_acquire_near_time);
+	Convars.SetValue("z_acquire_time_variance_factor" ,z_acquire_time_variance_factor);
+	Convars.SetValue("z_alert_range" ,z_alert_range);
+	Convars.SetValue("z_alert_dot" ,z_alert_dot);
+	Convars.SetValue("z_close_target_notice_distance" ,z_close_target_notice_distance);
+	Convars.SetValue("z_hear_gunfire_range" ,z_hear_gunfire_range);
+	Convars.SetValue("z_hear_runner_far_range" ,z_hear_runner_far_range);
+	Convars.SetValue("z_hear_runner_near_range" ,z_hear_runner_near_range);
+	Convars.SetValue("z_vision_range" ,z_vision_range);
+	Convars.SetValue("z_vision_range_alert" ,z_vision_range_alert);
+	Convars.SetValue("z_vision_range_daylight" ,z_vision_range_daylight);
+	Convars.SetValue("z_vision_range_obscured" ,z_vision_range_obscured);
+	Convars.SetValue("z_vision_range_obscured_alert" ,z_vision_range_obscured_alert);
+	Convars.SetValue("z_force_attack_from_sound_range" ,z_force_attack_from_sound_range);
+	Convars.SetValue("z_noise_level_display" ,z_noise_level_display);
+	Convars.SetValue("z_noise_level_fade_rate" ,z_noise_level_fade_rate);
+	Convars.SetValue("z_noise_level_footstep" ,z_noise_level_footstep);
+	Convars.SetValue("z_noise_level_hold_time" ,z_noise_level_hold_time);
+	Convars.SetValue("z_noise_level_max" ,z_noise_level_max);
+	Convars.SetValue("z_noise_level_vocalize" ,z_noise_level_vocalize);
+	Convars.SetValue("z_notice_it_range" ,z_notice_it_range);
+	Convars.SetValue("z_notice_near_range" ,z_notice_near_range);
+
+	//P. Survivor A.I.
+	local sb_friend_immobilized_reaction_time_normal=0;
+	local sb_friend_immobilized_reaction_time_hard=0;
+	local sb_friend_immobilized_reaction_time_expert=0;
+	local sb_friend_immobilized_reaction_time_vs=0;
+	local sb_separation_range=100;
+	local sb_enforce_proximity_range=75;
+	local sb_separation_danger_min_range=75;
+	local sb_separation_danger_max_range=100;
+	local sb_battlestation_give_up_range_from_human=75;
+	local sb_max_battlestation_range_from_human=100;
+	local sb_max_team_melee_weapons=3;
+	Convars.SetValue("sb_friend_immobilized_reaction_time_normal",sb_friend_immobilized_reaction_time_normal);
+	Convars.SetValue("sb_friend_immobilized_reaction_time_hard",sb_friend_immobilized_reaction_time_hard);	
+	Convars.SetValue("sb_friend_immobilized_reaction_time_expert",sb_friend_immobilized_reaction_time_expert);	
+	Convars.SetValue("sb_friend_immobilized_reaction_time_vs",sb_friend_immobilized_reaction_time_vs);
+	Convars.SetValue("sb_separation_range",sb_separation_range);
+	Convars.SetValue("sb_enforce_proximity_range",sb_enforce_proximity_range);
+	Convars.SetValue("sb_separation_danger_min_range",sb_separation_danger_min_range);		
+	Convars.SetValue("sb_separation_danger_max_range",sb_separation_danger_max_range);		
+	Convars.SetValue("sb_battlestation_give_up_range_from_human",sb_battlestation_give_up_range_from_human);		
+	Convars.SetValue("sb_max_battlestation_range_from_human",sb_max_battlestation_range_from_human);
+	Convars.SetValue("sb_max_team_melee_weapons",sb_max_team_melee_weapons);
+	
+	
+	
+	//zombie alertness
+	//sm_cvar z_spawn_mobs_behind_chance 50
+	//sm_cvar z_zombie_lunge_push 1
+	//sm_cvar z_throttle_hit_interval_normal 0.5
+	
 	if (miniFinalDirectorNoSet == 0)
 	{
 		DirectorOptions <-
@@ -1755,4 +1825,34 @@ else
 		}
 	}
 	Msg("Executed: alternateConvars function\n");
+}
+
+
+
+::CalculateNumberofPlayers <- function ()
+{
+	//if ( (developer() > 0) || (DEBUG == 1))
+	nowSurvivorsinGame=0;
+	nowPlayersinGame = 0;
+	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )
+	{
+		nowSurvivorsinGame++;
+		if ((developer() > 0) || (DEBUG == 1))
+		{
+			if(survivor.IsBot())
+				ClientPrint(null, 3, BLUE+"Contando Bot");
+			else				
+				ClientPrint(null, 3, BLUE+"Contando Humano");
+			nowPlayersinGame++;	
+			continue;	
+		}
+		else
+		{
+			if(survivor.IsBot())
+				continue;	
+			nowPlayersinGame++;	
+		}
+	}	
+	if (nowPlayerEvent=="Left")
+		nowPlayersinGame=nowPlayersinGame-1
 }

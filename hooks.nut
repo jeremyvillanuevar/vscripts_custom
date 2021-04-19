@@ -415,6 +415,12 @@ function Notifications::OnSurvivorsLeftStartArea::Inicio()
 	}
 	if ( (developer() > 0) || (DEBUG == 1))
 		IncludeScript ("debug_directoroptions.nut");	
+		
+	if (nowActivateBalance==1)
+		if (nowFinaleStarted==0 && nowFinaleScavengeStarted==0)
+			BalanceDirectorOptions()
+		else
+			BalanceFinaleDirectorOptions()
 }
 
 function Notifications::OnPlayerLeft::ModifyDirectorLeft (client, name, steamID, params)
