@@ -342,6 +342,9 @@
 	customtimer1			=	[1824.022460,5728.031250,1336.031250,0,0,0,0,"logic_timer","c1m1zombiespawncustom1SpawnZombie0-1"]
 	customtimer2			=	[1824.022460,5728.031250,1336.031250,0,0,0,0,"logic_timer","c1m1zombiespawncustom1SpawnZombie0-1"]
 	c1m1zombiespawncustom1			=	[2151.114257,5562.124023,1184,0,0,0,0,"info_zombie_spawn","default"]
+	sound_alarm			=	[2196,5715,2916,0,0,0,49,"ambient_generic","Objects.emergency_alarm_loop"]
+//Sky Entities
+	sky_elevator_button_model = [2263,5695,2516,0,266,0,260,"prop_dynamic","models/props_equipment/elevator_buttons.mdl"]
 }
 
 //Spawn Scavenge Gas Cans Table c1m4
@@ -368,7 +371,7 @@
 //entityBuild = tADMIT[categoryName][0];//category for find model
 //Spawn Table c1m1
 ::mSTc1m1 <-
-{	
+{
 	icechest_lid_001		=	[-5422,933,420,0,180,0,260,"ice"]
 	icechest_lid_002		=	[-5374,-2639,480,0,180,0,260,"ice"]
 	icechest_lid_003		=	[-1064,3384,120,0,180,0,260,"ice"]

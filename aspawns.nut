@@ -11,6 +11,47 @@
 {
 	switch (category)
 	{
+		case "ambient_generic":			
+			local spawnerTable =
+			{
+				targetname=targetName,
+				origin= position,
+				angles= angle,
+				message=cmdinput1,
+				volstart =0,
+				spinup=0,
+				spindown=0,
+				spawnflags=spawnflag,
+				radius=125000,
+				preset=0,
+				pitchstart=100,
+				pitch=100,
+				lfotype=0,
+				lforate=0,
+				lfomodvol=0,
+				lfomodpitch=0,
+				health=10,
+				fadeoutsecs=0,
+				fadeinsecs=0,
+				cspinup=0
+			}
+			return SpawnEntityFromTable(category, spawnerTable);
+			break;
+		case "prop_dynamic":			
+			local spawnerTable =
+			{
+				targetname=targetName,
+				glowcolor="0 0 0",
+				glowstate="0",
+				glowrange="800",
+				solid= "6",
+				origin= position,
+				angles= angle,
+				model=	cmdinput1,
+				disableshadows= "1"
+			}
+			return SpawnEntityFromTable(category, spawnerTable);
+			break;
 		case "info_zombie_spawn":			
 			local spawnerTable =
 			{

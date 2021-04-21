@@ -89,8 +89,8 @@ switch (execscriptName)
 				{
 					Msg("mod the buttonelevRelaybot\n");		
 					local entbuttonelevRelaybot = ::VSLib.Entity(buttonelevRelaybot);
-					entbuttonelevRelaybot.AddOutput("OnTrigger", "customtimer1", "Disable", "", 10.0, -1 )			
-					entbuttonelevRelaybot.AddOutput("OnTrigger", "customtimer2", "Disable", "", 10.0, -1 )	
+					entbuttonelevRelaybot.AddOutput("OnTrigger", "customtimer1", "Disable", "", 10.0, -1 )
+					entbuttonelevRelaybot.AddOutput("OnTrigger", "customtimer2", "Disable", "", 10.0, -1 )
 					//DoEntFire("!self", "AddOutput", "OnTrigger customtimer1:Disable::0:-1", 0.0, null, entbuttonelevRelaybot);
 					//DoEntFire("!self", "AddOutput", "OnTrigger customtimer2:Disable::0:-1", 0.0, null, entbuttonelevRelaybot);
 				}
@@ -114,8 +114,8 @@ switch (execscriptName)
 					MobSpawnMinTime = 1
 					MobSpawnMaxTime = 2
 					MobMaxPending = 20
-					MobMinSize = 20
-					MobMaxSize = 20
+					MobMinSize = 80
+					MobMaxSize = 80
 					SustainPeakMinTime = 1
 					SustainPeakMaxTime = 3
 					IntensityRelaxThreshold = 0.90
@@ -123,7 +123,23 @@ switch (execscriptName)
 					RelaxMaxInterval = 3
 					RelaxMaxFlowTravel = 200
 				}
-				Timers.AddTimer( 15.0, true, SpawnTank);
+				//Timers.AddTimer( 5.0, true, SpawnTank);
+				
+				local alarma = Entities.FindByName( null, "sound_alarm" );
+				local elevss = Entities.FindByName( null, "elevator_stuck_sound" );
+				local puerta = null;
+				while ( puerta = Entities.FindByName( puerta, "elevator_1_doors_shadow" ) )
+				{
+					if ( puerta.IsValid() )
+					{
+						DoEntFire( "!self", "StartGlowing", "", 0, null, puerta );
+						DoEntFire( "!self", "StopGlowing", "", 33, null, puerta );
+					}
+				}
+				DoEntFire( "!self", "PlaySound", "", 0, null, alarma );
+				DoEntFire( "!self", "FadeOut", "1", 32, null, alarma );
+				DoEntFire( "!self", "PlaySound", "", 33, null, elevss );
+				//DoEntFire("!self", "AddOutput", "OnTrigger customtimer1:Enable::0:-1", 0.0, null, entbuttonelevRelaytop);
 
 				Director.ResetMobTimer()
 				break;
