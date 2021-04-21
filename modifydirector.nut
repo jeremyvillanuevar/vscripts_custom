@@ -114,88 +114,264 @@ else
 		Utils.SpawnZombieNearPlayer( player, Z_WITCH, MaxDist, MinDist, false );
 }
 
-::BalanceDirectorOptions <- function ()
-{	
-	Msg("BalanceDirectorOptions"+"\n");
-		local sv_steamgroup = "39464742,2508707,36547718,964095,938619,554109,2450706,883,1240452,1850,5195189,3402923,1582249,10639590,3483,6112039,707962,1651917,1210106,1789698,4311062,37215448,707962,4189851,1909444";
-		local scuffle_duration = "6.0";
-		//Tanks
-		// If 1, Enable Tank Demolition, server will spawn one tank before door open
-		local lockdown_systemtdb = "1";
-		//Tanke Luego de Abrir en Horda de 4!!!
-		local lockdown_systemtda = "0";
-		//Time Interval to spawn a tank when door is opening (0=off)
-		local lockdown_systemoti = "1500";
-		//Mutant Tanks
-		local mt_pluginenabled = "1";
-		
-		//Witches
-		// Amount of damage the Witch causes when she hits a Survivor.
-		local l4d_pwm_psychoticchargedamage = "1";
-		// Power a Survivor is hit with during Psychotic Charge. (Def 300)
-		local l4d_pwm_psychoticchargepower = "1";
-		// How close a Survivor has to be to be hit by the Psychotic Charge. (Def 200)
-		local l4d_pwm_psychoticchargerange = "5";
+::EnforceStartCvars <- function ()
+{
+	Msg("EnforceStartCvars"+"\n");
+	//director
+	//sm_cvar director_afk_timeout 15
+	// Survivor Health, Accuracy, Friendly Fire Variables/Modifiers
+	Convars.SetValue("survivor_revive_health" ,					"40");					//was 30
+	//use situation
+	//Convars.SetValue("survivor_revive_duration" ,				sRDT[gMV][dAAW][gFD]);
 
+	
+	//use situation
+	//Convars.SetValue("survivor_limp_health" ,					sLHMT[gMV][dAAW][gFD]);
+	//use situation
+	//Convars.SetValue("survivor_limp_walk_speed" ,			sLWST[gMV][dAAW][gFD]);
+	Convars.SetValue("survivor_burn_factor_easy" ,				"0");		//was 0.2
+
+	Convars.SetValue("survivor_burn_factor_normal" ,			"0");		//was 0.2
+	Convars.SetValue("survivor_burn_factor_hard" ,				"0");		//was 0.4
+	Convars.SetValue("survivor_burn_factor_expert" ,			"0");		//was 1
+
+
+
+	//P. Survivor A.I.
+	local sb_friend_immobilized_reaction_time_normal=0;
+	local sb_friend_immobilized_reaction_time_hard=0;
+	local sb_friend_immobilized_reaction_time_expert=0;
+	local sb_friend_immobilized_reaction_time_vs=0;
+	local sb_separation_range=100;
+	local sb_enforce_proximity_range=75;
+	local sb_separation_danger_min_range=75;
+	local sb_separation_danger_max_range=100;
+	local sb_battlestation_give_up_range_from_human=75;
+	local sb_max_battlestation_range_from_human=100;
+	local sb_max_team_melee_weapons=3;
+	Convars.SetValue("sb_friend_immobilized_reaction_time_normal",sb_friend_immobilized_reaction_time_normal);
+	Convars.SetValue("sb_friend_immobilized_reaction_time_hard",sb_friend_immobilized_reaction_time_hard);	
+	Convars.SetValue("sb_friend_immobilized_reaction_time_expert",sb_friend_immobilized_reaction_time_expert);	
+	Convars.SetValue("sb_friend_immobilized_reaction_time_vs",sb_friend_immobilized_reaction_time_vs);
+	Convars.SetValue("sb_separation_range",sb_separation_range);
+	Convars.SetValue("sb_enforce_proximity_range",sb_enforce_proximity_range);
+	Convars.SetValue("sb_separation_danger_min_range",sb_separation_danger_min_range);		
+	Convars.SetValue("sb_separation_danger_max_range",sb_separation_danger_max_range);		
+	Convars.SetValue("sb_battlestation_give_up_range_from_human",sb_battlestation_give_up_range_from_human);		
+	Convars.SetValue("sb_max_battlestation_range_from_human",sb_max_battlestation_range_from_human);
+	Convars.SetValue("sb_max_team_melee_weapons",sb_max_team_melee_weapons);
+
+
+	//O. ZOMBIES ALERTNESS
+	//these all dictate the distance and probability that zombies will have you as an objective.
+	//the zombie has a much better chance of seeing you if you are in "near" range,
+	//and if you are beyond "far" range it won't notice you at all, even if you get boomed/pipe bombed.
+	local z_acquire_far_range = 200;
+	if (nowPlayersinGame<5)
+		z_acquire_far_range=z_acquire_far_range+(9*nowPlayersinGame);
+	else
+		z_acquire_far_range=z_acquire_far_range+(50*nowPlayersinGame);	
+	local z_acquire_far_time =3;
+	local z_acquire_near_range =90;
+	local z_acquire_near_time =0;	
+	local z_acquire_time_variance_factor ="0";
+	
+	
+	// How far a Zombie can see.
+	local z_vision_range =z_acquire_far_range;
+	// How far a Zombie can see in daylight
+	local z_vision_range_daylight =z_acquire_far_range+(3*nowPlayersinGame);
+	// How far a Zombie can see in OBSCURED areas.
+	local z_vision_range_obscured =z_acquire_far_range-(3*nowPlayersinGame);
+	
+	//the alert range seems to deal with the zombies overall awareness and the probability a zombie will notice you
+	// these deal with how likely a zombie will notice you if things are happening.
+	local z_alert_range =z_acquire_far_range-z_acquire_near_range;
+	//local z_alert_dot ="0";	
+	// How far a Zombie can see when alert.
+	local z_vision_range_alert =z_acquire_far_range-z_acquire_near_range;
+	// How far a Zombie can see in OBSCURED areas when alert.
+	local z_vision_range_obscured_alert =z_acquire_far_range-z_acquire_near_range-(3*nowPlayersinGame);
+	
+	//for example, if you get close to a zombie who is running for someone else, 
+	//it is likely to turn and smack you (which is why if you're 
+	//surrounded by a horde and throw a pipe bomb some will keep attacking you).	
+	local z_notice_near_range= z_acquire_near_range/2;
+	// How far an attacking zombie
+	//will look for a nearby target on their way to their chosen victim.
+	local z_close_target_notice_distance =z_acquire_near_range/2;
+	//whenever a console command refers to it, they mean someone who has been boomered.
+	//note that being boomered will draw zombies beyond the alert range.
+	local z_notice_it_range= 1500;
+	
+	
+	// zombies who are close to you will notice gunfire, but at that range they will likely notice you anyway.
+	local z_force_attack_from_sound_range= z_acquire_far_range;
+	// Loud noises attract far-off zombies
+	local z_hear_gunfire_range= z_acquire_far_range;
+	// Running attracts zombies a lot more than walking does, but the running 
+	//aggro (agressive) range is shorter than the zombie seeing you range.
+	local z_hear_runner_far_range =z_acquire_far_range-z_acquire_near_range;
+	local z_hear_runner_near_range =z_acquire_near_range;
+	// Show noise levels on players?
+	local z_noise_level_display= "1";
+	// How much noise we make with a footstep.
+	local z_noise_level_footstep= "135";
+	// How long we hold a given noise level before it starts to fade.
+	local z_noise_level_hold_time= "0";
+	// after hold_time expires.
+	local z_noise_level_fade_rate= "40";
+	// The highest the noise level can go.
+	local z_noise_level_max= "135";
+	// How much noise we make when we say things.
+	local z_noise_level_vocalize= "135";
+
+
+	
+	
+		
+	if (nowPlayersinGame>7)
+	{
+		l4d_si_ability_enabled = "1";
 		//Speciales
 		//Explosion de Boomer
-		local l4d_nbm_bileblast = "0";
-		// Enable/Disable the Special Infected Slap/Shove Ability Plugin.
-		//Convars.ExecuteConCommand("sm_cvar l4d_si_ability_enabled 0")
-		local l4d_si_ability_enabled = "0";
-		//(5/10/15/20)
-		local charger_dmg_punch = "5";
-		//(5/10/15/20)
-		local charger_dmg_firstpunch = "10";
-		//(10/10/15/20)
-		local charger_dmg_impact = "10";
-		//
-		local charger_dmg_stumble = "4";
-		//
-		local charger_dmg_pound = "5";
-     
-		//Commons
-		// Common uncommon chance
-		local l4d2_spawn_uncommons_autochance = "4";
-		//default 19, binary flag of allowed autoshuffle zombies. 1 = riot, 2 = ceda, 4 = clown, 8 = mudman, 16 = roadcrew, 32 = jimmy, 64 = fallen); riot + ceda + roadcrew = 19
-		local l4d2_spawn_uncommons_autotypes = "64";
-		//default -1 or health value (set to health value if you want something nonstandard)
-		local l4d2_spawn_uncommons_healthoverride = "21";
+		l4d_nbm_bileblast = "1";
+	}
+	else
+	if (nowPlayersinGame>5)
+	{
+	
+	}
+	else
+	if (nowPlayersinGame>5)
+	{
+	
+	}
 
-		local l4d_shot_warns_common_enable = "0";
-		local l4d_shot_warns_common_safe_area = "0";
-		local l4d_shot_warns_common_tank_alive = "0";
 
-		// ConVars for plugin "balancer_hp.smx"
-		// 0: Check all players survivor in game, 1: Ignore check idle survivors, 2: Ignore check survivors bot, 4: Ignore check dead survivors, 7: Set all ignore check modes
-		local balancer_hp_check_mode = "6";
-		//  0: Disable boomer increment/decrement balance HP, (Value < 1): Set factor percent of HP base [example:0.1 = 1] to increment/decrement per players), (Value >= 1): Set HP value to increment/decrement per players
-		//balancer_hp_factor_boomer "2"
-		//balancer_hp_factor_charger "10"
-		//balancer_hp_factor_hunter "13"
-		//balancer_hp_factor_jockey "8"
-		//balancer_hp_factor_smoker "2"
-		//balancer_hp_factor_spitter "5"
-		local balancer_hp_factor_tank="358";
-		local balancer_hp_factor_witch="257";
-		local l4d_super_HPmultiple_boomer="22.0";
-		local l4d_super_HPmultiple_charger="12.0";
-		local l4d_super_HPmultiple_hunter="43.0";
-		local l4d_super_HPmultiple_jockey="12.0";
-		local l4d_super_HPmultiple_smoker="53.0";
-		local l4d_super_HPmultiple_spitter="12.0";
-		local l4d_super_HPmultiple_tank="1.2";
-		//  0: Disable boomer limit max HP, (Value > 0): Set increment limit HP
-		local balancer_hp_max_boomer= "0";
-		local balancer_hp_max_charger= "0";
-		local balancer_hp_max_hunter= "0";
-		local balancer_hp_max_jockey= "0";
-		local balancer_hp_max_smoker ="0";
-		local balancer_hp_max_spitter= "0";
-		local balancer_hp_max_tank ="0";
-		local balancer_hp_max_witch ="0";
-		// Set survivor players default to set hp base
-		local balancer_hp_players_base="0";
+	Convars.SetValue("z_acquire_far_range" ,z_acquire_far_range);
+	Convars.SetValue("z_acquire_far_time" ,z_acquire_far_time);
+	Convars.SetValue("z_acquire_near_range" ,z_acquire_near_range);
+	Convars.SetValue("z_acquire_near_time" ,z_acquire_near_time);
+	Convars.SetValue("z_acquire_time_variance_factor" ,z_acquire_time_variance_factor);
+	Convars.SetValue("z_alert_range" ,z_alert_range);
+	//Convars.SetValue("z_alert_dot" ,z_alert_dot);
+	Convars.SetValue("z_close_target_notice_distance" ,z_close_target_notice_distance);
+	Convars.SetValue("z_hear_gunfire_range" ,z_hear_gunfire_range);
+	Convars.SetValue("z_hear_runner_far_range" ,z_hear_runner_far_range);
+	Convars.SetValue("z_hear_runner_near_range" ,z_hear_runner_near_range);
+	Convars.SetValue("z_vision_range" ,z_vision_range);
+	Convars.SetValue("z_vision_range_alert" ,z_vision_range_alert);
+	Convars.SetValue("z_vision_range_daylight" ,z_vision_range_daylight);
+	Convars.SetValue("z_vision_range_obscured" ,z_vision_range_obscured);
+	Convars.SetValue("z_vision_range_obscured_alert" ,z_vision_range_obscured_alert);
+	Convars.SetValue("z_force_attack_from_sound_range" ,z_force_attack_from_sound_range);
+	Convars.SetValue("z_noise_level_display" ,z_noise_level_display);
+	Convars.SetValue("z_noise_level_fade_rate" ,z_noise_level_fade_rate);
+	Convars.SetValue("z_noise_level_footstep" ,z_noise_level_footstep);
+	Convars.SetValue("z_noise_level_hold_time" ,z_noise_level_hold_time);
+	Convars.SetValue("z_noise_level_max" ,z_noise_level_max);
+	Convars.SetValue("z_noise_level_vocalize" ,z_noise_level_vocalize);
+	Convars.SetValue("z_notice_it_range" ,z_notice_it_range);
+	Convars.SetValue("z_notice_near_range" ,z_notice_near_range);
+
+	//use general
+	//A friend needs to be this close to say Reloading
+	Convars.SetValue("z_reload_chatter_nearby_friend_range" ,	"400");		
+	//use general
+	//Intensity level at which players start saying 'Reloading' 
+	Convars.SetValue("z_reload_chatter_intensity" ,				0);
+	
+	//use general
+	//An enemy needs to have been seen this recently to say 'Reloading'
+	Convars.SetValue("z_reload_chatter_recent_enemy","2.5")
+	//Players don't say 'Reloading' when reloading a shotgun that has this many shells already 
+	Convars.SetValue("z_reload_chatter_shotgun_ammo_threshold","8")
+	Convars.SetValue("z_reload_chatter_shotgun_interval","2")
+	
+
+
+
+	local sv_steamgroup = "39464742,2508707,36547718,964095,938619,554109,2450706,883,1240452,1850,5195189,3402923,1582249,10639590,3483,6112039,707962,1651917,1210106,1789698,4311062,37215448,707962,4189851,1909444";		
+	
+	local scuffle_duration = "6.0";
+	//Tanks
+	// If 1, Enable Tank Demolition, server will spawn one tank before door open
+	local lockdown_systemtdb = "1";
+	//Tanke Luego de Abrir en Horda de 4!!!
+	local lockdown_systemtda = "0";
+	//Time Interval to spawn a tank when door is opening (0=off)
+	local lockdown_systemoti = "1500";
+	//Mutant Tanks
+	local mt_pluginenabled = "1";
+	
+	//Witches
+	// Amount of damage the Witch causes when she hits a Survivor.
+	local l4d_pwm_psychoticchargedamage = "1";
+	// Power a Survivor is hit with during Psychotic Charge. (Def 300)
+	local l4d_pwm_psychoticchargepower = "1";
+	// How close a Survivor has to be to be hit by the Psychotic Charge. (Def 200)
+	local l4d_pwm_psychoticchargerange = "5";
+
+	//Speciales
+	//Explosion de Boomer
+	local l4d_nbm_bileblast = "0";
+	// Enable/Disable the Special Infected Slap/Shove Ability Plugin.
+	//Convars.ExecuteConCommand("sm_cvar l4d_si_ability_enabled 0")
+	local l4d_si_ability_enabled = "0";
+	//(5/10/15/20)
+	local charger_dmg_punch = "5";
+	//(5/10/15/20)
+	local charger_dmg_firstpunch = "10";
+	//(10/10/15/20)
+	local charger_dmg_impact = "10";
+	//
+	local charger_dmg_stumble = "4";
+	//
+	local charger_dmg_pound = "5";
+ 
+	//Commons
+	// Common uncommon chance
+	local l4d2_spawn_uncommons_autochance = "4";
+	//default 19, binary flag of allowed autoshuffle zombies. 1 = riot, 2 = ceda, 4 = clown, 8 = mudman, 16 = roadcrew, 32 = jimmy, 64 = fallen); riot + ceda + roadcrew = 19
+	local l4d2_spawn_uncommons_autotypes = "64";
+	//default -1 or health value (set to health value if you want something nonstandard)
+	local l4d2_spawn_uncommons_healthoverride = "21";
+
+	local l4d_shot_warns_common_enable = "0";
+	local l4d_shot_warns_common_safe_area = "0";
+	local l4d_shot_warns_common_tank_alive = "0";
+
+	// ConVars for plugin "balancer_hp.smx"
+	// 0: Check all players survivor in game, 1: Ignore check idle survivors, 2: Ignore check survivors bot, 4: Ignore check dead survivors, 7: Set all ignore check modes
+	local balancer_hp_check_mode = "6";
+	//  0: Disable boomer increment/decrement balance HP, (Value < 1): Set factor percent of HP base [example:0.1 = 1] to increment/decrement per players), (Value >= 1): Set HP value to increment/decrement per players
+	//balancer_hp_factor_boomer "2"
+	//balancer_hp_factor_charger "10"
+	//balancer_hp_factor_hunter "13"
+	//balancer_hp_factor_jockey "8"
+	//balancer_hp_factor_smoker "2"
+	//balancer_hp_factor_spitter "5"
+	local balancer_hp_factor_tank="358";
+	local balancer_hp_factor_witch="257";
+	local l4d_super_HPmultiple_boomer="22.0";
+	local l4d_super_HPmultiple_charger="12.0";
+	local l4d_super_HPmultiple_hunter="43.0";
+	local l4d_super_HPmultiple_jockey="12.0";
+	local l4d_super_HPmultiple_smoker="53.0";
+	local l4d_super_HPmultiple_spitter="12.0";
+	local l4d_super_HPmultiple_tank="1.2";
+	//  0: Disable boomer limit max HP, (Value > 0): Set increment limit HP
+	local balancer_hp_max_boomer= "0";
+	local balancer_hp_max_charger= "0";
+	local balancer_hp_max_hunter= "0";
+	local balancer_hp_max_jockey= "0";
+	local balancer_hp_max_smoker ="0";
+	local balancer_hp_max_spitter= "0";
+	local balancer_hp_max_tank ="0";
+	local balancer_hp_max_witch ="0";
+	// Set survivor players default to set hp base
+	local balancer_hp_players_base="0";
 	
 	
 		
@@ -400,6 +576,13 @@ else
 	// Convars.SetValue("l4d_super_probability_spitter" ,	l4d_super_probability_spitter);
 	// Convars.SetValue("l4d_super_probability_tank" ,	l4d_super_probability_tank);
 	
+
+}
+
+::BalanceDirectorOptions <- function ()
+{	
+	Msg("BalanceDirectorOptions"+"\n");
+	EnforceStartCvars();
 	
 	if (nowFirstPlayerinGame==0)
 		Director.ResetMobTimer()	
@@ -461,7 +644,7 @@ else
 		//Default Paceful Mode Stop
 		if (nowFirstPlayerinGame==0)
 			nowFirstPlayerinGame++;			
-	}	
+	}
 	
 	
 	
@@ -1468,6 +1651,13 @@ else
 	Convars.SetValue("z_reload_chatter_nearby_friend_range" ,	"400");		//was 600 A friend needs to be this close to say Reloading
 	//use general
 	Convars.SetValue("z_reload_chatter_intensity" ,				zRCIA[dAANNR]);
+	
+	//use general
+	
+	Convars.SetValue("z_reload_chatter_recent_enemy","2.5")
+	Convars.SetValue("z_reload_chatter_shotgun_ammo_threshold","7")
+	Convars.SetValue("z_reload_chatter_shotgun_interval","5")
+	
 	Convars.SetValue("cola_bottles_use_duration" ,				cBUDA[dAANNR]);
 
 	//B. SURVIVOR HEALTHCARE PLAN
@@ -1501,6 +1691,7 @@ else
 	Convars.SetValue("survivor_revive_duration" ,				sRDT[gMV][dAAW][gFD]);
 
 	
+	//use situation
 	Convars.SetValue("survivor_limp_health" ,					sLHMT[gMV][dAAW][gFD]);
 	Convars.SetValue("survivor_burn_factor_easy" ,				"0.2");		//was 0.2
 
@@ -1665,11 +1856,17 @@ else
 	Convars.SetValue("director_sustain_peak_min_time" ,			RandomInt	(dSPMITT[mAAN][tODMI],dSPMITT[mAAN][tODMA]));
 	Convars.SetValue("intensity_factor" ,						RandomFloat	(iFA[dAANMI],iFA[dAANMA]));
 	Convars.SetValue("intensity_decay_time" ,					RandomInt	(iDTA[dAANMI],iDTA[dAANMA]));	
-	
+	//Credits:"Romero Mod"
+	//"Description"	"A more gritty, realistic zombie experience."
+	//"Author"	"xaroth8088"
+	local z_hit_from_behind_factor=2;
+	// Zombies that get behind you are more dangerous
+	Convars.SetValue("z_hit_from_behind_factor" ,	z_hit_from_behind_factor);
 	//O. ZOMBIES ALERTNESS
 	//these all dictate the distance and probability that zombies will notice you.
-	//the zombie has a much better chance of seeing you if you are in "near" range, and if you are beyond "far" range it won't notice you at all, even if you get boomed/pipe bombed.
-	//the alert range seems to deal with the zombies overall awareness and the probability a zombie will notice you between the
+	//the zombie has a much better chance of seeing you if you are in "near" range,
+	//and if you are beyond "far" range it won't notice you at all, even if you get boomed/pipe bombed.
+	//the alert range seems to deal with the zombies overall awareness and the probability a zombie will notice you
 	local z_acquire_far_range = 2500;
 	local z_acquire_far_time =5;
 	local z_acquire_near_range =200;
@@ -1680,11 +1877,19 @@ else
 	local z_alert_range =1000;
 	local z_alert_dot ="0";
 
-	// these deal with how likely a zombie will notice you if things are happening. for example, if you get close to a zombie who is running for someone else, it is likely to turn and smack you (which is why if you're surrounded by a horde and throw a pipe bomb some will keep attacking you).
-	// zombies who are close to you will notice gunfire, but at that range they will likely notice you anyway.
-	// Running attracts zombies a lot more than walking does, but the running aggro range is shorter than the zombie seeing you range.
+	// these deal with how likely a zombie will notice you if things are happening.
+	//for example, if you get close to a zombie who is running for someone else, 
+	//it is likely to turn and smack you (which is why if you're 
+	//surrounded by a horde and throw a pipe bomb some will keep attacking you).
+	
+	// How far an attacking zombie
+	//will look for a nearby target on their way to their chosen victim.
 	local z_close_target_notice_distance =60;
+	// zombies who are close to you will notice gunfire, but at that range they will likely notice you anyway.
+	// Loud noises attract far-off zombies
 	local z_hear_gunfire_range= 200;
+	// Running attracts zombies a lot more than walking does, but the running 
+	//aggro range is shorter than the zombie seeing you range.
 	local z_hear_runner_far_range =750;
 	local z_hear_runner_near_range =500;
 	
@@ -1699,12 +1904,7 @@ else
 	local z_vision_range_obscured ="500";
 	// How far a Zombie can see in OBSCURED areas when alert.
 	local z_vision_range_obscured_alert ="750";
-	//z_use_tolerance = "0";
-	//z_view_distance = "0";
 
-	// How far an attacking zombie
-	//will look for a nearby target on their way to their chosen victim.
-	local z_close_target_notice_distance= "60";
 	
 	
 	local z_force_attack_from_sound_range= 750;
@@ -1781,9 +1981,19 @@ else
 	
 	
 	//zombie alertness
+	//z_use_tolerance = "0.00";
+	//Default camera distance when in-eye (non-zero is pulled back like staggering, hanging, etc)
+	//z_view_distance = "0"; 
 	//sm_cvar z_spawn_mobs_behind_chance 50
+	// Common Infected[All] Special Infected[lunge_push only]
+	//Does the zombie lunge push players?
 	//sm_cvar z_zombie_lunge_push 1
+	//sm_cvar z_hit_from_behind_factor 1.0
+	//Minimum time between damaging a Survivor from a mob 
+	//sm_cvar z_throttle_hit_interval_easy 0.5
 	//sm_cvar z_throttle_hit_interval_normal 0.5
+	//sm_cvar z_throttle_hit_interval_hard 0.5
+	//sm_cvar z_throttle_hit_interval_expert 0.5
 	
 	if (miniFinalDirectorNoSet == 0)
 	{

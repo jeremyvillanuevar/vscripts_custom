@@ -6,11 +6,55 @@
 //File Description: This is a data file that holds all of the spawn tables used by TADM
 
 
+//function entities spawner function
+::funcEntsSpawner <- function(targetName, position, angle, spawnflag, category,cmdinput1,cmdinput2=null)
+{
+	switch (category)
+	{
+		case "info_zombie_spawn":			
+			local spawnerTable =
+			{
+						targetname	= targetName,
+						origin = position,
+						angles= angle,
+						population	= cmdinput1
+			}
+			return SpawnEntityFromTable(category, spawnerTable);
+			break;		
+		case "logic_timer":			
+			local spawnerTable =
+			{
+				targetname	= targetName,
+				//RefireTime	= user_intKillTimer,
+				origin = position,
+				StartDisabled	= 1,
+				UseRandomTime	= 1,
+				UpperRandomBound	= 1,
+				spawnflags	= 0,
+				LowerRandomBound	= 2,
+				//origin = Vector(-11762,6341,459),
+				connections =
+				{
+					OnTimer =
+					{
+						cmd1 = cmdinput1
+					}
+				}
+			}
+			return SpawnEntityFromTable(category, spawnerTable);
+			break;	
+		default:
+			Msg("found: " + category + " that does not fit spawn function\n");
+			break;
+	}
+	Msg("Executed: genericSpawner function\n");
+}
+
 //spawner function
 ::genericSpawner <- function(targetName, position, angle, spawnflag, category, installation)
 {
 	switch (category)
-	{
+	{		
 		case "gascan":			
 			local spawnerTable =
 			{
@@ -140,123 +184,23 @@
 
 
 
-//read map gasScanSpawner table and send data to the spawner function
-::mapgasScanSpawnerSpawner <- function()
-{
-	local currentMap = SessionState.MapName;
-	local tableToUse = null;
-
-	switch (currentMap)
-	{
-		case "c1m1_hotel":
-		case "c1m2_streets":
-		case "c1m3_mall":
-		case "c1m4_atrium":
-		{				
-			tableToUse =
-			{
-				scavengegascanspawner_001				=	[-5826.397949,-3766.900146,121.191513,-89.756203,35.311050,-18.307281,256,"scavengegascanspawner"]
-				scavengegascanspawner_002				=	[-3921.168213,-2796.525146,273.444275,-89.437828,-15.096178,71.676933,256,"scavengegascanspawner"]
-				scavengegascanspawner_003				=	[-4460.450684,-2393.967773,-6.543771,-89.622887,151.324280,-81.998047,256,"scavengegascanspawner"]
-				scavengegascanspawner_004				=	[-3746.075439,-3469.342773,-6.533242,-89.725517,151.001450,-81.569489,256,"scavengegascanspawner"]
-				scavengegascanspawner_005				=	[-4509.846680,-3996.965820,129.438034,-89.684006,64.923325,3.458946,256,"scavengegascanspawner"]
-				scavengegascanspawner_006				=	[-4924.200684,-2777.282471,277.407135,-0.243933,16.434361,-90.146545,256,"scavengegascanspawner"]
-				scavengegascanspawner_007				=	[-3864.321289,-3422.527588,273.473846,-89.650421,139.663223,-70.185608,256,"scavengegascanspawner"]
-				scavengegascanspawner_008				=	[-2923.110107,-3148.653809,273.448975,-89.491905,-15.097923,71.676849,256,"scavengegascanspawner"]
-				scavengegascanspawner_009				=	[-3054.118652,-4660.107910,273.453247,-89.540642,-15.099179,71.677055,256,"scavengegascanspawner"]
-				scavengegascanspawner_010				=	[-4451.859375,-3206.565186,106.361153,0.889960,1.695853,0.070326,256,"scavengegascanspawner"]
-			}
-			Msg("from amap found: " + currentMap + "\n");
-			break;
-		}
-		case "c2m1_highway":			
-		case "c2m2_fairgrounds":			
-		case "c2m3_coaster":			
-		case "c2m4_barns":			
-		case "c2m5_concert":
-			//IncludeScript("adarkcarnival");
-		case "c3m1_plankcountry":
-		case "c3m2_swamp":
-		case "c3m3_shantytown":
-		case "c3m4_plantation":
-			//IncludeScript("aswampfever");
-		case "c4m1_milltown_a":
-		case "c4m2_sugarmill_a":
-		case "c4m3_sugarmill_b":
-		case "c4m4_milltown_b":
-		case "c4m5_milltown_escape":
-			//IncludeScript("ahardrain");
-		case "c5m1_waterfront":
-		case "c5m2_park":
-		case "c5m3_cemetery":
-		case "c5m4_quarter":
-		case "c5m5_bridge":
-			//IncludeScript("aparish");
-		case "c6m1_riverbank":
-		case "c6m2_bedlam":
-		case "c6m3_port":
-			//IncludeScript("apassing");
-		case "c7m1_docks":
-		case "c7m2_barge":
-		case "c7m3_port":
-			//IncludeScript("asacrifice");
-		case "c8m1_apartment":
-		case "c8m2_subway":
-		case "c8m3_sewers":
-		case "c8m4_interior":
-		case "c8m5_rooftop":
-		case "c9m1_alleys":
-		case "c9m2_lots":
-//			IncludeScript("acrashcourse");
-		case "c10m1_caves":
-		case "c10m2_drainage":
-		case "c10m3_ranchhouse":
-		case "c10m4_mainstreet":
-		case "c10m5_boathouse":
-//			IncludeScript("adeathtoll");
-		case "c11m1_greenhouse":
-		case "c11m2_offices":
-		case "c11m3_garage":
-		case "c11m4_terminal":
-		case "c11m5_runway":
-//			IncludeScript("adeadair");
-		case "c12m1_hilltop":
-		case "c12m2_traintunnel":
-		case "c12m3_bridge":
-		case "c12m4_barn":
-		case "c12m5_cornfield":
-		case "c13m1_alpinecreek":
-		case "c13m2_southpinestream":
-		case "c13m3_memorialbridge":
-		case "c13m4_cutthroatcreek":
-		case "c14m1_junkyard":
-		case "c14m2_lighthouse":	
-		default:
-			Msg("defaulted mapEntitesSpawner switch\n");
-			break;
-	}
-	foreach(index, item in tableToUse)
-	{
-		local propPhysicsName = index;
-		local propPhysicsVector = Vector(tableToUse[index][0], tableToUse[index][1], tableToUse[index][2]);
-		local propAngleVector = Vector(tableToUse[index][3], tableToUse[index][4], tableToUse[index][5]);
-		local propSpawnFlag = tableToUse[index][6];
-		local categoryName = tableToUse[index][7];
-		local entityBuild = tADMIT[categoryName][0];
-		genericSpawner(propPhysicsName, propPhysicsVector, propAngleVector, propSpawnFlag, categoryName, entityBuild);
-	}
-	Msg("Executed: mapgasScanSpawnerSpawner function\n");
-}
 
 //read map entities generator table and send data to the spawner function
 ::mapEntitiesSpawner <- function(params)
 {
 	local currentMap = SessionState.MapName;
 	local tableToUse = {};
+	local tableFuncEntToUse = {};
 
 	switch (currentMap)
 	{
 		case "c1m1_hotel":
+		{						
+			tableToUse = mSTc1m1;
+			tableFuncEntToUse = mSFETc1m1;
+			Msg("from amap found: " + currentMap + "\n");
+			break;
+		}
 		case "c1m2_streets":
 		{						
 			tableToUse =
@@ -358,143 +302,7 @@
 		}
 		case "c2m2_fairgrounds":
 		{				
-			tableToUse =
-			{
-				urban_clay_pot_001		=	[-2022,-4457,35,0,0,0,4356,"pot_clay"]
-				urban_clay_pot_002		=	[-1802,-4456,35,0,0,0,4356,"pot_clay"]
-				trash_bin_001			=	[-2106,494,-40,0,222.5,0,0,"bin"]
-				trash_bin_002			=	[-2061,464,-29,0,264,0,0,"bin"]
-				trash_bin_003			=	[3089,-631,0,0,222,0,0,"bin"]
-				trash_bin_004			=	[-925,-465,-103,0,200,0,0,"bin"]
-				trash_bin_005			=	[-933,-432,-124,0,193,0,0,"bin"]
-				barstool_001			=	[-2867.07,-5441.19,-126.493,0,195,0,4,"barstool"]
-				barstool_002			=	[3903.18,440.124,1.50742,0,195,0,4,"barstool"]
-				barstool_003			=	[-2380,-618,-96,0,195,0,4,"barstool"]
-				barstool_004			=	[2712.25,366.556,7.50741,0,195,0,4,"barstool"]
-				barstool_005			=	[2952.27,-451,1.50742,0,195,0,4,"barstool"]
-				barstool_006			=	[3940.12,-219.67,1.50741,0,195,0,4,"barstool"]
-				barstool_007			=	[3899.71,336.163,1.5074,0,195,0,4,"barstool"]
-				smoke_large_001			=	[-3904,-141,153,-89,90,90,0,"largeSmoke"]
-				smoke_large_002			=	[2792,-818,342,-89 90 90,0,"largeSmoke"]
-				smoke_large_003			=	[4607,-310,156.475,-89,90,90,0,"largeSmoke"]
-				smoke_large_004			=	[4620,-2294,270,-89,90,90,0,"largeSmoke"]
-				smoke_large_005			=	[2779,-2274,175,-89,90,90,0,"largeSmoke"]
-				smoke_large_006			=	[577,-2019,138,-89,90,90,0,"largeSmoke"]
-				smoke_large_007			=	[-649,5086,149,-89,90,90,0,"largeSmoke"]
-				smoke_large_008			=	[-4322,-4304,9,-89,90,90,0,"largeSmoke"]
-				smoke_large_009			=	[-3658,-6280,92,-89,90,90,0,"largeSmoke"]
-				riverboat_smoke_001		=	[-4408,-3306,308,-90,105,-105,0,"riverSmoke"]
-				riverboat_smoke_002		=	[-678,-4807,3,-90,105,-105,0,"riverSmoke"]
-				riverboat_smoke_003		=	[3840,-341,456,-90,105,-105,0,"riverSmoke"]
-				riverboat_smoke_004		=	[1710,-485,258,-90,105,-105,0,"riverSmoke"]
-				riverboat_smoke_005		=	[4681,165,9,-90,105,-105,0,"riverSmoke"]
-				riverboat_smoke_006		=	[4847,-1206,9,-90,105,-105,0,"riverSmoke"]
-				riverboat_smoke_007		=	[3436,-2431,9,-90,105,-105,0,"riverSmoke"]
-				riverboat_smoke_008		=	[680,-1926,138,-90,105,-105,0,"riverSmoke"]
-				riverboat_smoke_009		=	[160,-997,273,-90,105,-105,0,"riverSmoke"]
-				riverboat_smoke_010		=	[-229,-496,370,-90,105,-105,0,"riverSmoke"]
-				riverboat_smoke_011		=	[-866,-5189,4,-90,105,-105,0,"riverSmoke"]
-				riverboat_smoke_012		=	[566,-629,485,-90,105,-105,0,"riverSmoke"]
-				leaves_green_001		=	[-1237,-526,100,-90,25,-115,0,"leaves"]
-				leaves_green_002		=	[-482,-296,211,-90,25,-115,0,"leaves"]
-				leaves_green_003		=	[-159,-77,211,-90,25,-115,0,"leaves"]
-				leaves_green_004		=	[3491,-1293,215,-90,25,-115,0,"leaves"]
-				leaves_green_005		=	[3550,-1033,215,-90,25,-115,0,"leaves"]
-				leaves_green_006		=	[2968,-2,219,-90,25,-115,0,"leaves"]
-				leaves_green_007		=	[3508,116,219,-90,25,-115,0,"leaves"]
-				leaves_green_008		=	[3424,307,219,-90,25,-115,0,"leaves"]
-				leaves_green_009		=	[2565,876,214,-90,25,-115,0,"leaves"]
-				leaves_green_010		=	[2579,1341,214,-90,25,-115,0,"leaves"]
-				leaves_green_011		=	[1749,1172,220,-90,25,-115,0,"leaves"]
-				leaves_green_012		=	[1268,1314,220,-90,25,-115,0,"leaves"]
-				leaves_green_013		=	[-3100,-4721,86,-90,25,-115,0,"leaves"]
-				leaves_green_014		=	[-2560,-4603,86,-90,25,-115,0,"leaves"]
-				leaves_green_015		=	[-2644,-4412,86,-90,25,-115,0,"leaves"]
-				leaves_green_016		=	[-3186,-5885,150,-90,25,-115,0,"leaves"]
-				chopper_lowsmoke_001	=	[2866,-1807,340,-81,0,0,0,"lowSmoke"]
-				chopper_lowsmoke_002	=	[-3696,-5831,198,-81,0,0,0,"lowSmoke"]
-				chopper_lowsmoke_003	=	[-3842,-1798,465,-81,0,0,0,"lowSmoke"]
-				chopper_lowsmoke_004	=	[921,-30,266,-81,0,0,0,"lowSmoke"]
-				roaches_lot_001			=	[-3962,-1391,-122,1.3774,6.00096,-179.672,0,"roach"]
-				roaches_lot_002			=	[-3817,-1850,-118.972,1.3774,31.501,-179.672,0,"roach"]
-				roaches_lot_003			=	[-3235,-2013,-118,1.3774,125.001,-179.672,0,"roach"]
-				roaches_lot_004			=	[733,-1302,5,1.3774,143.501,-179.672,0,"roach"]
-				roaches_lot_005			=	[3052,-1573,9.08126,1.3774,301.501,-179.672,0,"roach"]
-				chainsaw_smoke_001		=	[2930,-5263,-61,-68,118,-164,0,"chainsawSmoke"]
-				chainsaw_smoke_002		=	[848,-121,78,-68,118,-164,0,"chainsawSmoke"]
-				chainsaw_smoke_003		=	[2832,-1740,69,-68,118,-164,0,"chainsawSmoke"]
-				chainsaw_smoke_004		=	[-1261,-6264,-63,-68,118,-164,0,"chainsawSmoke"]
-				chainsaw_smoke_005		=	[-3523,-5850,5,-68,118,-164,0,"chainsawSmoke"]
-				chainsaw_smoke_006		=	[-2377,-3324,-57,-68,118,-164,0,"chainsawSmoke"]
-				chainsaw_smoke_007		=	[-3816,-2004,-65,-68,118,-164,0,"chainsawSmoke"]
-				smoke_exhaust_001		=	[1761,-1377,172,2,32,111,0,"exhaust01"]
-				smoke_exhaust_002		=	[-2539,-6147,-82,-25,291,-72,0,"exhaust01"]
-				smoke_exhaust_003		=	[-2585,-6119,-115,-25,233,-72,0,"exhaust01"]
-				smoke_exhaust_004		=	[3446,-1957,18,67,291,-48,0,"exhaust01"]
-				smoke_exhaust_005		=	[-2876,-2036,-57,-25,135,-72,0,"exhaust01"]
-				smoke_exhaust_006		=	[2680,-861,26,-81,352,-151,0,"exhaust01"]
-				smoke_exhaust_007		=	[2797,-671,37,81,355,-154,0,"exhaust01"]
-				smoke_exhaust_008		=	[2294,2573,62,-25,164,-72,0,"exhaust01"]
-				smoke_exhaust_009		=	[-914,-1254,-81,-25,195,-72,0,"exhaust01"]
-				smoke_exhaust_010		=	[-3544,-6127,-20,-25,343,-72,0,"exhaust01"]
-				smoke_exhaust_011		=	[-3508,-2512,297,-25,185,-72,0,"exhaust01"]
-				smoke_exhaust_012		=	[-3335,-2497,306,-25,7,-72,0,"exhaust01"]
-				smoke_exhaust_013		=	[-3604,-1513,-76,-25,182,-72,0,"exhaust01"]
-				peanut_cutout_001		=	[-3886,-1741,-120,88,225,-108,260,"peanut"]
-				peanut_cutout_002		=	[1148,1602,30,-38,240,97,260,"peanut"]
-				peanut_cutout_003		=	[-2275,-2570,-125,66,192,-76,260,"peanut"]
-				peanut_cutout_004		=	[3111,-1763,15,0,247,0,260,"peanut"]
-				peanut_cutout_005		=	[2170,2254,25,79,261,-8,260,"peanut"]
-				peanut_cutout_006		=	[-2680,-4950,-127,0,139,0,260,"peanut"]
-				peanut_cutout_007		=	[-1868,-2591,-127,0,250,0,260,"peanut"]
-				peanut_cutout_008		=	[2257,-450,39,-38,240,97,260,"peanut"]
-				peanut_cutout_009		=	[4551,-1061,30,-38,240,97,260,"peanut"]	
-				wood_pallet_001			=	[1102,-1132.82,31,70.4829,269.885,-177.842,4,"pallet"]
-				wood_pallet_002			=	[1238,1992,33.2963,61.9836,271.629,-178.12,4,"pallet"]
-				wood_pallet_003			=	[3848,876,33.2963,61.9836,187.629,-178.12,4,"pallet"]
-				wood_pallet_004			=	[-4146.07,-4231.56,-121.82,0,140,0,4,"pallet"]
-				wood_pallet_005			=	[664.188,-1719.68,6.17955,0,140,0,4,"pallet"]
-				wood_pallet_006			=	[4212.11,-541.791,3.92978,0,140,0,4,"pallet"]
-				wood_pallet_007			=	[3754.55,790.792,6.17956,0,140,0,4,"pallet"]
-				trash04_001				=	[-2761.88,-1092,-128,0,326,0,0,"trash04"]
-				trash04_002				=	[-1666,-5331,-127,0,0,0,0,"trash04"]
-				trash04_003				=	[-1911,-3060.37,-128,0,0,0,0,"trash04"]
-				leaves02_001			=	[-1155,-5548,-128,0,0,0,0,"leavesDecal"]
-				leaves02_002			=	[-3791,-5201,-64,0,0,0,0,"leavesDecal"]
-				leaves02_003			=	[2982,977,0,0,0,0,0,"leavesDecal"]
-				leaves02_004			=	[4443,-1829,1,0,0,0,0,"leavesDecal"]
-				leaves02_005			=	[3822,-622,0,0,0,0,0,"leavesDecal"]
-				leaves02_006			=	[-3632,-5052,-64,0,0,0,0,"leavesDecal"]
-				leavesGround02_001		=	[-3144,-6316,-63,0,0,0,0,"leavesGroundDecal"]
-				leavesGround02_002		=	[-1562,-4814,-127,0,0,0,0,"leavesGroundDecal"]
-				leavesGround02_003		=	[-2765,-4667,-127,0,0,0,0,"leavesGroundDecal"]
-				leavesGround02_004		=	[-2002,-944,-127,0,0,0,0,"leavesGroundDecal"]
-				leavesGround02_005		=	[-1298,-220,-127,0,0,0,0,"leavesGroundDecal"]
-				leavesGround02_006		=	[3274,92,1,0,0,0,0,"leavesGroundDecal"]
-				leavesGround02_007		=	[3829,-1148,5,0,0,0,0,"leavesGroundDecal"]
-				leavesGround02_008		=	[3329,-54,1,0,0,0,0,"leavesGroundDecal"]
-				leavesGround02_009		=	[2680,1077,1,0,0,0,0,"leavesGroundDecal"]
-				leavesGround02_010		=	[-1510,-333,-127,0,0,0,0,"leavesGroundDecal"]
-				leavesGround02_011		=	[-1683,-2959,-127,0,0,0,0,"leavesGroundDecal"]
-				cementStain01_001		=	[1401,-1087,0,0,0,0,0,"cementStain"]
-				cementStain01_002		=	[827,-179,0,0,0,0,0,"cementStain"]
-				cementStain01_003		=	[-2345,-3326,-127,0,0,0,0,"cementStain"]
-				cementStain01_004		=	[2059,-1484,0,0,0,0,0,"cementStain"]
-				garbagePile02_001		=	[3086,228.493,1,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_002		=	[2115,1121.29,2,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_003		=	[3050,-1608.87,1,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_004		=	[284,-221.23,-28,-8.87415,13.7125,-1.99093,256,"garbagePile02"]
-				garbagePile02_005		=	[-1914,-3020.37,-127,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_006		=	[-2403,-3160,-127,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_007		=	[-1985,-6752.54,-119,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_008		=	[-1669,-5291,-126,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_009		=	[-1521,-5854.77,-124,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				bushAngled128_001		=	[-779,329,-133,0,179.5,0,0,"bushAngled128"]
-				bushAngled128_002		=	[-2435,-3528,-134,0,0,0,0,"bushAngled128"]
-				bushAngled128_003		=	[-2446,-6755,-130,0,90,0,0,"bushAngled128"]
-				bushAngled128_004		=	[-2182,-6753,-130,0,90,0,0,"bushAngled128"]
-				bushAngled128_005		=	[-3110,-5200,-68,2.5,90,0,0,"bushAngled128"]
-			}
+			tableToUse =mSTc2m2;			
 			Msg("from amap found: " + currentMap + "\n");
 			break;
 		}
@@ -533,77 +341,7 @@
 		}
 		case "c2m4_barns":
 		{				
-			tableToUse =
-			{
-				plasticChair_001		=	[-165,1424,-165,-11,320,-46,4,"pchair"]
-				plasticChair_002		=	[455,1407,-113,30.2181,197.423,-172.578,4,"pchair"]
-				plasticChair_003		=	[1578.67,1573.98,-131.971,-11.0007,320.239,-46.5093,4,"pchair"]
-				plasticChair_004		=	[2195.53,716.096,-175.971,-11.0007,320.239,-46.5093,4,"pchair"]
-				plasticChair_005		=	[-82,1106,-71,30.2181,313.923,-172.578,4,"pchair"]
-				plasticChair_006		=	[3181.59,768.848,-190.262,0,253.5,0,4,"pchair"]
-				bin_a_001				=	[2657.01,2199.43,-170.11,0,285,0,4,"bin_a"]
-				bin_a_002				=	[3734.97,1168.79,-170.11,0,285,0,4,"bin_a"]
-				bin_a_003				=	[3551.42,2001.74,-170.11,0,285,0,4,"bin_a"]
-				bin_a_004				=	[2836.63,3230.65,-170.11,0,285,0,4,"bin_a"]
-				bin_a_005				=	[2990.79,2558.18,-167.047,0,285,0,4,"bin_a"]
-				bin_a_006				=	[2834.12,673.723,-170.11,0,285,0,4,"bin_a"]
-				bin_a_007				=	[-646.407,1834.51,-234.491,0,285,0,4,"bin_a"]
-				bin_a_008				=	[-209.311,2338.33,-234.11,0,285,0,4,"bin_a"]
-				pbottle_001				=	[2487.06,1436.5,0.3932,0,285,0,4,"pbottle"]
-				pbottle_002				=	[-445.332,2190.28,-245.673,14.9013,239.763,-96.7272,4,"pbottle"]
-				pbottle_003				=	[-1598.38,18.4336,-14.3807,14.9013,239.763,-96.7272,4,"pbottle"]
-				pbottle_004				=	[-1744.11,-212.113,-7.15062,14.9013,239.763,-96.7272,4,"pbottle"]
-				pbottle_005				=	[-919.583,-161.198,-26.9846,14.9013,239.763,-96.7272,4,"pbottle"]
-				can_001					=	[-82.791,-260.786,-175.294,-85.9689,345.613,82.8691,4,"can"]
-				can_002					=	[3171.73,696.469,-175.294,-85.9689,345.613,82.8691,4,"can"]
-				garbagePile02_001		=	[-42,-238.237,-190,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_002		=	[-1268,1629.92,-255,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_003		=	[-2020,1365.27,-255,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_004		=	[-2428,1174.64,-255,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_005		=	[117,1880.64,-255,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_006		=	[3038.97,2565.12,-191,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_007		=	[-1395,836,-191,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_008		=	[513,2212,-191,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_009		=	[755,2204,-190,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_010		=	[2251,1395.19,-191,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_011		=	[2214,1508,-191,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_012		=	[-121,1618,-255,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile02_013		=	[3078,1339.42,-191,-0.612655,13.546,0.0171361,256,"garbagePile02"]
-				garbagePile01_001		=	[-2021,1408.27,-255,-0.612655,13.546,0.0171361,256,"garbagePile01"]
-				garbagePile01_002		=	[-2429,1217.64,-255,-0.612655,13.546,0.0171361,256,"garbagePile01"]
-				garbagePile01_003		=	[116,1923.64,-255,-0.612655,13.546,0.0171361,256,"garbagePile01"]
-				garbagePile01_004		=	[2999,2581,-191,-0.612655,13.546,0.0171361,256,"garbagePile01"]
-				garbagePile01_005		=	[-1396,879,-191,-0.612655,13.546,0.0171361,256,"garbagePile01"]
-				garbagePile01_006		=	[512,2255,-191,-0.612655,13.546,0.0171361,256,"garbagePile01"]
-				garbagePile01_007		=	[754,2247,-190,-0.612655,13.546,0.0171361,256,"garbagePile01"]
-				garbagePile01_008		=	[2250,1438.19,-191,-0.612655,13.546,0.0171361,256,"garbagePile01"]
-				garbagePile01_009		=	[2213,1551,-191,-0.612655,13.546,0.0171361,256,"garbagePile01"]
-				plasticJug_001			=	[-2624.67,108.326,-191,0,120,0,4,"pjug"]
-				plasticJug_002			=	[-1833.45,1380.83,-255,0,120,0,4,"pjug"]
-				plasticJug_003			=	[3326.92,1217.96,-156.15,0,120,0,4,"pjug"]
-				plasticJug_004			=	[2433.48,2662.23,-191,0,120,0,4,"pjug"]
-				plasticJug_005			=	[3485.81,2848.75,-191,0,120,0,4,"pjug"]
-				plasticJug_006			=	[-341.153,2236.92,-255,0,120,0,4,"pjug"]
-				food03_001				=	[981,1759,-191.824,0,310.5,0,256,"food03"]
-				food03_002				=	[347,1603,-191.824,0,310.5,0,256,"food03"]
-				food03_003				=	[-844,1114,-191.824,0,310.5,0,256,"food03"]
-				food03_004				=	[-2293,691,-191.824,0,310.5,0,256,"food03"]
-				food03_005				=	[36,415,-191.824,0,275.5,0,256,"food03"]
-				haybale_001				=	[189,156,-173.226,-0.612655,13.546,0.0171361,256,"haybale"]
-				haybale_002				=	[146,153,-173.226,86.6123,179.222,179.241,256,"haybale"]
-				haybale_003				=	[204,-520,-173.226,86.6123,197.722,179.241,256,"haybale"]
-				haybale_004				=	[102,-651,-173.226,-0.612655,32.046,0.0171361,256,"haybale"]
-//				haybails_001			=	[-2215.5 110.299 -190.559 0 169 0,256,"haybails"]
-//				haybails_002			=	[-1686 -105 -167 -2.3614 270.938 56.9698,261,"haybails"]
-//				haybails_003			=	[-1006.84 -468.572 -186.348 0 169 0,256,"haybails"]
-//				haybails_004			=	[-2162 157 -128 0 169 0,256,"haybails"]
-//				haybails_005			=	[-1903.48 209.871 -190.559 0 169 0,256,"haybails"]
-//				haybails_006			=	[-1109.95 -228.567 -62.5586 0 169 0,256,"haybails"]
-//				haybails_007			=	[-919.256 -479.963 -148.559 0 219 0,256,"haybails"]
-//				haybails_008			=	[-1032 -7.38014 -148.559 -78.9552 84.8695 95.2268,256,"haybails"]
-//				haybails_009			=	[-2077 -438 -118.598 0 169 0,256,"haybails"]
-//				haybails_010			=	[-1376.37 301.411 -190.559 0 218 0,256,"haybails"]
-			}
+			tableToUse = mSTc2m4;
 			Msg("from amap found: " + currentMap + "\n");
 			break;
 		}
@@ -783,9 +521,19 @@
 		local propPhysicsVector = Vector(tableToUse[index][0], tableToUse[index][1], tableToUse[index][2]);
 		local propAngleVector = Vector(tableToUse[index][3], tableToUse[index][4], tableToUse[index][5]);
 		local propSpawnFlag = tableToUse[index][6];
-		local categoryName = tableToUse[index][7];
+		local categoryName = tableToUse[index][7];//for spawn table logic
 		local entityBuild = tADMIT[categoryName][0];
 		genericSpawner(propPhysicsName, propPhysicsVector, propAngleVector, propSpawnFlag, categoryName, entityBuild);
+	}
+	foreach(index, item in tableFuncEntToUse)
+	{
+		local propPhysicsName = index;
+		local propPhysicsVector = Vector(tableFuncEntToUse[index][0], tableFuncEntToUse[index][1], tableFuncEntToUse[index][2]);
+		local propAngleVector = Vector(tableFuncEntToUse[index][3], tableFuncEntToUse[index][4], tableFuncEntToUse[index][5]);
+		local propSpawnFlag = tableFuncEntToUse[index][6];
+		local categoryName = tableFuncEntToUse[index][7];
+		local cmdinput1 = tableFuncEntToUse[index][8];
+		funcEntsSpawner(propPhysicsName, propPhysicsVector, propAngleVector, propSpawnFlag, categoryName, cmdinput1);
 	}
 	Msg("Executed: mapEntitiesSpawner function\n");
 }
@@ -808,4 +556,99 @@
 	return SpawnEntityFromTable("prop_physics", spawnerTable);
 }
 
+//read map gasScanSpawner table and send data to the spawner function
+::mapgasScanSpawnerSpawner <- function()
+{
+	local currentMap = SessionState.MapName;
+	local tableToUse = null;
+
+	switch (currentMap)
+	{
+		case "c1m1_hotel":
+		case "c1m2_streets":
+		case "c1m3_mall":
+		case "c1m4_atrium":
+		{				
+			tableToUse = mSSGCTc1m4;
+			Msg("from amap found: " + currentMap + "\n");
+			break;
+		}
+		case "c2m1_highway":			
+		case "c2m2_fairgrounds":			
+		case "c2m3_coaster":			
+		case "c2m4_barns":			
+		case "c2m5_concert":
+			//IncludeScript("adarkcarnival");
+		case "c3m1_plankcountry":
+		case "c3m2_swamp":
+		case "c3m3_shantytown":
+		case "c3m4_plantation":
+			//IncludeScript("aswampfever");
+		case "c4m1_milltown_a":
+		case "c4m2_sugarmill_a":
+		case "c4m3_sugarmill_b":
+		case "c4m4_milltown_b":
+		case "c4m5_milltown_escape":
+			//IncludeScript("ahardrain");
+		case "c5m1_waterfront":
+		case "c5m2_park":
+		case "c5m3_cemetery":
+		case "c5m4_quarter":
+		case "c5m5_bridge":
+			//IncludeScript("aparish");
+		case "c6m1_riverbank":
+		case "c6m2_bedlam":
+		case "c6m3_port":
+			//IncludeScript("apassing");
+		case "c7m1_docks":
+		case "c7m2_barge":
+		case "c7m3_port":
+			//IncludeScript("asacrifice");
+		case "c8m1_apartment":
+		case "c8m2_subway":
+		case "c8m3_sewers":
+		case "c8m4_interior":
+		case "c8m5_rooftop":
+		case "c9m1_alleys":
+		case "c9m2_lots":
+//			IncludeScript("acrashcourse");
+		case "c10m1_caves":
+		case "c10m2_drainage":
+		case "c10m3_ranchhouse":
+		case "c10m4_mainstreet":
+		case "c10m5_boathouse":
+//			IncludeScript("adeathtoll");
+		case "c11m1_greenhouse":
+		case "c11m2_offices":
+		case "c11m3_garage":
+		case "c11m4_terminal":
+		case "c11m5_runway":
+//			IncludeScript("adeadair");
+		case "c12m1_hilltop":
+		case "c12m2_traintunnel":
+		case "c12m3_bridge":
+		case "c12m4_barn":
+		case "c12m5_cornfield":
+		case "c13m1_alpinecreek":
+		case "c13m2_southpinestream":
+		case "c13m3_memorialbridge":
+		case "c13m4_cutthroatcreek":
+		case "c14m1_junkyard":
+		case "c14m2_lighthouse":	
+		default:
+			Msg("defaulted mapEntitesSpawner switch\n");
+			break;
+	}
+	foreach(index, item in tableToUse)
+	{
+		local propPhysicsName = index;
+		local propPhysicsVector = Vector(tableToUse[index][0], tableToUse[index][1], tableToUse[index][2]);
+		local propAngleVector = Vector(tableToUse[index][3], tableToUse[index][4], tableToUse[index][5]);
+		local propSpawnFlag = tableToUse[index][6];
+		local categoryName = tableToUse[index][7];//for spawn table logic
+		local entityBuild = tADMIT[categoryName][0];
+		genericSpawner(propPhysicsName, propPhysicsVector, propAngleVector, propSpawnFlag, categoryName, entityBuild);
+	}
+	Msg("Executed: mapgasScanSpawnerSpawner function\n");
+}
 Msg("Loaded: aSpawns.nut\n");

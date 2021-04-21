@@ -809,6 +809,13 @@ function Notifications::OnSpawn::spawnManager(player, params)
 			// }
 			// break;
 		case Z_TANK:
+			// printl("Nombre: "+player.GetName());
+			// printl("GetCharacterName: "+player.GetCharacterName());
+			// printl("GetClassname: "+player.GetClassname());
+			// printl("GetType: "+player.GetType());
+			// printl("GetPlayerType: "+player.GetPlayerType());
+			// printl("GetIndex: "+player.GetIndex());
+			//player.SetNetProp("m_iHealth", 20000);
 			// Timers.AddTimer(15, false, tankCheck,player);
 			// multiTankManager(player);
 			// masterTankBuilder(player, params);

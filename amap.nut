@@ -62,110 +62,11 @@ switch (execscriptName)
 				local buttonelevRelaybot = Entities.FindByName( null, "relay_elevator_reached_bottom" ) 
 
 
-				local hndc5m5timer1 = Entities.FindByName( null, "jeremytimer1" ) 
-				local hndc5m5timer2 = Entities.FindByName( null, "jeremytimer2" ) 
+				local hndc5m5timer1 = Entities.FindByName( null, "customtimer1" ) 
+				local hndc5m5timer2 = Entities.FindByName( null, "customtimer2" ) 
 
-				local hndzombie1 = Entities.FindByName( null, "c1m1jeremy1" ) 
+				local hndzombie1 = Entities.FindByName( null, "c1m1zombiespawncustom1" ) 
 
-				if ( hndzombie1==null)
-				{	
-					Msg("SpawnEntityFromTable hndzombie1\n");		
-					hndzombie1 =SpawnEntityFromTable( "info_zombie_spawn",
-					{
-						targetname	= "c1m1jeremy1",
-						origin = "2151.114257 5562.124023 1184",
-						angles= "0 0 0",
-						population	= "default"
-					} );
-				}
-
-				if ( hndc5m5timer1!=null )
-				{
-					Msg("kill hndc5m5timer1\n");
-					kill_entity(hndc5m5timer1);
-					//EntFire( "jeremytimer1", "Kill")
-					hndc5m5timer1=null;
-				}
-
-				if ( hndc5m5timer1==null)
-				{	
-					Msg("SpawnEntityFromTable hndc5m5timer1\n");	
-					
-					hndc5m5timer1 =SpawnEntityFromTable( "logic_timer",
-					{
-						targetname	= "jeremytimer1",
-						//RefireTime	= user_intKillTimer,
-						origin = "1824.022460 5728.031250 1336.031250"
-						StartDisabled	= 1,
-						UseRandomTime	= 1,
-						UpperRandomBound	= 1,
-						spawnflags	= 0,
-						LowerRandomBound	= 2,
-						//origin = Vector(-11762,6341,459),
-						connections =
-						{
-							OnTimer =
-							{
-								cmd1 = "c1m1jeremy1SpawnZombie0-1"
-							}
-						}
-					} );
-						
-				}
-				if ( hndc5m5timer2!=null )
-				{
-					Msg("kill hndc5m5timer2\n");	
-					//kill_entity(hndc5m5timer2);
-					EntFire( "jeremytimer2", "Kill")
-					hndc5m5timer2=null;
-
-				}
-
-				if ( hndc5m5timer2==null)
-				{		
-					Msg("SpawnEntityFromTable hndc5m5timer2\n");	
-					hndc5m5timer2=SpawnEntityFromTable( "logic_timer",
-					{
-						targetname	= "jeremytimer2",
-						//RefireTime	= user_intKillTimer,
-						origin = "-1824.022460 5728.031250 1336.031250"
-						StartDisabled	= 1,
-						UseRandomTime	= 1,
-						UpperRandomBound	= 1,
-						spawnflags	= 0,
-						LowerRandomBound	= 2,
-						//origin = Vector(-11762,6341,459),
-						connections =
-						{
-							OnTimer =
-							{
-								cmd1 = "c1m1jeremy1SpawnZombie0-1"
-							}
-						}
-					} );
-				}
-
-
-
-				if ( hndc5m5timer1!=null )
-				{
-					Msg("start the timer c5m5timer1\n");		
-					// start the timer c5m5timer1
-					//EntFireByHandle(handle target, string action, string value, float delay, handle activator, handle caller)
-					//EntFire( "jeremytimer1", "Enable")
-					//c5m5timer1.Destroy()
-				}
-					
-				if ( hndc5m5timer2!=null )
-				{
-						
-					Msg("start the timer c5m5timer2\n");		
-					// start the timer c5m5timer2
-					//DoEntFire(string target, string action, string value, float delay, handle activator, handle caller)
-					//DoEntFire( "jeremytimer2", "Enable", "", 0, null, null )
-					//c5m5timer1.Destroy()
-				}
-					
 				if ( buttonelevRelaytop!=null )
 				{
 					Msg("mod the buttonelevRelaytop\n");		
@@ -176,24 +77,22 @@ switch (execscriptName)
 					//OutputName TargetName:Color:255 255 255:0:-1
 					//"OnMapSpawn" "team_round_timer_red,AddOutput,OnFinished game_round_win:RoundWin::0:-1,0,-1"
 					//DELAY SIEMPRE ES FLOAT
-					entbuttonelevRelaytop.AddOutput("OnTrigger", "jeremytimer1", "Enable", "", 0.0, -1 )			
-					entbuttonelevRelaytop.AddOutput("OnTrigger", "jeremytimer2", "Enable", "", 0.0, -1 )			
-					//DoEntFire("!self", "AddOutput", "OnTrigger jeremytimer1:Enable::0:-1", 0.0, null, entbuttonelevRelaytop);
-					//DoEntFire("!self", "AddOutput", "OnTrigger jeremytimer2:Enable::0:-1", 0.0, null, entbuttonelevRelaytop);
+					entbuttonelevRelaytop.AddOutput("OnTrigger", "customtimer1", "Enable", "", 0.0, -1 )			
+					entbuttonelevRelaytop.AddOutput("OnTrigger", "customtimer2", "Enable", "", 0.0, -1 )			
+					//DoEntFire("!self", "AddOutput", "OnTrigger customtimer1:Enable::0:-1", 0.0, null, entbuttonelevRelaytop);
+					//DoEntFire("!self", "AddOutput", "OnTrigger customtimer2:Enable::0:-1", 0.0, null, entbuttonelevRelaytop);
 					//ALTERNATIVA
-					//DoEntFire( "entbuttonelevRelaytop", "AddOutput", "OnTrigger jeremytimer1:Enable::0:-1", 0.0, null, null);
-					//DoEntFire( "entbuttonelevRelaytop", "AddOutput", "OnTrigger jeremytimer2:Enable::0:-1", 0.0, null, null);
-
+					//DoEntFire( "entbuttonelevRelaytop", "AddOutput", "OnTrigger customtimer1:Enable::0:-1", 0.0, null, null);
+					//DoEntFire( "entbuttonelevRelaytop", "AddOutput", "OnTrigger customtimer2:Enable::0:-1", 0.0, null, null);
 				}
 				if ( buttonelevRelaybot!=null )
 				{
 					Msg("mod the buttonelevRelaybot\n");		
 					local entbuttonelevRelaybot = ::VSLib.Entity(buttonelevRelaybot);
-					entbuttonelevRelaybot.AddOutput("OnTrigger", "jeremytimer1", "Disable", "", 10.0, -1 )			
-					entbuttonelevRelaybot.AddOutput("OnTrigger", "jeremytimer2", "Disable", "", 10.0, -1 )	
-					//DoEntFire("!self", "AddOutput", "OnTrigger jeremytimer1:Disable::0:-1", 0.0, null, entbuttonelevRelaybot);
-					//DoEntFire("!self", "AddOutput", "OnTrigger jeremytimer2:Disable::0:-1", 0.0, null, entbuttonelevRelaybot);
-
+					entbuttonelevRelaybot.AddOutput("OnTrigger", "customtimer1", "Disable", "", 10.0, -1 )			
+					entbuttonelevRelaybot.AddOutput("OnTrigger", "customtimer2", "Disable", "", 10.0, -1 )	
+					//DoEntFire("!self", "AddOutput", "OnTrigger customtimer1:Disable::0:-1", 0.0, null, entbuttonelevRelaybot);
+					//DoEntFire("!self", "AddOutput", "OnTrigger customtimer2:Disable::0:-1", 0.0, null, entbuttonelevRelaybot);
 				}
 				break;
 			}
@@ -224,6 +123,7 @@ switch (execscriptName)
 					RelaxMaxInterval = 3
 					RelaxMaxFlowTravel = 200
 				}
+				Timers.AddTimer( 15.0, true, SpawnTank);
 
 				Director.ResetMobTimer()
 				break;

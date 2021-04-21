@@ -867,10 +867,6 @@
 }
 
 
-::messageCompleteGame <- function (params)
-{
-	Utils.SayToAllDel(titleOfMod);
-}
 
 ::endGameSpeedUp <- function (params)
 {
