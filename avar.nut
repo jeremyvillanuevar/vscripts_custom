@@ -5,14 +5,19 @@
 //Programming Language: VScript
 //File Description: This is a data file that initialises most of the global variables used by TADM
 
+//32 survivor Rush Indice Table
+::sRIT <- [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+
 //establishedMapTypeVariablesTable
-//mAAN, mINOD, physicsMapTarget, miniFinalDirectorNoSet, whichMapHasCanGames, isAFinale, noCSWeps,mSMOL
+//Flow Size on the Map
+//SizeHordeModifierforMap
+//mAAN, mINOD, physicsMapTarget, miniFinalDirectorNoSet, whichMapHasCanGames, isAFinale, noCSWeps,mFSoM,mSHMfM
 ::eMTVT <-
 {
-	c1m1_hotel				=	["clsd",0,0,0,00,0,0.25,"small",1]
+	c1m1_hotel				=	["clsd",0,0,0,00,0,0.25,"small",1.2]
 	c1m2_streets			=	["clsd",0,0,0,00,0,0,"small",1]
 	c1m3_mall				=	["clsd",0,0,0,00,0,0.25,"medium",1]
-	c1m4_atrium				=	["clsd",0,0,0,14,1,0.25,"large",1]
+	c1m4_atrium				=	["clsd",0,0,0,14,1,0.25,"large",1.5]
 	c2m1_highway			=	["open",1,0,0,00,0,0.25,"large",1]
 	c2m2_fairgrounds		=	["open",1,1,0,00,0,0.25,"large",1]
 	c2m3_coaster			=	["clsd",1,0,0,00,0,0.25,"large",1]
@@ -90,6 +95,7 @@
 	::nowPlayersTimeAveragedIntensity <- 0
 	::nowPlayersinGame <- 0
 	::nowSurvivorsinGame <- 0
+	::nowAntiRushAddRange <- 0
 	::nowFinaleStarted <- 0
 	::nowCrescendoStarted <- 0
 	::nowFinaleScavengeStarted <- 0

@@ -82,7 +82,8 @@ coop.nut: Enables Scripted Mode: Scope and VScript Hooks and Callbacks
 y Crea Variables Globales (se usan en todos los scopes)
 debug.nut: Habilita el debug como una variable DEBUG
 amap.nut: Implementa cada script llamado en vscripts_override
-trabaja en el Local Scope.
+trabaja en el Local Scope (lógica de JetSetWilly II).
+a*.nut: (lógica de JetSetWilly II).
 modifydirector.nut: Realiza el balance de las variables del juego basado en jugadores y dificultad
 modifica al Map Scope.
 hooks.nut: Procedimientos adjuntos (hookeados) a Eventos de Juego.
@@ -90,6 +91,19 @@ showplayers.nut: Métodos de Hud.
 announcedirector.nut: Métodos de apoyo a Anuncios.
 debug_directoroptions.nut: Muestra las opciones de DirectorOptions de todos los Scopes.
 VSLib: La librería de Rayman1103
+
+
+
+
+
+
+
+
+
+-------------------------
+
+
+
 
 VScript BIBLE
 VScripting is handled by scopes.
@@ -147,7 +161,8 @@ coop.nut: Enables Scripted Mode: Scope and VScript Hooks and Callbacks
 and Create Global Variables (used in all scopes)
 debug.nut: Enable debugging as a DEBUG variable
 amap.nut: Implement every script called in vscripts_override
-working on the Local Scope.
+working on the Local Scope (logic from JetSetWilly II).
+a*.nut: (logic from JetSetWilly II).
 modifydirector.nut: Balances the game variables based on players and difficulty
 changing the Map Scope.
 hooks.nut: Procedures attached (hooked) to Game Events.
@@ -155,6 +170,7 @@ showplayers.nut: Hud methods.
 announcedirector.nut: Ads support methods.
 debug_directoroptions.nut: Displays the DirectorOptions options for all Scopes.
 VSLib: Rayman's Library1103
+
 
 Each Map Executes the VScripts in this order
 mapspawn // anniversary

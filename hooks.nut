@@ -6,6 +6,7 @@ printl( "\n\n\n\n==============Loaded HOOKS ===============\n\n\n\n");
 
 function OnGameEvent_witch_spawn(params)
 {	
+	Msg("OnGameEvent_witch_spawn"+"\n");
 	//TimeTick4WitchMsg=10;
 	local mensaje="Aparece una Witch, ataquen en grupo!!!"
 	ShowHUDTicker(4,"Witch",mensaje)
@@ -13,6 +14,7 @@ function OnGameEvent_witch_spawn(params)
 
 ::OnCustomFinaleStageChangeHook <- function ( )
 {
+	Msg("OnCustomFinaleStageChangeHook"+"\n");
 	TimeTick4Rescue=15
 	if (nowFinaleStageNum < DirectorScript.MapScript.DirectorOptions.A_CustomFinale_StageCount )
 		ClientPrint(null, 3, BLUE+"Comenzando el Finale: Fase " + nowFinaleStageNum + " de " + DirectorScript.MapScript.DirectorOptions.A_CustomFinale_StageCount + " fases. Tipo " + numTypetoTypeString(nowFinaleStageType));
@@ -24,7 +26,7 @@ function VSLib::EasyLogic::OnActivate::RoundStart(modename, mapname)
 {			
 	Msg("OnActivate"+"\n");	
 	//ShowRank();
-	//GameDifficulty = ::VSLib.Utils.GetDifficulty();
+	//GameDifficulty = Utils.GetDifficulty();
 	// @todo: put scoring back into holdout!
 	g_ModeScript.Scoring_LoadTable( SessionState.MapName, SessionState.ModeName )	
 
@@ -44,6 +46,7 @@ function VSLib::EasyLogic::OnShutdown::GameShutdown(reason, nextmap)
 //Speeds the game up just fractionally when the map transition starts
 function Notifications::OnMapEnd::speedLoader()
 {	
+	Msg("speedLoader"+"\n");
 	survivorsParticleHead();
 	survivorsYellCelebration();
 	survivorsYellCelebration();
@@ -62,7 +65,7 @@ function Notifications::OnMapEnd::speedLoader()
 			survivor.ShowHint("Bien Hecho "+survivor.GetName());
 		}
 	}
-	survivorsPrint(nombres);
+	Utils.ShowHintSurvivors(nombres,3,"icon_arrow_up");
 }
 
 ::survivorsPrint <- function (mensaje)
@@ -135,23 +138,57 @@ while(player = Entities.FindByClassname(player, "player"))   // Iterate through 
 	// else//Map Starts Door Spawns
 	// {
 	// }
+//}
+// function OnGameEvent_player_entered_checkpoint(event)
+// {
+	// if ("userid" in event && GetFlowPercentForPosition(EntIndexToHScript(event.door).GetOrigin(), false) > 50)
+	// {
+		// OnSafe(GetPlayerFromUserID(event.userid));
+	// }
 // }
 
+//function OnGameEvent_player_entered_checkpoint(params)
+function Notifications::OnEnterSaferoom::pasarSafeRoom ( client, params )
+{
+	Msg("pasarSafeRoom"+"\n");
+	local player = ::VSLib.Player(client);
+	if (GetFlowPercentForPosition(EntIndexToHScript(params["door"]).GetOrigin(), false) > 50)
+	{
+		player.ShowHint("Cuando entran el 75%, cierra y se tpearán!",0.8);
+		setBalanceDirectorOptions(params);
+	}
+}
+
+
+function Notifications::OnSurvivorsLeftStartArea::Inicio()
+{			
+	Msg("OnSurvivorsLeftStartArea"+"\n");
+	if (nowPlayersinGame>4)
+	{	
+		SpawnWitch();		
+	}
+	Timers.AddTimer(60-5*nowPlayersinGame, true, SpawnWitch);
+	Timers.AddTimer(18.0, true, setBalanceDirectorOptions);
+}
 
 
 //Controls sequence of function execution (re-organise at your own risk)
 function OnGameEvent_round_start_post_nav(params)
 {
+	Msg("OnGameEvent_round_start_post_nav"+"\n");
 	Utils.ResumeTime();
 	initializeAllFrameworkGlobalVariables();
 	initializeGameMode();
 	initializeDifficulty();
 	establishMapType();
-	Timers.AddTimer(1, true, NamesUpdate, params);	
+	Timers.AddTimer(1.0, true, NamesUpdate, params);
 	mountedBarrierRandomizer(params);
 	hurtKills();
 	spawnForMapSpecificData(params);
-	
+	if ((developer() > 0) || (DEBUG == 1))
+	{
+		skipIntro();
+	}
 	
 	//Utils.SlowTime(0.5, 2.0, 1.0, 2.0, true);
 	//initializeAllTADMGlobalVariables();
@@ -189,7 +226,6 @@ function Notifications::OnDifficultyChanged::DifficultyChanged(diff, olddiff)
 	GameDifficulty = diff
 }
 
-//function Notifications::OnEnterSaferoom::ClearScores ( client, params )
 
 ::ClearScores <- function()
 {
@@ -236,7 +272,7 @@ function Notifications::OnDifficultyChanged::DifficultyChanged(diff, olddiff)
 function Notifications::OnSurvivorsDead::MissionLost()
 {
 	Msg("OnSurvivorsDead"+"\n");	
-	::VSLib.Utils.DirectorBeginScript("director_quiet");	
+	Utils.DirectorBeginScript("director_quiet");	
 	ClearEdicts = true;
 	// Después de un retraso de 6 segundos, el código de limpieza se ejecutará 1-2 veces.
 	//No establezca más de 7 segundos.
@@ -286,9 +322,15 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 					
 					local mensaje="Bien!! Derrotaste al Boss, avanza!";					
 					//TimeTick4BossDefeatedMsg=10;
-					ShowHUDTicker(5,"Tank",mensaje);
-					Utils.SlowTime(0.5);
 					
+					local tankName=survivor.GetName();
+					local nameCloneTank=tankName.find("Clone Tank");
+					local nameSecond=tankName.find("(");					
+					if (!((nameCloneTank!=null) && (nameSecond!=null)))
+					{
+						ShowHUDTicker(2,"Tank",mensaje);	
+						Utils.SlowTime(0.5);
+					}
 					// No configures, la sangre se llena//不设置 虚血变成实血
 					//survivor.SwitchHealth("perm");
 					//HealthReg(survivor,tankgiveheal);	
@@ -363,7 +405,7 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 				//HealthReg(attacker,witchgiveheal);
 				
 				local mensaje="Bien!! Derrotaron a la Witch!"
-				ShowHUDTicker(5,"Witch",mensaje);
+				ShowHUDTicker(2,"Witch",mensaje);
 				Utils.SlowTime(0.5);
 					
 				if(!::AllowShowBotSurvivor)
@@ -400,27 +442,6 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 function Notifications::OnModeStart::GameStart(gamemode)
 {			
 	Msg("OnModeStart"+"\n");	
-}
-
-
-function Notifications::OnSurvivorsLeftStartArea::Inicio()
-{			
-	Msg("OnSurvivorsLeftStartArea"+"\n");
-	if (nowPlayersinGame>4)
-	{	
-		SpawnWitch();
-		Timers.AddTimer(60-5*nowPlayersinGame, true, SpawnWitch);
-		//Time4TimerWitch=60-5*nowPlayersinGame;
-		
-	}
-	if ( (developer() > 0) || (DEBUG == 1))
-		IncludeScript ("debug_directoroptions.nut");	
-		
-	if (nowActivateBalance==1)
-		if (nowFinaleStarted==0 && nowFinaleScavengeStarted==0)
-			BalanceDirectorOptions()
-		else
-			BalanceFinaleDirectorOptions()
 }
 
 function Notifications::OnPlayerLeft::ModifyDirectorLeft (client, name, steamID, params)
@@ -485,12 +506,9 @@ function Notifications::OnPlayerLeft::ModifyDirectorLeft (client, name, steamID,
 		nowPlayerLeft=player.GetName();
 		if (!esta)
 			//TimeTick4ConnectMsg=9
-			ShowHUDTicker(10,nowPlayerEvent,nowPlayerLeft)
-		if (nowActivateBalance==1)
-			if (nowFinaleStarted==0 && nowFinaleScavengeStarted==0)
-				BalanceDirectorOptions()
-			else
-				BalanceFinaleDirectorOptions()
+			ShowHUDTicker(3,nowPlayerEvent,nowPlayerLeft)
+		//Timers.RemoveTimerByName(nowPlayerLeft+modifySpeedAR);
+		setBalanceDirectorOptions(params);
 	}
 }
 function Notifications::OnPlayerConnected::onStartingConnections (client, params)
@@ -580,13 +598,10 @@ function Notifications::OnPlayerJoined::ModifyDirectorJoin (client, name, ipAddr
 		nowPlayerEvent="Join"
 		nowPlayerJoined=player.GetName();
 		if (!esta)
-			ShowHUDTicker(10,nowPlayerEvent,nowPlayerJoined)
+			ShowHUDTicker(6,nowPlayerEvent,nowPlayerJoined)
 			//TimeTick4ConnectMsg=9
-		if (nowActivateBalance==1)
-			if (nowFinaleStageEvent==0 && nowFinaleScavengeStarted==0)
-				BalanceDirectorOptions()
-			else
-				BalanceFinaleDirectorOptions()
+		//Timers.AddTimerByName(nowPlayerJoined+modifySpeedAR,3, true, modifySpeedAR,client);
+		setBalanceDirectorOptions(params);
 	}
 }
 
@@ -599,7 +614,7 @@ function Notifications::OnPanicEvent::Iniciado(entity, params)
 {
 //	TimeTick4PanicMsg=10;
 	local mensaje = "PANIC: Derroten juntos a la horda!!!";
-	ShowHUDTicker(3,"PANIC",mensaje)
+	ShowHUDTicker(4,"PANIC",mensaje)
 	
 }
 
@@ -655,6 +670,7 @@ function Notifications::OnRescueVehicleLeaving::outTheDoor(count, params)
 	if (alreadyPlayed == 0)
 	{
 		Timers.RemoveTimer(NamesUpdate);
+		Timers.RemoveTimer(setBalanceDirectorOptions);
 		Timers.RemoveTimer(SpawnWitch);
 		Timers.RemoveTimer(ShowHUDTicker)
 		//Utils.SayToAllDel("You have been playing... ");
@@ -671,6 +687,7 @@ function Notifications::OnVersusMatchFinished::thatGameWas(winners, params)
 	if (alreadyPlayed == 0)
 	{
 		Timers.RemoveTimer(NamesUpdate);
+		Timers.RemoveTimer(setBalanceDirectorOptions);
 		Timers.RemoveTimer(SpawnWitch);
 		Timers.RemoveTimer(ShowHUDTicker)
 		//Utils.SayToAllDel("You have been playing... ");
@@ -809,13 +826,7 @@ function Notifications::OnSpawn::spawnManager(player, params)
 			// }
 			// break;
 		case Z_TANK:
-			// printl("Nombre: "+player.GetName());
-			// printl("GetCharacterName: "+player.GetCharacterName());
-			// printl("GetClassname: "+player.GetClassname());
-			// printl("GetType: "+player.GetType());
-			// printl("GetPlayerType: "+player.GetPlayerType());
-			// printl("GetIndex: "+player.GetIndex());
-			//player.SetNetProp("m_iHealth", 20000);
+			Timers.AddTimer(0.1,false,spawnedTankTF,player)
 			// Timers.AddTimer(15, false, tankCheck,player);
 			// multiTankManager(player);
 			// masterTankBuilder(player, params);

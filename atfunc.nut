@@ -6,6 +6,109 @@
 //File Description: This is a control and data file that contains functions that are called from timers
 //Note: atfunc means alternate timed functions
 
+// ::player_speedmod <- g_ModeScript.CreateSingleSimpleEntityFromTable
+// (
+	// {
+		// targetname = "speed_prueba"
+		// classname = "player_speedmod"
+	// }
+// );
+
+
+::modifySpeed<-function(player,speed=1){
+	//local speed=505.0;
+	//local speedlaggged=0.7;
+	//DEBUG
+	if ( (developer() > 0) || (DEBUG == 1))
+	{
+		//nowActivateBalance=0;
+		ClientPrint(null, 3, "modifySpeed player:"+player+" speed:"+speed);
+	}
+	//DoEntFire("!self","ModifySpeed",speed.tostring(),0,player,player_speedmod);
+	local playerx = ::VSLib.Player(player);
+	//playerx.SetNetPropFloat( "m_flMaxspeed", speed );
+	playerx.SetNetProp( "m_flLaggedMovementValue", speed );
+	//SetEntPropFloat(client, Prop_Send, "m_flMaxspeed", g_fCvarSlow);
+}
+
+::modifySpeedAR<-function(player){
+	local speed=1.0;
+	//local speedlaggged=0.7;
+	//DEBUG
+	//DoEntFire("!self","ModifySpeed",speed.tostring(),0,player,player_speedmod);
+	local playerx = ::VSLib.Player(player);
+	if ( (developer() > 0) || (DEBUG == 1))
+	{
+		//nowActivateBalance=0;
+		ClientPrint(null, 3, "modifySpeed player:"+playerx.GetName()+" speed:"+speed);
+	}
+	//playerx.SetNetPropFloat( "m_flMaxspeed", speed );
+	playerx.SetNetProp( "m_flLaggedMovementValue", speed );
+	//SetEntPropFloat(client, Prop_Send, "m_flMaxspeed", g_fCvarSlow);
+}
+::spawnedTankTF <- function (player)
+{
+	local tankName=player.GetName();
+	//player.SetNetProp("m_iHealth", 1000);	
+	//if (nowPlayersinGame>1)
+	local mensaje="Aparece un "+tankName+" Boss!!!";
+	//else
+	//	mensaje="Aparece un Tank Boss!!!";
+	local nameAcidicTank=tankName.find("Acidic Tank");
+	local nameBomberTank=tankName.find("Bomber Tank");
+	local namePyromaniacTank=tankName.find("Pyromaniac Tank");
+	local nameShakerTank=tankName.find("Shaker Tank");
+	local nameCloneTank=tankName.find("Clone Tank");
+	local nameCarTank=tankName.find("Car Tank");
+	local nameSecond=tankName.find("(");
+	local healthAcidicTank=1800+100*nowPlayersinGame;
+	local healthPyromaniacTank=1200+100*nowPlayersinGame;
+	local healthShakerTank=600+100*nowPlayersinGame;
+	local healthBomberTank=500+100*nowPlayersinGame;
+	local healthCloneTank=400+100*nowPlayersinGame;
+	local healthCarTank=1500+100*nowPlayersinGame;
+	
+	if (!((nameCloneTank!=null) && (nameSecond!=null)))
+	{
+		ShowHUDTicker(3,"Tank",mensaje);	
+	}	
+	if ((nameCloneTank!=null) && (nameSecond==null))
+	{
+		player.SetMaxHealth(healthCloneTank);
+		player.SetHealth(healthCloneTank);
+		player.SetRawHealth(healthCloneTank);
+	}
+	if (nameCarTank!=null)
+	{
+		player.SetMaxHealth(healthCarTank);
+		player.SetHealth(healthCarTank);
+		player.SetRawHealth(healthCarTank);
+	}
+	if (nameAcidicTank!=null)
+	{
+		player.SetMaxHealth(healthAcidicTank);
+		player.SetHealth(healthAcidicTank);
+		player.SetRawHealth(healthAcidicTank);
+	}
+	if (nameBomberTank!=null)
+	{
+		player.SetMaxHealth(healthBomberTank);
+		player.SetHealth(healthBomberTank);
+		player.SetRawHealth(healthBomberTank);
+	}
+	if (namePyromaniacTank!=null)
+	{
+		player.SetMaxHealth(healthPyromaniacTank);
+		player.SetHealth(healthPyromaniacTank);
+		player.SetRawHealth(healthPyromaniacTank);
+	}
+	if (nameShakerTank!=null)
+	{
+		player.SetMaxHealth(healthShakerTank);
+		player.SetHealth(healthShakerTank);
+		player.SetRawHealth(healthShakerTank);
+	}
+}
 
 ::gascansCalculate <- function(arg)	
 {
@@ -52,47 +155,26 @@
 ::NamesUpdate <- function(arg)	
 {
 	//DEBUG
-	//nowActivateBalance=0
-
-	//Msg("DateUpDate \n");
 	if ( (developer() > 0) || (DEBUG == 1))
 	{
+		//nowActivateBalance=0;
+		ClientPrint(null, 3, "DateUpDate");
 		ClientPrint(null, 3, BLUE+"nowFinaleStageEvent "+nowFinaleStageEvent+"\n");
 	}
-	if (Show_Player_Hud==true)
-		
-		ShowHUD();
-	
-	
-	if (nowFinaleStarted==1 || nowCrescendoStarted==1)
+	if (Show_Player_Hud==true)		
+		ShowHUD();	
+	if (nowFinaleStarted==1)// || nowCrescendoStarted==1)
 	{
 		Time4TimerRusher=99999;
-	}
-	
-	if (nowActivateBalance==1)
-		if (nowFinaleStarted==1)
-		{
-			BalanceFinaleDirectorOptions();
-			nowFinaleStarted==2;
-		}
-		else
-		if (nowFinaleStarted==0)
-		{
-			if (nowFinaleStageEvent==1 || nowFinaleScavengeStarted==1)
-				nowFinaleStarted=1;
-		}
-		
+	}	
+	if (nowFinaleStageEvent==1 || nowFinaleScavengeStarted==1)
+		nowFinaleStarted=1;
 	Time4Connections--
 	if (nowFinaleStageEvent==1)
 	{
 		nowFinaleStageEvent = 0
 		OnCustomFinaleStageChangeHook()
 	}
-	local flow=-1
-	local countflow=0
-	local survivorlist =[]
-	local flowlist =[]
-	
 	//if (nowPlayersinGame>8)
 	//{
 		Time4TimerWitch--;
@@ -116,146 +198,7 @@
 	//{
 		Time4TimerRusher--;
 	//}
-	if (Time4TimerRusher<=0 && nowFinaleStarted==0 && nowCrescendoStarted==0 && nowPlayersinGame > 2)
-	{
-		if ( (developer() > 0) || (DEBUG == 1))
-		{
-			ClientPrint(null, 3, BLUE+"Time4TimerRusher");
-		}
-		foreach ( survivor in ::VSLib.EasyLogic.Players.Survivors() )
-		{
-			flow = survivor.GetFlowDistance();
-			
-			if ( (developer() > 0) || (DEBUG == 1))
-			{
-				ClientPrint(null, 3, BLUE+"survivor.GetFlowDistance() "+flow);	
-			}
-			if( flow && flow != -9999.0 ) // Invalid flows
-			{
-				survivorlist.insert(countflow,survivor.GetIndex());
-				flowlist.insert(countflow,flow);
-				countflow++
-				//index = aList.Push(flow);
-				//aList.Set(index, client, 1);
-			}
-		}
-		countflow=flowlist.len();//deja de ser indice
-		if( countflow >= 2 )
-		{
-			//flowlist.sort(CompareFlow);
-			for (local i = 0; i < flowlist.len()-1; i++ )
-			{	
-				local temp1,temp2;
-					
-				if (flowlist[i]>flowlist[i+1])
-				{
-					/*
-					temp1=flowlist[i+1]
-					temp2=survivorlist[i+1]
-					flowlist[i+1]=flowlist[i]
-					survivorlist[i+1]=survivorlist[i]
-					flowlist[i]=temp1
-					survivorlist[i]=temp2				
-					*/
-				}
-				else 
-				if(flowlist[i]<flowlist[i+1])
-				{
-					temp1=flowlist[i]
-					temp2=survivorlist[i]
-					flowlist[i]=flowlist[i+1]
-					survivorlist[i]=survivorlist[i+1]
-					flowlist[i+1]=temp1
-					survivorlist[i+1]=temp2				
-				}
-			}
-			local clientflowAvg;
-			local clientflowFirst;
-			local clientflowNear;
-			local lastFlow;
-			local distance;		
-			local teleportedahead =false;
-			local client=-1;
-			if ( (developer() > 0) || (DEBUG == 1))
-			{
-				ClientPrint(null, 3, BLUE+"countflow "+countflow);	
-			}				
-			// Loop through survivors from highest flow
-			for( local i = 0; i < flowlist.len(); i++ )//len es tamaño completo no es -1
-			{
-				
-				client = survivorlist[i];
-				local player = ::VSLib.Player(client);	
-				if ( (developer() > 0) || (DEBUG == 1))
-				{
-					ClientPrint(null, 3, BLUE+"player.GetName() "+player.GetName());
-				}				
-				local flowBack = true;
-				// Only check nearest half of survivor pack.
-				if (( i < countflow / 2 ))
-				{					
-					flow = flowlist[i];
-					if ( (developer() > 0) || (DEBUG == 1))
-					{
-						ClientPrint(null, 3, BLUE+"GetFlowDistance() "+flow);
-					}
-					// Loop through from next survivor to mid-way through the pack.
-					for( local x = i + 1; x <= countflow / 2; x++ )
-					{
-						local player2 = ::VSLib.Player(survivorlist[x]);	
-						if ( (developer() > 0) || (DEBUG == 1))
-						{
-							ClientPrint(null, 3, BLUE+"player2.GetName() "+player2.GetName());
-						}
-						lastFlow = flowlist[x]//aList.Get(x, 0);
-						if ( (developer() > 0) || (DEBUG == 1))
-						{
-							ClientPrint(null, 3, BLUE+"GetFlowDistance() "+lastFlow);
-						}
-						distance = flow - lastFlow;
-						if ( (developer() > 0) || (DEBUG == 1))
-						{
-							ClientPrint(null, 3, BLUE+"flow - lastFlow "+distance);
-						}
-						// Compare higher flow with next survivor, they're rushing
-						if ((distance > 1810))//1750 is antirush
-						{
-							// PrintToServer("RUSH: %N %f", client, distance);
-							flowBack = false;							
-							
-							//float vPos[3];
-							//GetClientAbsOrigin(clientflowNear, vPos);
-							//CPrintToChatAll("%s",rawmsg);
-							//TeleportEntity(client, vPos, NULL_VECTOR, NULL_VECTOR);
-							
-							local mensaje;
-							GetInfectedStats( nowinfStats )
-							if (nowinfStats.Tanks==0 && nowSpawnedTankRusher==0)
-							{
-								SpawnTank(null,player);
-								if (nowPlayersinGame>1)
-									mensaje="Aparece un Tank, derrotenlo!!!";
-								else
-									mensaje="Aparece un Tank Boss!!!";
-								nowSpawnedTankRusher++
-							}
-							else
-							if (nowinfStats.Tanks==1 || nowSpawnedTankRusher==1)
-								mensaje="Para avanzar derrota al Tank!";
-							else 
-								mensaje="Para avanzar derrota a los Tanks!";
-							Time4TimerRusher=1600
-							ShowHUDTicker(4,"Tank",mensaje);
-							//TimeTick4BossMsg=10;
-							break;
-						}
-					}
-				}
-			}
-		}		
-	}
-	else
-	nowSpawnedTankRusher=0;
+	portedAntiRushPlugin(arg);
 	
 	if(ClearEdicts)
 	{
@@ -355,6 +298,380 @@
 	Survivors_Count=survivorcount;
 	nowSurvivorsinGame=Survivors_Count;
 }
+
+
+::portedAntiRushPlugin <- function(arg)
+{
+
+	local sizeHordeModifier = mSHMfM;
+	local mapArea = mAAN;
+	local flow=-1;
+	local countflow=0;
+	local survivorlist =[];
+	local speedlist =[];
+	local flowlist =[];
+	
+	if (nowFinaleStarted==0 && (nowPlayersinGame > 2 || ( (developer() > 0) || (DEBUG == 1))))
+	{
+		if ( (developer() > 0) || (DEBUG == 1))
+		{
+			ClientPrint(null, 3, BLUE+"Time4TimerRusher: "+Time4TimerRusher);
+		}
+		foreach ( survivor in ::VSLib.EasyLogic.Players.Survivors() )
+		{
+			flow = survivor.GetFlowDistance();
+			
+			if ( (developer() > 0) || (DEBUG == 1))
+			{
+				ClientPrint(null, 3, BLUE+"[AR] clients[i] %N "+survivor.GetName()+" %d "+survivor.GetIndex());	
+				ClientPrint(null, 3, BLUE+"[AR] flow %f "+flow);	
+			}
+			if(survivor.IsAlive() && (flow && flow != -9999.0 )) // Invalid flows
+			{
+				survivorlist.insert(countflow,survivor.GetIndex());
+				flowlist.insert(countflow,flow);
+				speedlist.insert(countflow,1);
+				countflow++
+				//index = aList.Push(flow);
+				//aList.Set(index, client, 1);
+			}
+		}
+		countflow=flowlist.len();//deja de ser indice
+		
+		if ( (developer() > 0) || (DEBUG == 1))
+		{
+			ClientPrint(null, 3, BLUE+"[AR] countflow "+countflow);	
+		}
+		
+		if( countflow >= 2 )
+		{
+			//flowlist.sort(CompareFlow);
+			for (local i = 0; i < flowlist.len()-1; i++ )
+			{	
+				local temp1,temp2;
+					
+				if (flowlist[i]>flowlist[i+1])
+				{
+					/*
+					temp1=flowlist[i+1]
+					temp2=survivorlist[i+1]
+					flowlist[i+1]=flowlist[i]
+					survivorlist[i+1]=survivorlist[i]
+					flowlist[i]=temp1
+					survivorlist[i]=temp2				
+					*/
+				}
+				else 
+				if(flowlist[i]<flowlist[i+1])
+				{
+					temp1=flowlist[i]
+					temp2=survivorlist[i]
+					flowlist[i]=flowlist[i+1]
+					survivorlist[i]=survivorlist[i+1]
+					flowlist[i+1]=temp1
+					survivorlist[i+1]=temp2				
+				}
+			}
+			local clientflowAvg;
+			local clientflowFirst;
+			local clientflowNear;
+			local lastFlow;
+			local distance;		
+			local teleportedahead =false;
+			local client=-1;
+			local clientflowposRusher;
+			local distanciamapAreaOpen = 0;
+			if (mapArea="open")
+				distanciamapAreaOpen=450;
+			// ::nowflTeleportRusher <- true
+			// ::nowflTeleportSlacker <- true
+			// ::nowflSpeedAhead <- true
+			// ::nowflSpeedBehind <- true
+			//nowflTankAhead
+				
+			// Loop through survivors from highest flow
+			for( local i = 0; i < flowlist.len(); i++ )//len es tamaño completo no es -1
+			{				
+				client = survivorlist[i];
+				local player = ::VSLib.Player(client);	
+				if ( (developer() > 0) || (DEBUG == 1))
+				{
+					ClientPrint(null, 3, BLUE+"[AR] client i "+i+"= %N "+player.GetName()+" %d "+player.GetIndex());
+				}				
+				local flowBack = true;
+				// Only check nearest half of survivor pack.
+				if (( i < countflow / 2 ))
+				{				
+					flow = flowlist[i];
+					if ( (developer() > 0) || (DEBUG == 1))
+					{
+						ClientPrint(null, 3, BLUE+"[AR] client i "+i+"= flow "+flow);
+						ClientPrint(null, 3, BLUE+"[AR] speed "+speedlist[i]);
+					}				
+					// Loop through from next survivor to mid-way through the pack.
+					for( local x = i + 1; x <= countflow / 2; x++ )
+					{
+						local player2 = ::VSLib.Player(survivorlist[x]);
+						lastFlow = flowlist[x];//aList.Get(x, 0);
+						distance = flowlist[i]-flowlist[x];//flow - lastFlow;
+						// if distance 500
+						// speed 1
+						// if distance 2000
+						// speed 0
+						// 500 -- 1
+						// 2000 -- 0
+						// speed  --- y
+						//m= (1-0)/(500-2000)= 1/1500
+						//y= mx+b;
+						//1= (-1/-1500)*500+b
+						//b=0.666
+						local distanciadefault=1810;
+						local maximoparaRushTP=distanciadefault+distanciamapAreaOpen+nowAntiRushAddRange;
+						local comienzaNecesitaApoyo=500;
+						local speed= (-1/(comienzaNecesitaApoyo-maximoparaRushTP))* (distance)+ 0.666;
+						if ( (developer() > 0) || (DEBUG == 1))
+						{
+							ClientPrint(null, 3, BLUE+"[AR] client x "+x+"= %N "+player2.GetName()+" %d "+player2.GetIndex());
+							ClientPrint(null, 3, BLUE+"[AR] client x "+x+" = lastFlow %f"+lastFlow);
+							ClientPrint(null, 3, BLUE+"[AR] flow - lastFlow "+distance);
+							ClientPrint(null, 3, BLUE+"[AR] Calculated speed "+speed);
+						}						
+						if ((distance>comienzaNecesitaApoyo)&&nowflSpeedAhead)
+						{
+							if (speedlist[i]>speed)
+								speedlist[i]=speed;
+						}
+						else speedlist[i]=1.0;
+						player.SetNetProp("m_flLaggedMovementValue", speedlist[i] );
+						local warndistance=360;
+						// Warn ahead hint
+						if ((distance > maximoparaRushTP-warndistance)&&nowflTeleportRusher)//1750 is antirush
+						{
+							if ( (developer() > 0) || (DEBUG == 1))
+							{
+								ClientPrint(null, 3, BLUE+"[AR] warn ahead hint");
+							}
+							//g_fHintWarn[client] = GetGameTime() + g_fCvarWarnTime;
+
+							//if( g_iCvarType == 1 )
+							//	ClientHintMessage(client, "Warn_Slowdown");
+							//else
+							//	ClientHintMessage(client, "Warn_Ahead");							
+							player.ShowHint("[AR] Avanza con el equipo, ayúdalos a avanzar.",1);
+						}
+						
+						// Compare higher flow with next survivor, they're rushing
+						if ((distance > maximoparaRushTP)&&nowflTeleportRusher)//1750 is antirush
+						{
+							if ( (developer() > 0) || (DEBUG == 1))
+							{
+								ClientPrint(null, 3, "[AR] (distance > maximoparaRushTP)&&nowflTeleportRusher)");
+								ClientPrint(null, 3, BLUE+"[AR] RUSH: "+player.GetName()+"= distance "+distance);
+							}
+							// PrintToServer("RUSH: %N %f", client, distance);
+							flowBack = false;							
+							
+							//float vPos[3];
+							
+							//GetClientAbsOrigin(clientflowNear, vPos);
+							//CPrintToChatAll("%s",rawmsg);
+							//TeleportEntity(client, vPos, NULL_VECTOR, NULL_VECTOR);	
+							player.TeleportTo(player2);
+							flowlist[i]=flowlist[x];
+							clientflowposRusher=i;
+							//aList.Set(clientflowposRusher,aList.Get(clientAvgpos, 0),0);//tempflowii,0);
+							player.ShowHint("[AR] Regresaste por el equipo, te necesitan!");
+							cmd_nb_rush();
+							Utils.ForcePanicEvent();
+							teleportedahead=true;
+							if (i==0 && x==2)
+							{
+								local player3 = ::VSLib.Player(survivorlist[i+1]);
+								
+								if ((flowlist[i]-flowlist[x]>760+nowAntiRushAddRange)&&teleportedahead)
+								{
+									player3.TeleportTo(player2);
+									player3.ShowHint("[AR] Todo esta bien, estas ahora con el equipo.");
+									//TeleportEntity(aList.Get(i+1, 1), vPos, NULL_VECTOR, NULL_VECTOR);	
+									flowlist[i+1]=flowlist[x];
+									//aList.Set(i+1,aList.Get(clientAvgpos, 0),0);//tempflowii,0);
+									if ( (developer() > 0) || (DEBUG == 1))
+									{
+										ClientPrint(null, 3, "[AR] 2nd %d: "+(i+1)+" %N %d "+player3.GetName());
+										ClientPrint(null, 3, BLUE+"[AR] TP 2nd %d "+(i+1)+" to clientAvg: %N %d "+player2.GetName());
+									}
+								}
+							}
+						}		
+						
+						// Compare higher flow with next survivor, they're rushing						
+						if ((distance > maximoparaRushTP)&&nowflTankAhead)//1750 is antirush
+						{
+							if ( (developer() > 0) || (DEBUG == 1))
+							{
+								ClientPrint(null, 3, "[AR] (distance > maximoparaRushTP)&&nowflTankAhead)");
+								ClientPrint(null, 3, BLUE+"[AR] SPAWNTANK");
+							}
+							GetInfectedStats( nowinfStats )
+							if (nowinfStats.Tanks==0 && nowSpawnedTankRusher==0)
+							{
+								if (Time4TimerRusher<=0)
+								{
+									if ( (developer() > 0) || (DEBUG == 1))
+									{
+										ClientPrint(null, 3, "SpawnTank");
+									}
+									SpawnTank(null,player);
+									nowSpawnedTankRusher++;
+									Time4TimerRusher=1600;
+								}
+							}
+							else
+							if (nowinfStats.Tanks==1 || nowSpawnedTankRusher==1)
+							{
+								if ( (developer() > 0) || (DEBUG == 1))
+								{
+									ClientPrint(null, 3, "Message Defeat Tank!");
+								}
+								local mensaje;
+								mensaje="Para avanzar derrota Tanks!";
+								ShowHUDTicker(3,"Tank",mensaje);
+							}
+							//TimeTick4BossMsg=10;
+							break;	
+						}
+					}
+				}
+			}
+			if ( (developer() > 0) || (DEBUG == 1))
+			{
+				ClientPrint(null, 3, "[AR] g_fCvarRangeLast");
+			}
+			// Loop through survivors from lowest flow to mid-way through the pack.
+			for( local i = flowlist.len()-1; i > flowlist.len()/ 2; i-- )//8 jugadores i 7 al 5//9 j i 8 al 5
+			{
+				flow = flowlist[i];//aList.Get(i, 0);
+				client = survivorlist[i];//aList.Get(i, 1);
+				local player = ::VSLib.Player(client);
+				if ( (developer() > 0) || (DEBUG == 1))
+				{
+					ClientPrint(null, 3, BLUE+"[AR] client i "+i+"= %N "+player.GetName()+" %d "+player.GetIndex());
+					ClientPrint(null, 3, BLUE+"[AR] client i "+i+"= flow "+flow);
+					ClientPrint(null, 3, BLUE+"[AR] speed "+speedlist[i]);
+				}
+				// Loop through from next survivor to mid-way through the pack.
+				for( local x = i - 1; x < countflow; x++ )//8jugadores i 7 x 6 al 7, i 6 x 5 al 7, i 5 x 4 al 7//9j i 8 x 7 al 8
+				{
+					lastFlow = flowlist[x];//aList.Get(x, 0);						
+					//clientAvg = survivorlist[x];//aList.Get(x, 1);
+					local player2 = ::VSLib.Player(survivorlist[x]);
+					//clientAvgpos = x;
+					distance = lastFlow - flow;
+					//if( g_bEventStarted ) distance -= g_fEventExtended;
+					
+					// if distance 1500
+					// speed 2
+					// if distance 300
+					// speed 1
+					// 1500 -- 2
+					// 300 -- 1
+					// speed  --- y
+					//m= (2-1)/(1500-300)= 1/1200
+					//y= mx+b;
+					//1= (1/1200)*300+b
+					//b=1.33333
+					local distanciadefault=990;
+					local minimoparaJuntarTP=distanciadefault+distanciamapAreaOpen+nowAntiRushAddRange;
+					local comienzaNecesitaApoyo=300;
+					local speed= (1/(minimoparaJuntarTP-comienzaNecesitaApoyo))* (distance)+ 0.75;
+					if ((distance>comienzaNecesitaApoyo)&&nowflSpeedBehind)
+					{
+						if (speedlist[i]<speed)
+							speedlist[i]=speed;
+					}
+					else speedlist[i]=1.0;
+					player.SetNetProp("m_flLaggedMovementValue", speedlist[i] );
+					if ( (developer() > 0) || (DEBUG == 1))
+					{
+						ClientPrint(null, 3, BLUE+"[AR] client x "+x+"= %N "+player2.GetName()+" %d "+player2.GetIndex());
+						ClientPrint(null, 3, BLUE+"[AR] client x "+x+" = lastFlow %f"+lastFlow);
+						ClientPrint(null, 3, BLUE+"[AR] lastFlow - flow "+distance);
+					}
+						
+					local warndistance=540;
+					if (distance > minimoparaJuntarTP-warndistance)
+					{
+						if ( (developer() > 0) || (DEBUG == 1))
+						{
+							ClientPrint(null, 3, "[AR] warn behind hint");
+						}
+						//g_fHintWarn[client] = GetGameTime() + g_fCvarWarnTime;
+
+						//ClientHintMessage(client, "Warn_Behind");
+						if (client==survivorlist[flowlist.len()-1])
+							player.ShowHint("[AR] Estas quedandote muy atrás, ve con un amigo.",0.8);
+						else
+							player.ShowHint("[AR] Apoya al que esta mas atrás.",0.8);							
+					}		
+		
+					// teleportedahead or they're behind
+					if( (distance > minimoparaJuntarTP) || teleportedahead)// && IsClientPinned(client) == false )
+					{
+						if ( (developer() > 0) || (DEBUG == 1))
+						{
+							ClientPrint(null, 3, "[AR] SLOW: "+player.GetName()+"= distance "+distance);
+						}
+						if (teleportedahead)
+						{
+							//int nexttoRusher = aList.Get(0,1);//clientflowposRusher+1, 1);
+							//GetClientAbsOrigin(nexttoRusher, vPos);
+							//posTel=clientflowposRusher+1;
+							local player3 = ::VSLib.Player(survivorlist[clientflowposRusher+1]);
+							player.TeleportTo(player3);
+							flowlist[i]=flowlist[clientflowposRusher+1];
+							if ( (developer() > 0) || (DEBUG == 1))
+							{
+								ClientPrint(null, 3, "[AR] teleportedahead");
+								ClientPrint(null, 3, "[AR] TP to next to clientflowidRusher "+(clientflowposRusher+1)+" to clientflowidRusher: "+player3.GetName());
+							}
+						}
+						else
+						// Compare lower flow with next survivor, they're behind
+						if (distance > minimoparaJuntarTP)
+						{
+							clientflowposRusher=0;
+							//clientflowidRusher= aList.Get(clientflowposRusher, 1);
+							local player3 = ::VSLib.Player(survivorlist[clientflowposRusher]);
+							player.TeleportTo(player3);
+							flowlist[i]=flowlist[clientflowposRusher];
+							//GetClientAbsOrigin(clientflowidRusher, vPos);
+							//posTel=clientflowposRusher;
+							//GetClientAbsOrigin(clientAvg, vPos);
+							if ( (developer() > 0) || (DEBUG == 1))
+							{
+								ClientPrint(null, 3, "[AR] distance > g_fCvarRangeLast");
+								ClientPrint(null, 3, "[AR] TP to next to clientflowidRusher "+(clientflowposRusher)+" to clientflowidRusher: "+player3.GetName());
+							}
+						}
+						// Hint
+						player.ShowHint("[AR] Todo esta bien, estas ahora con el equipo.");		
+
+						//TeleportEntity(client, vPos, NULL_VECTOR, NULL_VECTOR);
+						//aList.Set(i,aList.Get(posTel, 0),0);//tempflowii,0);
+						break;
+					}
+				}
+			}
+			
+			
+		}
+	}
+	else
+	nowSpawnedTankRusher=0;
+
+
+}
+
 
 ::spawnForMapSpecificData <- function(params)
 {
@@ -866,11 +1183,15 @@
 	}	
 }
 
-
-
 ::endGameSpeedUp <- function (params)
 {
 	Utils.SlowTime(eGGSA[dAANNR], 2.0, 1.0, 1.5, false);
+}
+
+
+::setTimerFlag <- function (flag)
+{
+	flag = !flag;
 }
 
 Msg("Loaded: aTFuncs.nut\n");

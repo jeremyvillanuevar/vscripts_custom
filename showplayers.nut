@@ -413,10 +413,6 @@ g_ModeScript.HoldoutHUD <- {}
 
 ::ShowHUDTicker <- function(numero,tipo, mensaje1="",mensaje2="")
 {
-	if ( (developer() > 0) || (DEBUG == 1))
-	{
-		ClientPrint(null, 3, BLUE+"ShowHUDTicker\n");
-	}		
 	//if (numero ==4)
 	//{
 	local hudtip4 = HUD.Item("{name}");//\n{rank05}\n{rank06}\n{rank07}\n{rank08}");
@@ -464,6 +460,11 @@ g_ModeScript.HoldoutHUD <- {}
 			break;
 		}		
 	}
+	if ( (developer() > 0) || (DEBUG == 1))
+	{
+		ClientPrint(null, 3, BLUE+"ShowHUDTicker\n");
+		ClientPrint(null, 3, BLUE+hudtip4.GetValue("name"));
+	}		
 	hudtip4.SetTextPosition(TextAlign.Center); //文本对齐参数，Left=左对齐，Center=中心对齐，Right=右对齐
 	hudtip4.AddFlag(HUD_FLAG_BLINK);
 	Timers.AddTimer(numero, false, CloseHud, hudtip4 ); //添加计时器关闭HUD

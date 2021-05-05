@@ -175,7 +175,6 @@ getconsttable()["Z_TANK"] <- 8;
 getconsttable()["Z_SURVIVOR"] <- 9;
 getconsttable()["Z_MOB"] <- 10;
 getconsttable()["Z_WITCH_BRIDE"] <- 11;
-::Z_SURVIVOR <- 9;
 
 // "Uncommon" types, to be used with GetUncommonInfected()
 getconsttable()["Z_CEDA"] <- 11;

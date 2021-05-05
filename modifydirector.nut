@@ -69,7 +69,7 @@ else
 		CommonLimit=18
 		MobMinSize = 5
 		MobMaxSize = 8
-		MobMaxPending= 999
+		MobMaxPending=63
 		
 		MobSpawnMinTime=10
 		MobSpawnMaxTime=20
@@ -78,9 +78,20 @@ else
 	}	
 }
 
+::cmd_nb_rush <- function ()
+{
+	Msg("cmd_nb_rush"+"\n");
+	local ent = null;
+	while (ent = Entities.FindByClassname(ent, "infected"))
+	{
+		if (ent.IsValid())
+			NetProps.SetPropInt( ent, "m_mobRush", 1 );
+	}
+}
 
 ::SpawnTank <- function ( vPos=null,player=null )
 {
+	Msg("SpawnTank"+"\n");
 	if (player!=0)
 		Utils.SpawnZombieNearPlayer( player, Z_TANK, 0, 0, false );
 	//local vPos = player.GetLocation();
@@ -101,17 +112,46 @@ else
 	}
 }
 
-::SpawnWitch <- function ()
+::SpawnWitch <- function (args)
 {
-	::VSLib.Utils.HowAngry();	
-	local player = Players.SurvivorWithHighestFlow();
-	local MaxDist = RandomInt( 800, 1200 );
-	local MinDist = RandomInt( 400, 800 );
-	local ranTD = RandomInt(0,1);
-	if ( ranTD ==0 )
-		Utils.SpawnZombieNearPlayer( player, Z_WITCH_BRIDE, MaxDist, MinDist, false );
-	else
-		Utils.SpawnZombieNearPlayer( player, Z_WITCH, MaxDist, MinDist, false );
+	Msg("SpawnWitch"+"\n");
+	
+	GetInfectedStats( nowinfStats );
+	if (nowinfStats.Witches==0)
+	{		
+		if ( (developer() > 0) || (DEBUG == 1))
+		{
+			//nowActivateBalance=0;
+			ClientPrint(null, 3, "nowinfStats.Witches==0");
+		}
+		Utils.HowAngry();	
+		local player = Players.SurvivorWithHighestFlow();
+		local MaxDist = RandomInt( 800, 1200 );
+		local MinDist = RandomInt( 400, 800 );
+		local ranTD = RandomInt(0,1);
+		if ( ranTD ==0 )
+			Utils.SpawnZombieNearPlayer( player, Z_WITCH_BRIDE, MaxDist, MinDist, false );
+		else
+			Utils.SpawnZombieNearPlayer( player, Z_WITCH, MaxDist, MinDist, false );
+	}	
+}
+
+::setBalanceDirectorOptions <- function (args)
+{
+	Msg("setBalanceDirectorOptions"+"\n");
+	//DEBUG
+	if ( (developer() > 0) || (DEBUG == 1))
+	{
+		//nowActivateBalance=0;
+		ClientPrint(null, 3, "setBalanceDirectorOptions");
+	}
+	if (nowActivateBalance==1)
+		if (nowFinaleStarted==0 && nowFinaleScavengeStarted==0)
+			BalanceDirectorOptions()
+		else
+			BalanceFinaleDirectorOptions()
+	if ( (developer() > 0) || (DEBUG == 1))
+		IncludeScript ("debug_directoroptions.nut");	
 }
 
 ::EnforceStartCvars <- function ()
@@ -165,7 +205,11 @@ else
 	//O. ZOMBIES ALERTNESS
 	//these all dictate the distance and probability that zombies will have you as an objective.
 	//the zombie has a much better chance of seeing you if you are in "near" range,
-	//and if you are beyond "far" range it won't notice you at all, even if you get boomed/pipe bombed.
+	//and if you are beyond "far" range it won't notice you at all, even if you get boomed/pipe bombed.	
+	// FarAcquireRange	int	2500	The maximum range common infected can spot survivors.
+	// FarAcquireTime	float	5.0	The time it takes for an infected to acquire the survivor after spotting them at maximum range.
+	// NearAcquireRange	int	200	The range where common infected can spot survivors in the least amount of time.
+	// NearAcquireTime	float	0.5	The time it takes for an infected to acquire the survivor after spotting them at minimum range.local z_acquire_far_range = 200;
 	local z_acquire_far_range = 200;
 	if (nowPlayersinGame<5)
 		z_acquire_far_range=z_acquire_far_range+(9*nowPlayersinGame);
@@ -173,7 +217,7 @@ else
 		z_acquire_far_range=z_acquire_far_range+(50*nowPlayersinGame);	
 	local z_acquire_far_time =3;
 	local z_acquire_near_range =90;
-	local z_acquire_near_time =0;	
+	local z_acquire_near_time =0.72;	
 	local z_acquire_time_variance_factor ="0";
 	
 	
@@ -227,31 +271,15 @@ else
 	local z_noise_level_vocalize= "135";
 
 
-	
-	
 		
-	if (nowPlayersinGame>7)
-	{
-		l4d_si_ability_enabled = "1";
-		//Speciales
-		//Explosion de Boomer
-		l4d_nbm_bileblast = "1";
-	}
-	else
-	if (nowPlayersinGame>5)
-	{
-	
-	}
-	else
-	if (nowPlayersinGame>5)
-	{
-	
-	}
 
-
+	DirectorScript.MapScript.DirectorOptions.FarAcquireRange <- z_acquire_far_range;
 	Convars.SetValue("z_acquire_far_range" ,z_acquire_far_range);
+	DirectorScript.MapScript.DirectorOptions.FarAcquireTime <- z_acquire_far_time;
 	Convars.SetValue("z_acquire_far_time" ,z_acquire_far_time);
+	DirectorScript.MapScript.DirectorOptions.NearAcquireRange <- z_acquire_near_range;
 	Convars.SetValue("z_acquire_near_range" ,z_acquire_near_range);
+	DirectorScript.MapScript.DirectorOptions.NearAcquireTime <- z_acquire_near_time;
 	Convars.SetValue("z_acquire_near_time" ,z_acquire_near_time);
 	Convars.SetValue("z_acquire_time_variance_factor" ,z_acquire_time_variance_factor);
 	Convars.SetValue("z_alert_range" ,z_alert_range);
@@ -579,6 +607,265 @@ else
 
 }
 
+//WANDERING SETTINGS
+::setWanderingDirectorOptions <- function ()
+{	
+	local sizeHordeModifier = mSHMfM;
+	//0: default both.  1: wandering zombies don't sit/lie down.  -1: wandering zombies always sit/lie down.
+	local z_must_wander=0;
+	//Chance that wandering infected will be lying down in a SPAWN_LYINGDOWN area. default 50
+	local nav_lying_down_percent=50;
+	
+	//Wanderer count (N) is zeroed:
+	//When an area becomes visible to any Survivor
+	//When the Director is in Relax mode
+	//AlwaysAllowWanderers = true//bool
+	//WanderingZombieDensityModifier  = 1 //Set to 0 to have no wandering zombies float
+	//ClearedWandererRespawnChance percent int
+	//NumReservedWanderers= common additional from mobs 
+	//IntensityRelaxAllowWanderersThreshold float
+	//All survivors must be below this intensity before a Wanderer Peak is allowed to switch to Relax (in addition to the normal peak timer)
+	//intensity during relax for wandering zombies to be spawned director
+	//Intensity < Threshold so switch Relax AllowWanderers
+	//Intensity > Threshold can't switch Relax AllowWanderers
+	if (nowWanderingPermit)
+	{
+		DirectorScript.MapScript.DirectorOptions.AlwaysAllowWanderers <- true;	
+		DirectorScript.MapScript.DirectorOptions.WanderingZombieDensityModifier <- 1;
+		DirectorScript.MapScript.DirectorOptions.ClearedWandererRespawnChance <- 100;
+		DirectorScript.MapScript.DirectorOptions.IntensityRelaxAllowWanderersThreshold <- 1;
+		if (nowPlayersinGame>6)
+		{
+			z_must_wander=1;
+			nav_lying_down_percent=15;
+		}
+		if (nowPlayersinGame>4)
+		{
+			DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- (30+5*nowPlayersinGame)*sizeHordeModifier;
+			z_must_wander=0;
+			nav_lying_down_percent=75;	
+		}				
+		else
+		{
+			DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- (30+3*nowPlayersinGame*sizeHordeModifier);
+			z_must_wander=-1;
+			nav_lying_down_percent=100;
+		}
+	}
+	else
+	{
+		DirectorScript.MapScript.DirectorOptions.AlwaysAllowWanderers <- false;	
+		DirectorScript.MapScript.DirectorOptions.WanderingZombieDensityModifier <- 0;
+		DirectorScript.MapScript.DirectorOptions.ClearedWandererRespawnChance <- 0;
+		DirectorScript.MapScript.DirectorOptions.IntensityRelaxAllowWanderersThreshold <- 1;
+		DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- 0;
+	}
+	Convars.SetValue("z_must_wander" ,	z_must_wander);
+	Convars.SetValue("nav_lying_down_percent" ,	nav_lying_down_percent);
+}
+
+//PANIC, WAVES AND COMMON INFECTED SETTINGS
+::setPanicWavesCommonInfectedDirectorOptions <- function ()
+{	
+	local sizeHordeModifier = mSHMfM;
+	local mapArea = mAAN;
+	//A Panic lasts until MegaMobSize commons spawn
+	//MegaMobSize The amount of total infected spawned during a panic event
+	//how much Panic they cause, and when the Director decides they are done
+	//no more than CommonLimit will ever be out at once.
+	//MegaMobSize Default = 50
+	//So MegaMobSize 50 CommonLimit 2 is a long slow gentle PANIC
+	//and MegaMobSize 80 CommonLimit 80 is over instantly, with a lot of zombies around. 
+	//MegaMobSize/CommonLimit 1000 is a good way to crash the game.
+	//L 05/02/2021 - 08:41:49: 91.03: Director::StartPanicEvent( 0 ): Panic event started.
+	//L 05/02/2021 - 08:41:49: 91.03: ZombieManager::ClearPendingMobCount: All mobs cleared.
+	//L 05/02/2021 - 08:41:49: 91.03: Director: Panic Stage = STAGE_INITIAL_DELAY
+	//L 05/02/2021 - 08:41:55: 96.47: (MOB) SpawnMob requested of size 130.
+	//L 05/02/2021 - 08:41:55: 96.47: (MOB) SpawnMob pending count is now 130.
+	//L 05/02/2021 - 08:41:56: 97.53: (MOB) Mob zombie spawned, 0 remain.
+	//L 05/02/2021 - 08:41:56: 97.53: (MOB) Pending mob done.
+	
+	
+	//The horde spawning pacing consists of: 
+	//BUILD_UP (spawn horde) -> SUSTAIN_PEAK -> PEAK_FADE -> RELAX -> BUILD_UP again.
+	//L 05/02/2021 - 08:48:42: ------------------------------ Director state change BUILD_UP -> SUSTAIN_PEAK
+	//L 05/02/2021 - 08:42:43: ------------------------------ Director state change SUSTAIN_PEAK -> PEAK_FADE
+	//L 05/02/2021 - 08:42:43: ------------------------------ Director state change PEAK_FADE -> RELAX
+	//L 05/02/2021 - 08:43:19: ------------------------------ Director state change RELAX -> BUILD_UP
+	//L 05/02/2021 - 08:48:20: 176.00: (MOB) SpawnMob requested of size 18.
+	//L 05/02/2021 - 08:48:20: 176.00: (MOB) SpawnMob pending count is now 18.
+	//L 05/02/2021 - 08:48:33: (MOB) 0 wanderers grabbed for an IT mob of desired size 18.
+	//L 05/02/2021 - 08:48:33: 189.07: (MOB) SpawnITMob requested of size 18.
+	//L 05/02/2021 - 08:48:33: 189.07: (MOB) SpawnITMob will make 18.
+	//L 05/02/2021 - 08:48:42: ------------------------------ Director state change BUILD_UP -> SUSTAIN_PEAK
+	
+	//	Setting LockTempo = true removes the 
+	//"SUSTAIN_PEAK -> RELAX -> BUILD_UP" bit making your hordes spawn constantly without a delay.
+	DirectorScript.MapScript.DirectorOptions.LockTempo  <- false
+	//MobMaxPending is a queue for zombies that couldn't spawn because of the limit
+	
+	
+	//BUILD_UP
+	//BUILD_UP (spawn horde) -> SUSTAIN_PEAK -> PEAK_FADE -> RELAX -> BUILD_UP again.
+	//How many zombies are in each mob.
+	//MobMinSize Default 10
+	//MobMaxSize Default 30
+	//MobSpawnSize: Static amount of infected in a mob. Likely overrides MobMinSize and MobMinSize.
+	//BuildUpMinInterval MobSpawnMinTime MobSpawnMaxTime
+	// Sets the time between mob spawns. Mobs can only spawn when the pacing is in the BUILD_UP state.
+	//BileMobSize: Number of commons that spawn when a bile bomb is thrown or a survivor is hit by vomit.
+	//Only works if scripted mode is enabled, a custom finale is active, or a scavenge finale is active.
+	if (nowPlayersinGame>12)
+	{
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (150+30*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMaxPending  <- (150+30*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+12*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+4*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (30-5+4*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)
+		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (45+3*nowPlayersinGame*sizeHordeModifier)
+	}
+	else
+	if (nowPlayersinGame>8)
+	{
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (150+20*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMaxPending  <-  (150+20*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+10*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (30-5+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)
+		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (45+3*nowPlayersinGame*sizeHordeModifier)
+	}
+	else
+	if (nowPlayersinGame>4)
+	{
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (120+20*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMaxPending  <- (120+20*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+6*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (30-5+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)
+		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (45+3*nowPlayersinGame*sizeHordeModifier)
+	}
+		else
+	{
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (120)*sizeHordeModifier
+		DirectorScript.MapScript.DirectorOptions.MobMaxPending  <- (120)*sizeHordeModifier
+		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15)*sizeHordeModifier
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+sizeHordeModifier*1*nowPlayersinGame*10/2)
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (30-5+sizeHordeModifier*1*nowPlayersinGame*10/2)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36)
+		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (45+sizeHordeModifier*1*nowPlayersinGame*10/2)
+	}
+	
+	
+	//SUSTAIN_PEAK	
+	//BUILD_UP (spawn horde) -> SUSTAIN_PEAK -> PEAK_FADE -> RELAX -> BUILD_UP again.
+	//Modifies the length of the SUSTAIN_PEAK state to shorten the time between mob spawns.
+	//SustainPeakMinTime SustainPeakMaxTime//持续高峰		
+	if (nowPlayersinGame>12)
+	{
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMinTime <- 35-2*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMaxTime <- 75-2*nowPlayersinGame
+	}
+	else
+	if (nowPlayersinGame>8)
+	{
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMinTime <- 35-2*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMaxTime <- 75-2*nowPlayersinGame
+	}
+	else
+	if (nowPlayersinGame>4)
+	{
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMinTime <- 35-3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMaxTime <- 75-3*nowPlayersinGame
+	}
+	else
+	{
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMinTime <- 35
+		DirectorScript.MapScript.DirectorOptions.SustainPeakMaxTime <- 75
+	}	
+	
+	//IntensityRelaxThreshold
+	//All survivors must be below this intensity before a Peak is allowed to switch to Relax (in addition to the normal peak timer)
+	//Intensity < Threshold so switch Relax
+	//Intensity > Threshold can't switch Relax	
+	if (nowPlayersinGame>4)
+	{				
+		DirectorScript.MapScript.DirectorOptions.IntensityRelaxThreshold <- 0.90-0.015*nowPlayersinGame
+	}				
+	else
+	{
+		DirectorScript.MapScript.DirectorOptions.IntensityRelaxThreshold <- 0.81+0.03*nowPlayersinGame
+	}	
+	
+	//RELAX	
+	//Modifies the length of the RELAX state to shorten the time between mob spawns.
+	//RelaxMinInterval RelaxMaxInterval//放松阶段	
+	//RelaxMaxFlowTravel
+	//How far the survivors can advance along the flow before transitioning from RELAX to BUILD_UP.
+	if (nowPlayersinGame>12)
+	{
+		DirectorScript.MapScript.DirectorOptions.RelaxMinInterval <- 30-3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxInterval <- 60-3*nowPlayersinGame
+	}
+	else
+	if (nowPlayersinGame>8)
+	{
+		DirectorScript.MapScript.DirectorOptions.RelaxMinInterval <- 30-3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxInterval <- 60-3*nowPlayersinGame
+	}
+	else
+	if (nowPlayersinGame>4)
+	{
+		DirectorScript.MapScript.DirectorOptions.RelaxMinInterval <- 30-3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxInterval <- 60-3*nowPlayersinGame
+	}
+	else
+	{
+		DirectorScript.MapScript.DirectorOptions.RelaxMinInterval <- 30;
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxInterval <- 60;
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxFlowTravel <- 1750;
+	}	
+	if (mapArea="clsd")
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxFlowTravel <- 810;
+		else
+		DirectorScript.MapScript.DirectorOptions.RelaxMaxFlowTravel <- 1350;
+
+	//Progress Based
+	
+	//Increase common limit based on progress  
+	//local progressPct = ( Director.GetFurthestSurvivorFlow() / BridgeSpan )
+	
+	if( nowPlayersinGame >= 2 )
+	{
+		local playerx = ::VSLib.EasyLogic.Players.SurvivorWithHighestFlow();
+		if (playerx!=null)
+		{
+			local flow = playerx.GetFlowDistance();
+			if(playerx.IsAlive() && (flow && flow != -9999.0 )) // Invalid flows
+			{
+				local progressPct = playerx.GetFlowPercent();
+				
+				if ( (developer() > 0) || (DEBUG == 1))
+					ClientPrint(null, 3, BLUE+"progressPct: "+progressPct);
+				//if ( progressPct < 0.0 ) progressPct = 0.0;
+				//if ( progressPct > 1.0 ) progressPct = 1.0;
+				//DirectorScript.MapScript.DirectorOptions.MobMaxPending  <- (120)*sizeHordeModifier
+				if ( progressPct > 90.0 )
+					DirectorScript.MapScript.DirectorOptions.CommonLimit <- (14+sizeHordeModifier*1*nowPlayersinGame*10/2)
+				//MobSpawnSize = MobSpawnSizeMin + progressPct * ( MobSpawnSizeMax - MobSpawnSizeMin )
+			}
+		}
+	}	
+}
+
+
+
 ::BalanceDirectorOptions <- function ()
 {	
 	Msg("BalanceDirectorOptions"+"\n");
@@ -591,6 +878,7 @@ else
 	//DirectorScript.MapScript.DirectorOptions.SurvivorMaxIncapacitatedCount <-6
 	
 	local sizeHordeModifier = mSHMfM;
+	local mapArea = mAAN;
 
 	//You can only assign DirectorOptions with <-
 	 //Warning: NEVER use the = operator when trying to influence the director. 
@@ -843,178 +1131,9 @@ else
 	if ( "SpawnDirectionMask" in DirectorScript.MapScript.ChallengeScript.DirectorOptions )
 		DirectorScript.MapScript.ChallengeScript.DirectorOptions.SpawnDirectionMask <- 0
 	
-	//	DirectorScript.MapScript.ChallengeScript.DirectorOptions.cm_AggressiveSpecials <- 	1	
+	setPanicWavesCommonInfectedDirectorOptions();
 	
-	
-	//PANIC WAVES AND COMMON SETTINGS
-	//A Panic lasts until MegaMobSize commons spawn
-	//MegaMobSize The amount of total infected spawned during a panic event
-	//how much Panic they cause, and when the Director decides they are done
-	//no more than CommonLimit will ever be out at once. 
-	//So MegaMobSize 50 CommonLimit 2 is a long slow gentle PANIC
-	//and MegaMobSize 80 CommonLimit 80 is over instantly, with a lot of zombies around. 
-	//MegaMobSize/CommonLimit 1000 is a good way to crash the game.
-	//The horde spawning pacing consists of: 
-	//BUILD_UP (spawn horde) -> SUSTAIN_PEAK -> RELAX -> BUILD_UP again.
-	
-	//	Setting LockTempo = true removes the 
-	//"SUSTAIN_PEAK -> RELAX -> BUILD_UP" bit making your hordes spawn constantly without a delay.
-	DirectorScript.MapScript.DirectorOptions.LockTempo  <- false
-	//MobMaxPending is a queue for zombies that couldn't spawn because of the limit
-	DirectorScript.MapScript.DirectorOptions.MobMaxPending  <- 999
-	
-	
-	//BUILD_UP
-	//MobMinSize MobMaxSize 
-	//How many zombies are in each mob.		
-	//MobSpawnSize: Static amount of infected in a mob. Likely overrides MobMinSize and MobMinSize.
-	//BuildUpMinInterval MobSpawnMinTime MobSpawnMaxTime
-	// Sets the time between mob spawns. Mobs can only spawn when the pacing is in the BUILD_UP state.
-	//BileMobSize: Number of commons that spawn when a bile bomb is thrown or a survivor is hit by vomit.
-	//Only works if scripted mode is enabled, a custom finale is active, or a scavenge finale is active.
-	if (nowPlayersinGame>12)
-	{
-		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+3*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (5+3*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (40+4*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+4*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (10-5+4*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)
-	}
-	else
-	if (nowPlayersinGame>8)
-	{
-		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+2*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (5+3*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (45+3*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+3*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (10-5+3*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)
-	}
-	else
-	if (nowPlayersinGame>4)
-	{
-		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+1*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (5+3*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (45+3*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+3*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (10-5+3*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)
-	}
-		else
-	{
-		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (5)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (55+sizeHordeModifier*1*nowPlayersinGame*10/2)
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (17-10+sizeHordeModifier*1*nowPlayersinGame*10/2)
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (17-5+sizeHordeModifier*1*nowPlayersinGame*10/2)
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20)
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36)
-	}	
-	
-	
-	//SUSTAIN_PEAK	
-	//Modifies the length of the SUSTAIN_PEAK state to shorten the time between mob spawns.
-	//SustainPeakMinTime SustainPeakMaxTime//持续高峰	
-	
-	//IntensityRelaxThreshold
-	//All survivors must be below this intensity before a Peak is allowed to switch to Relax (in addition to the normal peak timer)
-	//Intensity < Threshold so switch Relax
-	//Intensity > Threshold can't switch Relax	
-	if (nowPlayersinGame>4)
-	{				
-		DirectorScript.MapScript.DirectorOptions.IntensityRelaxThreshold <- 0.90-0.015*nowPlayersinGame
-	}				
-	else
-	{
-		DirectorScript.MapScript.DirectorOptions.IntensityRelaxThreshold <- 0.81+0.03*nowPlayersinGame
-	}	
-	
-	//RELAX	
-	//Modifies the length of the RELAX state to shorten the time between mob spawns.
-	//RelaxMinInterval RelaxMaxInterval//放松阶段
-	//RelaxMaxFlowTravel
-	//How far the survivors can advance along the flow before transitioning from RELAX to BUILD_UP.
-	if (nowPlayersinGame>12)
-	{
-		DirectorScript.MapScript.DirectorOptions.SustainPeakMinTime <- 35-2*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.SustainPeakMaxTime <- 75-2*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.RelaxMinInterval <- 30-3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.RelaxMaxInterval <- 60-3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.RelaxMaxFlowTravel <- 1350
-	}
-	else
-	if (nowPlayersinGame>8)
-	{
-		DirectorScript.MapScript.DirectorOptions.SustainPeakMinTime <- 35-2*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.SustainPeakMaxTime <- 75-2*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.RelaxMinInterval <- 30-3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.RelaxMaxInterval <- 60-3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.RelaxMaxFlowTravel <- 1350
-	}
-	else
-	if (nowPlayersinGame>4)
-	{
-		DirectorScript.MapScript.DirectorOptions.SustainPeakMinTime <- 35-3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.SustainPeakMaxTime <- 75-3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.RelaxMinInterval <- 30-3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.RelaxMaxInterval <- 60-3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.RelaxMaxFlowTravel <- 1500
-	}
-	else
-	{
-		DirectorScript.MapScript.DirectorOptions.SustainPeakMinTime <- 35
-		DirectorScript.MapScript.DirectorOptions.SustainPeakMaxTime <- 75
-		DirectorScript.MapScript.DirectorOptions.RelaxMinInterval <- 30
-		DirectorScript.MapScript.DirectorOptions.RelaxMaxInterval <- 60
-		DirectorScript.MapScript.DirectorOptions.RelaxMaxFlowTravel <- 1750
-	}	
-	
-	
-	//WANDERING SETTINGS
-
-	//0: default.  1: wandering zombies don't sit/lie down.  -1: wandering zombies always sit/lie down.
-	Convars.SetValue("z_must_wander" ,	"-1");
-	
-	//Wanderer count (N) is zeroed:
-	//When an area becomes visible to any Survivor
-	//When the Director is in Relax mode
-	//AlwaysAllowWanderers = true//bool
-	//WanderingZombieDensityModifier  = 1 //Set to 0 to have no wandering zombies float
-	//ClearedWandererRespawnChance percent int
-	//NumReservedWanderers= common additional from mobs 
-	//IntensityRelaxAllowWanderersThreshold float
-	//All survivors must be below this intensity before a Wanderer Peak is allowed to switch to Relax (in addition to the normal peak timer)
-	//intensity during relax for wandering zombies to be spawned director
-	//Intensity < Threshold so switch Relax AllowWanderers
-	//Intensity > Threshold can't switch Relax AllowWanderers
-	DirectorScript.MapScript.DirectorOptions.AlwaysAllowWanderers <- true;	
-	DirectorScript.MapScript.DirectorOptions.WanderingZombieDensityModifier <- 1;
-	DirectorScript.MapScript.DirectorOptions.ClearedWandererRespawnChance <- 100;
-	// FarAcquireRange	int	2500	The maximum range common infected can spot survivors.
-	// NearAcquireRange	int	200	The range where common infected can spot survivors in the least amount of time.
-	// FarAcquireTime	float	5.0	The time it takes for an infected to acquire the survivor after spotting them at maximum range.
-	// NearAcquireTime	float	0.5	The time it takes for an infected to acquire the survivor after spotting them at minimum range.
-	DirectorScript.MapScript.DirectorOptions.IntensityRelaxAllowWanderersThreshold <- 1
-	if (nowPlayersinGame>4)
-	{
-		DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- (30+5*nowPlayersinGame)*sizeHordeModifier;	
-		DirectorScript.MapScript.DirectorOptions.FarAcquireTime <- 2.0
-		DirectorScript.MapScript.DirectorOptions.FarAcquireRange <- 800
-		DirectorScript.MapScript.DirectorOptions.NearAcquireTime <- 0.5
-		DirectorScript.MapScript.DirectorOptions.NearAcquireRange <- 200
-	}				
-	else
-	{
-		DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- (30+3*nowPlayersinGame*sizeHordeModifier);		
-		DirectorScript.MapScript.DirectorOptions.FarAcquireTime <- 5.0
-		DirectorScript.MapScript.DirectorOptions.FarAcquireRange <- 2500
-		DirectorScript.MapScript.DirectorOptions.NearAcquireTime <- 0.5
-		DirectorScript.MapScript.DirectorOptions.NearAcquireRange <- 200
-	}				
+	setWanderingDirectorOptions();
 
 	
 	if ( (developer() > 0) || (DEBUG == 1))
@@ -1022,16 +1141,6 @@ else
 	
 	
 	/*
-	//Progress Based
-	
-	//Increase common limit based on progress  
-	    local progressPct = ( Director.GetFurthestSurvivorFlow() / BridgeSpan )
-	    
-	    if ( progressPct < 0.0 ) progressPct = 0.0;
-	    if ( progressPct > 1.0 ) progressPct = 1.0;
-	    
-	    MobSpawnSize = MobSpawnSizeMin + progressPct * ( MobSpawnSizeMax - MobSpawnSizeMin )
-
 
 	//Increase common limit based on speed   
 	    local speedPct = ( Director.GetAveragedSurvivorSpeed() - minSpeed ) / ( maxSpeed - minSpeed );
@@ -1048,7 +1157,7 @@ else
 
 	
 	if ( "cm_SpecialRespawnInterval" in DirectorScript.MapScript.GetDirectorOptions() )
-		DirectorScript.MapScript.GetDirectorOptions().cm_SpecialRespawnInterval <- 30;
+		DirectorScript.MapScript.GetDirectorOptions().cm_SpecialRespawnInterval <- 31;
 	if ( "SpecialInitialSpawnDelayMin" in DirectorScript.MapScript.GetDirectorOptions() )
 		DirectorScript.MapScript.GetDirectorOptions().SpecialInitialSpawnDelayMin <- 5;
 	if ( "SpecialInitialSpawnDelayMax" in DirectorScript.MapScript.GetDirectorOptions() )
@@ -1154,8 +1263,7 @@ else
 		//tank.SetHealth(4000);
 	}
 	*/	
-	
-	
+
 	
 }
 
@@ -1330,8 +1438,8 @@ else
 	//Only works if scripted mode is enabled, a custom finale is active, or a scavenge finale is active.
 	if (nowPlayersinGame>12)
 	{
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 30+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.BileMobSize<- 15+3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 5+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 40+4*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 10-10+4*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 10-5+4*nowPlayersinGame
@@ -1341,8 +1449,8 @@ else
 	else
 	if (nowPlayersinGame>8)
 	{
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 30+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.BileMobSize<- 15+2*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 5+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 45+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 10-10+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 10-5+3*nowPlayersinGame
@@ -1352,8 +1460,8 @@ else
 	else
 	if (nowPlayersinGame>4)
 	{
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 30+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.BileMobSize<- 15+1*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 5+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 45+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 10-10+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 10-5+3*nowPlayersinGame
@@ -1362,8 +1470,8 @@ else
 	}
 		else
 	{
+		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 30
 		DirectorScript.MapScript.DirectorOptions.BileMobSize<- 15
-		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 5
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 55+1*nowPlayersinGame*10/2
 		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 17-10+1*nowPlayersinGame*10/2
 		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 17-5+1*nowPlayersinGame*10/2
@@ -1445,7 +1553,7 @@ else
 		DirectorScript.MapScript.DirectorOptions.RelaxMaxFlowTravel  <- 350//was 400
 
 		DirectorScript.MapScript.DirectorOptions.LockTempo  <-false
-		DirectorScript.MapScript.DirectorOptions.SpecialRespawnInterval  <- 20
+		DirectorScript.MapScript.DirectorOptions.SpecialRespawnInterval  <- 21
 				
 		DirectorScript.MapScript.DirectorOptions.PreTankMobMax <- 20
 		DirectorScript.MapScript.DirectorOptions.ZombieSpawnRange <- 1500//was 3000
@@ -2065,4 +2173,171 @@ else
 	}	
 	if (nowPlayerEvent=="Left")
 		nowPlayersinGame=nowPlayersinGame-1
+	if ((developer() > 0) || (DEBUG == 1))
+	{
+		nowPlayersinGame=nowSurvivorsinGame;
+	}
+}
+
+::skipIntro <- function ()
+{	
+	//addontitle "Speedrunner Tools"
+	//Author シェイディ♑ Constantin Horoshawin
+	//addonversion "5.4"
+	//addondescription "Speedrunner Tools makes speedrun recording more convenient."
+	if (SessionState.MapName.find("m1_") != null)
+	{
+		if (SessionState.MapName == "c1m1_hotel")
+		{
+			EntFire("sound_chopperleave", "Kill");					//Specific intro sounds.
+			EntFire("rescue_chopper", "Kill");						//Specific models of rescue vehicles.
+			EntFire("lcs_intro", "Kill");								//Remove survivor voices during intro.
+			EntFire("fade_intro", "Kill");								//Remove entity of fade control.
+			EntFire("director", "FinishIntro", null, 0.1);					//Stop survivor animations during intro.
+			EntFire("director", "ReleaseSurvivorPositions", null, 0.1);		//Teleport to start points + unfreezing.
+			EntFire("point_viewcontrol_survivor", "Kill"); 				//Remove intro cameras.
+		}
+		else if (SessionState.MapName == "c2m1_highway")
+		{
+			EntFire("lcs_intro", "Kill");
+			EntFire("fade_intro", "Kill");
+			EntFire("director", "FinishIntro", null, 0.1);
+			EntFire("director", "ReleaseSurvivorPositions", null, 0.1);
+			EntFire("point_viewcontrol_survivor", "Kill");
+		}
+		else if (SessionState.MapName == "c3m1_plankcountry")
+		{
+			EntFire("lcs_intro", "Kill");
+			EntFire("fade_intro", "Kill");
+			EntFire("director", "ReleaseSurvivorPositions", null, 0.1);
+			EntFire("point_viewcontrol_survivor", "Kill");
+		}
+		else if (SessionState.MapName == "c4m1_milltown_a")
+		{
+			EntFire("PugTug", "Kill");
+			EntFire("@skybox_PugTug", "Kill");
+			EntFire("lcs_intro", "Kill");
+			EntFire("fade_intro", "Kill");
+			EntFire("@director", "FinishIntro", null, 0.1);
+			EntFire("@director", "ReleaseSurvivorPositions", null, 0.1);
+			EntFire("point_viewcontrol_survivor", "Kill");
+		}
+		else if (SessionState.MapName == "c5m1_waterfront")
+		{
+			EntFire("orator", "Kill");
+			EntFire("tug_boat_intro", "Kill");
+			EntFire("@skybox_tug_boat_intro", "Kill");
+			EntFire("fade_intro", "Kill");
+			EntFire("director", "FinishIntro", null, 0.1);
+			EntFire("director", "ReleaseSurvivorPositions", null, 0.1);
+			EntFire("point_viewcontrol_survivor", "Kill");
+		}
+		else if (SessionState.MapName == "c6m1_riverbank")
+		{
+			/*Prohibit "relay_intro_start" forcing a FireConceptToAny input.
+			P.S.: Usually we avoid using such methods, 
+			but only this time... Made sure, that DirectorOptions loads properly.*/
+			
+			EntFire("@director", "FinishIntro");
+			EntFire("@director", "AddOutput", "targetname director_temp");
+			EntFire("director_temp", "AddOutput", "targetname @director", 0.1);
+			EntFire("fade_intro", "Kill");
+			EntFire("point_viewcontrol_survivor", "Kill");
+		}
+		else if (SessionState.MapName == "c7m1_docks")
+		{
+			EntFire("civilian_gunfire", "Kill");
+			EntFire("intro_killer", "Kill");
+			EntFire("intro_train_steam1", "Kill");
+			EntFire("intro_train_steam2", "Kill");
+			EntFire("intro_train_steam3", "Kill");
+			EntFire("train", "AddOutput", "origin 13168.001, 2768.000, 50.000");
+			EntFire("infected_chase", "Kill");
+			EntFire("infected_spawner", "Kill");
+			EntFire("fade_outro_1", "Kill");
+			EntFire("fade_outro_4", "Kill");
+			EntFire("director", "ReleaseSurvivorPositions", null, 0.1);
+			EntFire("point_viewcontrol_survivor", "Kill");
+		}
+		else if (SessionState.MapName == "c8m1_apartment")
+		{
+			EntFire("lcs_intro_survivors", "Kill");
+			EntFire("tarp_sound", "Kill");
+			EntFire("tarp_animated", "Kill");
+			EntFire("ghostAnim", "Kill");
+			EntFire("sound_chopper", "Kill");
+			EntFire("helicopter_speaker", "Kill");
+			EntFire("helicopter_animated", "Kill");
+			EntFire("fade_intro", "Kill");
+			EntFire("director", "FinishIntro", null, 0.3);
+			EntFire("director", "ReleaseSurvivorPositions", null, 0.3);
+			EntFire("camera_intro_airplane", "Kill");
+		}
+		else if (SessionState.MapName == "c9m1_alleys")
+		{
+			EntFire("lcs_intro", "Kill");
+			EntFire("fade_intro", "Kill");
+			EntFire("@director", "FinishIntro", null, 0.1);
+			EntFire("@director", "ReleaseSurvivorPositions", null, 0.1);
+			EntFire("point_viewcontrol_survivor", "Kill");
+		}
+		else if (SessionState.MapName == "c10m1_caves")
+		{
+			EntFire("lcs_intro", "Kill");
+			EntFire("fade_intro", "Kill");
+			EntFire("director", "FinishIntro", null, 0.3);
+			EntFire("director", "ReleaseSurvivorPositions", null, 0.3);
+			EntFire("point_viewcontrol_survivor", "Kill");
+		}
+		else if (SessionState.MapName == "c11m1_greenhouse")
+		{
+			EntFire("light_hanging03", "AddOutput", "targetname ");
+			EntFire("light_hanging02", "AddOutput", "targetname ");
+			EntFire("light_hanging01", "AddOutput", "targetname ");
+			EntFire("greenhouse_panel02", "Kill");
+			EntFire("greenhouse_panel01", "Kill");
+			EntFire("greenhouse_particles", "Kill");
+			EntFire("sound_airplane_intro", "Kill");
+			EntFire("airplane_animated_intro", "Kill");
+			EntFire("lcs_intro_airport_01", "Kill");
+			EntFire("fade_intro", "Kill");
+			EntFire("director", "FinishIntro", null, 0.3);
+			EntFire("director", "ReleaseSurvivorPositions", null, 0.3);
+			EntFire("point_viewcontrol_survivor", "Kill");
+		}
+		else if (SessionState.MapName == "c12m1_hilltop")
+		{
+			EntFire("lcs_intro", "Kill");
+			EntFire("fade_intro", "Kill");
+			EntFire("director", "FinishIntro", null, 0.3);
+			EntFire("director", "ReleaseSurvivorPositions", null, 0.3);
+			EntFire("point_viewcontrol_survivor", "Kill");
+		}
+		else if (SessionState.MapName == "c13m1_alpinecreek")
+		{
+			EntFire("gamesound", "PlaySound");
+			EntFire("lcs_intro", "Kill");
+			EntFire("scene_relay", "Kill");
+			EntFire("b_Signboard01", "Kill");
+			EntFire("fade_intro", "Kill");
+			EntFire("director", "FinishIntro", null, 0.1);
+			EntFire("director", "ReleaseSurvivorPositions", null, 0.1);
+			EntFire("point_viewcontrol_survivor", "Kill");
+		}
+		else													//omni skipintro
+		{
+			EntFire("camera_intro_airplane", "Disable", null, 0.1);
+			EntFire("airplane_animated_intro", "Kill");
+			EntFire("env_fade", "AddOutput", "duration 0");
+			EntFire("env_fade", "Fade");
+			EntFire("env_fade", "Kill", null, 1.0);
+			EntFire("director", "FinishIntro", null, 0.1);
+			EntFire("director", "FinishIntro", null, 0.3);
+			EntFire("director", "ReleaseSurvivorPositions", null, 0.1);
+			EntFire("@director", "FinishIntro", null, 0.1);
+			EntFire("@director", "ReleaseSurvivorPositions", null, 0.1);
+			EntFire("point_viewcontrol_survivor", "Disable", null, 0.1);
+		}
+		printl("[ST] Loaded SkipIntro script.");
+	}
 }

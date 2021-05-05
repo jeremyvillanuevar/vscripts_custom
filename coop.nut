@@ -15,6 +15,12 @@ IncludeScript ("debug.nut");
 {
 	::nowexecScriptName <- ""
 	::nowLocalScriptExec <- 0
+	::nowWanderingPermit <- true;
+	::nowflTeleportRusher <- true;
+	::nowflTeleportSlacker <- true;
+	::nowflSpeedAhead <- true;
+	::nowflSpeedBehind <- true;
+	::nowflTankAhead <- true;
 }
 
 if ( (developer() > 0) || (DEBUG == 1))
