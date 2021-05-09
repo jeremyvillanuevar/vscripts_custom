@@ -157,6 +157,8 @@ function Notifications::OnEnterSaferoom::pasarSafeRoom ( client, params )
 		player.ShowHint("Cuando entran el 75%, cierra y se tpearán!",0.8);
 		setBalanceDirectorOptions(params);
 	}
+	//if (player.IsHuman())
+	//	cmd_nb_rush_player_command(player.GetIndex());	
 }
 
 
@@ -165,7 +167,7 @@ function Notifications::OnSurvivorsLeftStartArea::Inicio()
 	Msg("OnSurvivorsLeftStartArea"+"\n");
 	if (nowPlayersinGame>4)
 	{	
-		SpawnWitch();		
+		SpawnWitch(null);		
 	}
 	Timers.AddTimer(60-5*nowPlayersinGame, true, SpawnWitch);
 	Timers.AddTimer(18.0, true, setBalanceDirectorOptions);
@@ -441,7 +443,8 @@ function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
 
 function Notifications::OnModeStart::GameStart(gamemode)
 {			
-	Msg("OnModeStart"+"\n");	
+	Msg("OnModeStart"+"\n");
+	setBalanceDirectorOptions(gamemode);
 }
 
 function Notifications::OnPlayerLeft::ModifyDirectorLeft (client, name, steamID, params)
@@ -614,8 +617,8 @@ function Notifications::OnPanicEvent::Iniciado(entity, params)
 {
 //	TimeTick4PanicMsg=10;
 	local mensaje = "PANIC: Derroten juntos a la horda!!!";
-	ShowHUDTicker(4,"PANIC",mensaje)
-	
+	ShowHUDTicker(4,"PANIC",mensaje);
+	launchPanicEventComplement();
 }
 
 function Notifications::OnHealSuccess::completaCuracion ( healee, healer, health, params )

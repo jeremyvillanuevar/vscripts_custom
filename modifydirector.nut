@@ -89,6 +89,49 @@ else
 	}
 }
 
+
+::cmd_nb_rush_player_try <- function (client,duration=15.0)
+{
+	Msg("cmd_nb_rush_player"+"\n");
+	
+	local vsPlayer = ::VSLib.Player(client);
+	local info_goal_infected_chase = g_ModeScript.CreateSingleSimpleEntityFromTable({ classname = "info_goal_infected_chase", targetname = "info_goal_infected_chase" + UniqueString(), origin = vsPlayer.GetEyePosition(), angles = QAngle(0,0,0) });
+	if (!info_goal_infected_chase)
+	{
+		printl("Advertencia: No se pudo crear la entidad de info_goal_infected_chase.");
+		//printl("警告:创建粒子实体失败.");
+		return;
+	}
+	AttachOther(PlayerInstanceFromIndex(vsPlayer.GetIndex()),info_goal_infected_chase, true,vsPlayer.GetEyePosition());
+	DoEntFire("!self", "Start", "", 0, null, info_goal_infected_chase);
+	DoEntFire("!self", "Enable", "", 0, null, info_goal_infected_chase);
+	//DoEntFire("!self", "AddOutput", "", 0, null, info_goal_infected_chase);
+	DoEntFire("!self", "FireUser1", "", 0, null, info_goal_infected_chase);
+	DoEntFire("!self", "Kill", "", duration, null, info_goal_infected_chase);
+}
+
+
+::cmd_nb_rush_player_command <- function (client)
+{
+	Msg("cmd_nb_rush_player_command"+"\n");
+	local vsPlayer = ::VSLib.Player(client);
+	foreach( ent in ::VSLib.EasyLogic.Zombies.CommonInfected() )
+	{
+		//NetProps.SetPropInt( ent, "m_mobRush", 1 );
+		Entity(ent).BotAttack(vsPlayer);
+	}		
+	// while (bot = Entities.FindByClassname(bot, "infected"))
+	// {
+		// if (bot.IsValid())
+		// {
+			// local vsbot = ::VSLib.Entity(bot);
+			// vsbot.BotAttack(vsPlayer);
+		// }
+	// }
+}
+
+
+
 ::SpawnTank <- function ( vPos=null,player=null )
 {
 	Msg("SpawnTank"+"\n");
@@ -136,6 +179,29 @@ else
 	}	
 }
 
+::closeARRange<- function()			
+{
+	if ( (developer() > 0) || (DEBUG == 1))
+	{
+		//nowActivateBalance=0;
+		ClientPrint(null, 3, "closeARRange");
+	}
+	nowAntiRushAddRange=0;
+	local mensaje = "Bien Hecho, sigan juntos!";
+	ShowHUDTicker(4,"Ad",mensaje)
+}
+
+::launchPanicEventComplement<- function()			
+{
+	if ( (developer() > 0) || (DEBUG == 1))
+	{
+		//nowActivateBalance=0;
+		ClientPrint(null, 3, "launchPanicEventComplement");
+	}
+	local player = ::VSLib.EasyLogic.Players.SurvivorWithHighestFlow();
+	cmd_nb_rush_player_command(player.GetIndex());
+	Director.PlayMegaMobWarningSounds();
+}
 ::setBalanceDirectorOptions <- function (args)
 {
 	Msg("setBalanceDirectorOptions"+"\n");
@@ -145,11 +211,12 @@ else
 		//nowActivateBalance=0;
 		ClientPrint(null, 3, "setBalanceDirectorOptions");
 	}
-	if (nowActivateBalance==1)
-		if (nowFinaleStarted==0 && nowFinaleScavengeStarted==0)
-			BalanceDirectorOptions()
-		else
-			BalanceFinaleDirectorOptions()
+	if (nowinScriptfromaMap==false)	
+		if (nowActivateBalance==1)
+			if (nowFinaleStarted==0 && nowFinaleScavengeStarted==0)
+				BalanceDirectorOptions();
+			else
+				BalanceFinaleDirectorOptions();
 	if ( (developer() > 0) || (DEBUG == 1))
 		IncludeScript ("debug_directoroptions.nut");	
 }
@@ -636,20 +703,21 @@ else
 		DirectorScript.MapScript.DirectorOptions.IntensityRelaxAllowWanderersThreshold <- 1;
 		if (nowPlayersinGame>6)
 		{
+			DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- (45+5*nowPlayersinGame)*sizeHordeModifier;
 			z_must_wander=1;
 			nav_lying_down_percent=15;
 		}
 		if (nowPlayersinGame>4)
 		{
-			DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- (30+5*nowPlayersinGame)*sizeHordeModifier;
+			DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- (40+5*nowPlayersinGame)*sizeHordeModifier;
 			z_must_wander=0;
 			nav_lying_down_percent=75;	
 		}				
 		else
 		{
-			DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- (30+3*nowPlayersinGame*sizeHordeModifier);
+			DirectorScript.MapScript.DirectorOptions.NumReservedWanderers <- (35+3*nowPlayersinGame*sizeHordeModifier);
 			z_must_wander=-1;
-			nav_lying_down_percent=100;
+			nav_lying_down_percent=100-5*nowPlayersinGame;
 		}
 	}
 	else
@@ -720,9 +788,9 @@ else
 		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (150+30*nowPlayersinGame*sizeHordeModifier)
 		DirectorScript.MapScript.DirectorOptions.MobMaxPending  <- (150+30*nowPlayersinGame*sizeHordeModifier)
 		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+12*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+4*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (30-5+4*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10+4*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (25+4*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (18-1*nowPlayersinGame)
 		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (45+3*nowPlayersinGame*sizeHordeModifier)
 	}
@@ -732,9 +800,9 @@ else
 		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (150+20*nowPlayersinGame*sizeHordeModifier)
 		DirectorScript.MapScript.DirectorOptions.MobMaxPending  <-  (150+20*nowPlayersinGame*sizeHordeModifier)
 		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+10*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+3*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (30-5+3*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (25+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (18-1*nowPlayersinGame)
 		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (45+3*nowPlayersinGame*sizeHordeModifier)
 	}
@@ -744,9 +812,9 @@ else
 		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (120+20*nowPlayersinGame*sizeHordeModifier)
 		DirectorScript.MapScript.DirectorOptions.MobMaxPending  <- (120+20*nowPlayersinGame*sizeHordeModifier)
 		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15+6*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+3*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (30-5+3*nowPlayersinGame*sizeHordeModifier)
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20-1*nowPlayersinGame)
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (25+3*nowPlayersinGame*sizeHordeModifier)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (18-1*nowPlayersinGame)
 		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36-1*nowPlayersinGame)
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (45+3*nowPlayersinGame*sizeHordeModifier)
 	}
@@ -755,9 +823,9 @@ else
 		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- (120)*sizeHordeModifier
 		DirectorScript.MapScript.DirectorOptions.MobMaxPending  <- (120)*sizeHordeModifier
 		DirectorScript.MapScript.DirectorOptions.BileMobSize<- (15)*sizeHordeModifier
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10-10+sizeHordeModifier*1*nowPlayersinGame*10/2)
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- (10+sizeHordeModifier*1*nowPlayersinGame*10/2)
 		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- (30-5+sizeHordeModifier*1*nowPlayersinGame*10/2)
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (20)
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- (18)
 		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- (36)
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- (45+sizeHordeModifier*1*nowPlayersinGame*10/2)
 	}
@@ -1441,9 +1509,9 @@ else
 		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 30+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.BileMobSize<- 15+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 40+4*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 10-10+4*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 10-5+4*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- 20-1*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 10+4*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 20+4*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- 24-1*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- 36-1*nowPlayersinGame
 	}
 	else
@@ -1452,9 +1520,9 @@ else
 		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 30+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.BileMobSize<- 15+2*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 45+3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 10-10+3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 10-5+3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- 20-1*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 10+3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 20+3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- 19-1*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- 36-1*nowPlayersinGame
 	}
 	else
@@ -1463,9 +1531,9 @@ else
 		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 30+3*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.BileMobSize<- 15+1*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 45+3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 10-10+3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 10-5+3*nowPlayersinGame
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- 20-1*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 10+3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 20+3*nowPlayersinGame
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- 15-1*nowPlayersinGame
 		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- 36-1*nowPlayersinGame
 	}
 		else
@@ -1473,9 +1541,9 @@ else
 		DirectorScript.MapScript.DirectorOptions.MegaMobSize<- 30
 		DirectorScript.MapScript.DirectorOptions.BileMobSize<- 15
 		DirectorScript.MapScript.DirectorOptions.CommonLimit <- 55+1*nowPlayersinGame*10/2
-		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 17-10+1*nowPlayersinGame*10/2
-		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 17-5+1*nowPlayersinGame*10/2
-		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- 20
+		DirectorScript.MapScript.DirectorOptions.MobMinSize <- 10+1*nowPlayersinGame*10/2
+		DirectorScript.MapScript.DirectorOptions.MobMaxSize <- 20+1*nowPlayersinGame*10/2
+		DirectorScript.MapScript.DirectorOptions.MobSpawnMinTime <- 9
 		DirectorScript.MapScript.DirectorOptions.MobSpawnMaxTime <- 36
 	}	
 	//ShouldConstrainLargeVolumeSpawn	bool

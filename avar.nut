@@ -14,15 +14,15 @@
 //mAAN, mINOD, physicsMapTarget, miniFinalDirectorNoSet, whichMapHasCanGames, isAFinale, noCSWeps,mFSoM,mSHMfM
 ::eMTVT <-
 {
-	c1m1_hotel				=	["clsd",0,0,0,00,0,0.25,"small",1.2]
-	c1m2_streets			=	["clsd",0,0,0,00,0,0,"small",1]
+	c1m1_hotel				=	["clsd",0,0,0,00,0,0.25,"small",1]
+	c1m2_streets			=	["clsd",0,0,0,00,0,0,"small",1.1]
 	c1m3_mall				=	["clsd",0,0,0,00,0,0.25,"medium",1]
-	c1m4_atrium				=	["clsd",0,0,0,14,1,0.25,"large",1.5]
-	c2m1_highway			=	["open",1,0,0,00,0,0.25,"large",1]
-	c2m2_fairgrounds		=	["open",1,1,0,00,0,0.25,"large",1]
-	c2m3_coaster			=	["clsd",1,0,0,00,0,0.25,"large",1]
-	c2m4_barns				=	["clsd",1,0,1,00,0,0.25,"large",1]
-	c2m5_concert			=	["clsd",1,0,0,00,1,0.25,"large",1]
+	c1m4_atrium				=	["clsd",0,0,0,14,1,0.25,"large",1.3]
+	c2m1_highway			=	["open",1,0,0,00,0,0.25,"medium",1.1]
+	c2m2_fairgrounds		=	["open",1,1,0,00,0,0.25,"small",1]
+	c2m3_coaster			=	["clsd",1,0,0,00,0,0.25,"large",1.1]
+	c2m4_barns				=	["clsd",1,0,1,00,0,0.25,"large",1.1]
+	c2m5_concert			=	["clsd",1,0,0,00,1,0.25,"large",1.3]
 	c3m1_plankcountry		=	["open",1,2,1,00,0,0.25,"large",1]
 	c3m2_swamp				=	["open",1,2,0,00,0,0.25,"large",1]
 	c3m3_shantytown			=	["open",1,2,0,00,0,0.25,"large",1]
@@ -104,7 +104,7 @@
 	::nowFinaleStageType <- 0
 	::nowFinaleStageEvent <- 0
 	::nowFirstPlayerinGame <- 0
-	::nowSpawnedTankRusher <- 0
+	::nowSpawnedTankRusher <- false
 	::nowSpawnedWitch <- 0
 	::nowStartConnectionsnum <- 0
 	::nowStartConnections <-  []

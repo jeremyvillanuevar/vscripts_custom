@@ -15,6 +15,9 @@ if ( (developer() > 0) || (DEBUG == 1))
 	local mensaje = "amap invoked";
 	ClientPrint(null, 3, BLUE+mensaje);
 }
+::DirectorScript.MapScript.LocalScript.DirectorOptions <-
+{
+}
 //implemented
 /*
 c1m1_hotel
@@ -37,18 +40,47 @@ c7m3_port
 		dest[key] <- val
 	}
 }
-::testamap <- function()			
-{
-	nowAntiRushAddRange=0;
-	local mensaje = "Bien Hecho, sigan juntos!";
-	ShowHUDTicker(4,"Ad",mensaje)
-}
 
+::defineDirectorOptions <- function( DirectorOptions )
+{	
+	DirectorScript.MapScript.LocalScript.DirectorOptions.clear();
+	AddTableToTable( DirectorScript.MapScript.LocalScript.DirectorOptions, DirectorOptions );
+}
 ::c1m1_hotel_sky_event <- function()			
 {
 	local execscriptName="sky_event";
 	aMapLogic(execscriptName);
 }
+::c1m1_hotel_C1m1_reserved_wanderers <- function()			
+{
+	local execscriptName="C1m1_reserved_wanderers";
+	aMapLogic(execscriptName);
+}
+
+::c1m2_streets_C1M2_reserved_wanderers <- function()			
+{
+	local execscriptName="C1M2_reserved_wanderers";
+	aMapLogic(execscriptName);
+}
+
+::c1m2_streets_C1_gunshop_onslaught <- function()			
+{
+	local execscriptName="C1_gunshop_onslaught";
+	aMapLogic(execscriptName);
+}
+
+::c1m2_streets_C1_gunshop_quiet <- function()			
+{
+	local execscriptName="C1_gunshop_quiet";
+	aMapLogic(execscriptName);
+}
+
+::c1m2_streets_C1_streets_ambush <- function()			
+{
+	local execscriptName="C1_streets_ambush";
+	aMapLogic(execscriptName);
+}
+
 ::c2m1_highway_C2_highway_ambush <- function()			
 {
 	local execscriptName="C2_highway_ambush";
@@ -62,34 +94,39 @@ c7m3_port
 
 ::aMapLogic <- function(execscriptName)			
 {
-	g_MapScript.LocalScript.DirectorOptions.clear();
 	switch (g_MapName)
 	{
 	//Scripts Names or Map Names Controlled by nowLocalScriptExec Times
 		case "c1m1_hotel":
 		{
-			switch (nowLocalScriptExec)
+			switch (execscriptName)
 			{
-				case 0:
+				case "C1m1_reserved_wanderers":
 				{
 					Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
 					nowLocalScriptExec++;
 					Msg("Replacing c1m1_reserved_wanderers\n");
 					Msg("Initiating Reserved Wanderers\n");
 
-					/*DirectorOptions <-
-					{
-						// Turn always wanderer on
-						AlwaysAllowWanderers = true
+					//nowWanderingPermit=true;
+					// nowinScriptfromaMap=true;					
+					// g_MapScript.DirectorOptions.clear();
+					// DirectorOptions <-
+					// {
+						// AlwaysAllowWanderers = true
+						// NumReservedWanderers = 5
+						// ProhibitBosses = true
+					// }
+					// AddTableToTable( g_MapScript.DirectorOptions, DirectorOptions );
 
-						// Set the number of infected that cannot be absorbed
-						NumReservedWanderers = 5
-
-						// This turns off tanks and witches.
-						//ProhibitBosses = true
-
-					}*/
-
+					// DirectorOptions <-
+					// {
+						// AlwaysAllowWanderers = true
+						// NumReservedWanderers = 5
+						// ProhibitBosses = true
+					// }
+					// defineDirectorOptions( DirectorOptions );
+					
 					Msg("Initiating relay buttons timers\n");
 
 					local buttonelevRelaytop = Entities.FindByName( null, "relay_top_button" ) 
@@ -145,27 +182,21 @@ c7m3_port
 					// }
 					break;
 				}
-				case 1:
+				case "sky_event":
 				{
 					Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
 					nowLocalScriptExec++;
 					Msg("sky_event_c1m1_hotel.nut\n");
-					Msg("Initiating Sky Elevator Event \n");
-
-					
+					Msg("Initiating Sky Elevator Event \n");					
 					nowWanderingPermit=false;
 					Timers.AddTimer(33,false,setTimerFlag,nowWanderingPermit);
 					//Director.ResetMobTimer() // Sets the mob spawn timer to 0.
 					//Director.PlayMegaMobWarningSounds() // Plays the incoming mob sound effect.
 					//L 04/30/2021 - 15:41:57: 57.29: (MOB) SpawnMob requested of size 36.
 					//Director.ResetMobTimer()
-					cmd_nb_rush();
 					Utils.ForcePanicEvent();
-					Director.PlayMegaMobWarningSounds();
 					//EntFire( "director", "PanicEvent", 0 )
-
-					//Timers.AddTimer( 5.0, true, SpawnTank);
-					
+					//Timers.AddTimer( 5.0, true, SpawnTank);					
 					local alarma = Entities.FindByName( null, "sound_alarm" );
 					local elevss = Entities.FindByName( null, "elevator_stuck_sound" );
 					local puerta = null;
@@ -197,72 +228,143 @@ c7m3_port
 		//c1_streets_ambush 1
 		//c1_gunshop_quiet 2
 		{			
-			if (nowLocalScriptExec==1)
+			switch (execscriptName)
 			{
-				Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
-				nowLocalScriptExec++;
-				Msg("c1_gunshop_quiet\n");
-				nowCrescendoStarted=1;
-				nowAntiRushAddRange=1000;
-				local mensaje = "Misión: Tienda de Armas";
-				ShowHUDTicker(4,"Ad",mensaje)
-				local id_ExplodeTanker = Entities.FindByName( null, "tanker_destroy_relay" );
-				local ent_logic_relay_ExplodeTanker = ::VSLib.Entity(id_ExplodeTanker);
-				ent_logic_relay_ExplodeTanker.AddOutput("OnTrigger", "worldspawn", "RunScriptCode", "testamap()", 0, -1 );
-				cmd_nb_rush();
-				Utils.ForcePanicEvent();
-				Director.PlayMegaMobWarningSounds();
-				//ent_logic_relay_ExplodeTanker.AddOutput("OnTrigger", "@director", "runscriptcode", "DirectorScript.MapScript.LocalScript.GasCanTouched()", 0, -1 );
-				//local tabladeentidad={};
-				//ent_logic_relay_ExplodeTanker.GetOutputTable(tabladeentidad);			
-				//foreach( key, value in ent_logic_relay_ExplodeTanker )
-				//{
-				//	Msg( "    " + key + " = " + value + "\n" );
-				//}		
-				//@directorrunscriptcodeDirectorScript.MapScript.LocalScript.GasCanTouched()0-1
-				//DirectorOptions <-
-				//{
-					// This turns off tanks and witches.
-				//	ProhibitBosses = false
-				//	PreferredMobDirection = SPAWN_BEHIND_SURVIVORS
-				//	PreferredSpecialDirection = SPAWN_SPECIALS_ANYWHERE
-				//}
-				//function GasCanTouched()
-				//{
-				//	local mensaje = "GasCanTouched";
-				//	ShowHUDTicker(4,"Ad",mensaje)
-				//}
-			}
-			if (nowLocalScriptExec==0)
-			{
-				Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
-				nowLocalScriptExec++;
-				Msg("c1_streets_ambush\n");
-				Msg("Initiating Ambush\n");
-				local tempChargerLimit=2+1*nowPlayersinGame/4
-				DirectorOptions <-
+				case "C1_gunshop_quiet":
 				{
-					// This turns off tanks and witches.
-					//ProhibitBosses = false
-					MaxSpecials = DirectorScript.MapScript.DirectorOptions.MaxSpecials+tempChargerLimit
-					DominatorLimit = DirectorScript.MapScript.DirectorOptions.MaxSpecials+tempChargerLimit
-					BoomerLimit = 0
-					SmokerLimit = 0
-					HunterLimit = 0
-					ChargerLimit = tempChargerLimit
-					SpitterLimit = 0
-					JockeyLimit = 0
-					LockTempo = false
-					SpecialRespawnInterval = 30-1*nowPlayersinGame
-					SpecialInitialSpawnDelayMin = 2
-					SpecialInitialSpawnDelayMax = 6
-					PreferredSpecialDirection = SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS	
-					PreferredMobDirection =	SPAWN_IN_FRONT_OF_SURVIVORS
-					ZombieSpawnRange=500				
+					Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+					nowLocalScriptExec++;
+					Msg("C1_gunshop_quiet\n");
+					nowCrescendoStarted=1;
+					nowAntiRushAddRange=1000;
+					mSHMfM=1.5;
+					local id_ExplodeTanker = Entities.FindByName( null, "tanker_destroy_relay" );
+					local ent_logic_relay_ExplodeTanker = ::VSLib.Entity(id_ExplodeTanker);
+					ent_logic_relay_ExplodeTanker.AddOutput("OnTrigger", "worldspawn", "RunScriptCode", "closeARRange()", 0, -1 );
+					
+					DirectorOptions <-
+					{
+						// This turns off tanks and witches.
+						ProhibitBosses = true
+
+						PreferredMobDirection = SPAWN_BEHIND_SURVIVORS
+						MobSpawnMinTime = 1
+						MobSpawnMaxTime = 2
+						MobMaxPending = 10
+						//MobMinSize = 10
+						//MobMaxSize = 20
+						SustainPeakMinTime = 1
+						SustainPeakMaxTime = 3
+						IntensityRelaxThreshold = 0.90
+						RelaxMinInterval = 5
+						RelaxMaxInterval = 10
+						RelaxMaxFlowTravel = 200
+					}
+					Director.ResetMobTimer();
+					defineDirectorOptions( DirectorOptions );
+					
+					Utils.ForcePanicEvent();
+					
+					local mensaje = "Misión: Tienda de Armas";
+					ShowHUDTicker(4,"Ad",mensaje);
+					//ent_logic_relay_ExplodeTanker.AddOutput("OnTrigger", "@director", "runscriptcode", "DirectorScript.MapScript.LocalScript.GasCanTouched()", 0, -1 );
+					//local tabladeentidad={};
+					//ent_logic_relay_ExplodeTanker.GetOutputTable(tabladeentidad);			
+					//foreach( key, value in ent_logic_relay_ExplodeTanker )
+					//{
+					//	Msg( "    " + key + " = " + value + "\n" );
+					//}		
+					//@directorrunscriptcodeDirectorScript.MapScript.LocalScript.GasCanTouched()0-1
+					//DirectorOptions <-
+					//{
+						// This turns off tanks and witches.
+					//	ProhibitBosses = false
+					//	PreferredMobDirection = SPAWN_BEHIND_SURVIVORS
+					//	PreferredSpecialDirection = SPAWN_SPECIALS_ANYWHERE
+					//}
+					//function GasCanTouched()
+					//{
+					//	local mensaje = "GasCanTouched";
+					//	ShowHUDTicker(4,"Ad",mensaje)
+					//}
+					break;
+				}			
+				case "C1_gunshop_onslaught":
+				{
+					Msg("C1_gunshop_onslaught\n");
+					Msg("Initiating Onslaught\n");
+
+					DirectorOptions <-
+					{
+						// This turns off tanks and witches.
+						ProhibitBosses = true
+
+						PreferredMobDirection = SPAWN_BEHIND_SURVIVORS
+						MobSpawnMinTime = 1
+						MobSpawnMaxTime = 2
+						MobMaxPending = 10
+						//MobMinSize = 10
+						//MobMaxSize = 20
+						SustainPeakMinTime = 1
+						SustainPeakMaxTime = 3
+						IntensityRelaxThreshold = 0.90
+						RelaxMinInterval = 5
+						RelaxMaxInterval = 10
+						RelaxMaxFlowTravel = 200
+					}
+					Director.ResetMobTimer();
+					defineDirectorOptions( DirectorOptions );
+					Utils.ForcePanicEvent();
+					//Director.ResetMobTimer()
+					//Director.PlayMegaMobWarningSounds()
+
+					break;
+				}				
+				case "C1_streets_ambush":
+				{			
+					Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
+					nowLocalScriptExec++;
+					Msg("C1_streets_ambush\n");
+					Msg("Initiating Ambush\n");
+					local tempChargerLimit=2+1*nowPlayersinGame/4;
+					
+					//nowinScriptfromaMap=true;	
+					DirectorOptions <-
+					{
+						// This turns off tanks and witches.
+						//ProhibitBosses = false
+						MaxSpecials = DirectorScript.MapScript.DirectorOptions.MaxSpecials+tempChargerLimit
+						DominatorLimit = DirectorScript.MapScript.DirectorOptions.MaxSpecials+tempChargerLimit
+						BoomerLimit = 0
+						SmokerLimit = 0
+						HunterLimit = 0
+						ChargerLimit = tempChargerLimit
+						SpitterLimit = 0
+						JockeyLimit = 0
+						LockTempo = false
+						SpecialRespawnInterval = 30-1*nowPlayersinGame
+						SpecialInitialSpawnDelayMin = 2
+						SpecialInitialSpawnDelayMax = 6
+						PreferredSpecialDirection = SPAWN_SPECIALS_IN_FRONT_OF_SURVIVORS	
+						PreferredMobDirection =	SPAWN_IN_FRONT_OF_SURVIVORS
+						ZombieSpawnRange=500
+						MobSpawnMinTime = 1
+						MobSpawnMaxTime = 2
+						MobMaxPending = 10
+						//MobMinSize = DirectorScript.MapScript.DirectorOptions.MobMinSize
+						//MobMaxSize = 20+1*nowPlayersinGame
+						SustainPeakMinTime = 1
+						SustainPeakMaxTime = 3
+						IntensityRelaxThreshold = 0.90
+						RelaxMinInterval = 5
+						RelaxMaxInterval = 10
+						RelaxMaxFlowTravel = 200			
+					}
+					Director.ResetMobTimer();
+					defineDirectorOptions( DirectorOptions );
+					Utils.ForcePanicEvent();
+					break;
 				}
-				cmd_nb_rush();
-				Utils.ForcePanicEvent();
-				Director.PlayMegaMobWarningSounds();
 			}
 			break;
 		}
@@ -648,10 +750,10 @@ c7m3_port
 				case "C2_highway_ambush":
 				{
 					Msg( "C2_highway_ambush\n" );					
-					SharedOptions <-
+					DirectorOptions <-
 					{
 						// This turns off tanks and witches.
-						ProhibitBosses = false
+						//ProhibitBosses = false
 
 						BoomerLimit = 0
 						SmokerLimit = 3
@@ -660,7 +762,8 @@ c7m3_port
 						SpitterLimit = 0
 						JockeyLimit = 1
 					}
-					AddTableToTable( g_MapScript.LocalScript.DirectorOptions, SharedOptions );
+					Director.ResetMobTimer();
+					defineDirectorOptions( DirectorOptions );
 				
 				}
 				default:
@@ -2636,7 +2739,6 @@ c7m3_port
 
 ::aScriptLogic <- function(execscriptName)			
 {
-	g_MapScript.LocalScript.DirectorOptions.clear();
 	switch (execscriptName)
 	{
 	//Scripts Names or Map Names Controlled by nowLocalScriptExec Times
@@ -2652,9 +2754,9 @@ c7m3_port
 				PreferredMobDirection = SPAWN_IN_FRONT_OF_SURVIVORS
 				MobSpawnMinTime = 4
 				MobSpawnMaxTime = 4
-				MobMaxPending = 16
-				MobMinSize = 16
-				MobMaxSize = 16
+				//MobMaxPending = 16
+				//MobMinSize = 16
+				//MobMaxSize = 16
 				SustainPeakMinTime = 3
 				SustainPeakMaxTime = 3
 				IntensityRelaxThreshold = 0.90
@@ -2662,11 +2764,7 @@ c7m3_port
 				RelaxMaxInterval = 4
 				RelaxMaxFlowTravel = 200
 			}
-			AddTableToTable( g_MapScript.LocalScript.DirectorOptions, DirectorOptions );
-			//Director.ResetMobTimer()
-			cmd_nb_rush();
-			Director.PlayMegaMobWarningSounds();
-			Utils.ForcePanicEvent();
+			defineDirectorOptions(DirectorOptions);
 		}
 		break;
 	}
