@@ -245,6 +245,7 @@ else
 
 
 	//P. Survivor A.I.
+	
 	local sb_friend_immobilized_reaction_time_normal=0;
 	local sb_friend_immobilized_reaction_time_hard=0;
 	local sb_friend_immobilized_reaction_time_expert=0;
@@ -407,6 +408,8 @@ else
 	local l4d_pwm_psychoticchargepower = "1";
 	// How close a Survivor has to be to be hit by the Psychotic Charge. (Def 200)
 	local l4d_pwm_psychoticchargerange = "5";
+	//Witch Damage
+	local l4d_witch_damage_scale="18,27,36,45"
 
 	//Speciales
 	//Explosion de Boomer
@@ -598,6 +601,8 @@ else
 	Convars.SetValue("l4d_pwm_psychoticchargepower" ,	l4d_pwm_psychoticchargepower);
 	// How close a Survivor has to be to be hit by the Psychotic Charge. (Def 200)
 	Convars.SetValue("l4d_pwm_psychoticchargerange" ,	l4d_pwm_psychoticchargerange);
+	//Witchs
+	Convars.SetValue("l4d_witch_damage_scale" ,			l4d_witch_damage_scale);		
 
 
 	//Speciales

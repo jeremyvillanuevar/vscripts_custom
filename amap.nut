@@ -6,15 +6,6 @@
 //File Description: This is a control file that selects map specific files used by TADM
 
 
-Msg("................................................ " + g_MapName + "\n");
-Msg("..............................nowexecScriptName: " + nowexecScriptName + "\n");
-Msg(".............................nowLocalScriptExec: " + nowLocalScriptExec + "\n");
-
-if ( (developer() > 0) || (DEBUG == 1))
-{
-	local mensaje = "amap invoked";
-	ClientPrint(null, 3, BLUE+mensaje);
-}
 ::DirectorScript.MapScript.LocalScript.DirectorOptions <-
 {
 }
@@ -86,25 +77,52 @@ c7m3_port
 	local execscriptName="C2_highway_ambush";
 	aMapLogic(execscriptName);
 }
+::sky_events_in_any_where<- function()			
+{
+	local execscriptName="sky_events_in_any_where";
+	aScriptLogic(execscriptName);
+}
 ::sky_events_in_front <- function()			
 {
 	local execscriptName="sky_events_in_front";
 	aScriptLogic(execscriptName);
 }
 
+::sky_events_silent<- function()			
+{
+	local execscriptName="sky_events_silent";
+	aScriptLogic(execscriptName);
+}
+
+::sky_scavenge_cans_cvars<- function()			
+{
+	local execscriptName="sky_scavenge_cans_cvars";
+	aScriptLogic(execscriptName);
+}
+
+
+Msg("................................................ amap invoked\n");
+Msg("................................................ " + g_MapName + "\n");
+Msg("..............................nowexecScriptName: " + nowexecScriptName + "\n");
+Msg(".............................nowLocalScriptExec: " + nowLocalScriptExec + "\n");
+
+if ( (developer() > 0) || (DEBUG == 1))
+{
+	local mensaje = "amap invoked";
+	ClientPrint(null, 3, BLUE+mensaje);
+}
 ::aMapLogic <- function(execscriptName)			
 {
+Msg("................................................ aMapLogic\n");
+Msg(".................................execscriptName: " + execscriptName + "\n");
 	switch (g_MapName)
 	{
-	//Scripts Names or Map Names Controlled by nowLocalScriptExec Times
 		case "c1m1_hotel":
 		{
 			switch (execscriptName)
 			{
 				case "C1m1_reserved_wanderers":
 				{
-					Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
-					nowLocalScriptExec++;
 					Msg("Replacing c1m1_reserved_wanderers\n");
 					Msg("Initiating Reserved Wanderers\n");
 
@@ -184,8 +202,6 @@ c7m3_port
 				}
 				case "sky_event":
 				{
-					Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
-					nowLocalScriptExec++;
 					Msg("sky_event_c1m1_hotel.nut\n");
 					Msg("Initiating Sky Elevator Event \n");					
 					nowWanderingPermit=false;
@@ -232,8 +248,6 @@ c7m3_port
 			{
 				case "C1_gunshop_quiet":
 				{
-					Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
-					nowLocalScriptExec++;
 					Msg("C1_gunshop_quiet\n");
 					nowCrescendoStarted=1;
 					nowAntiRushAddRange=1000;
@@ -322,8 +336,6 @@ c7m3_port
 				}				
 				case "C1_streets_ambush":
 				{			
-					Msg("Local Script exec n° "+nowLocalScriptExec+"\n");
-					nowLocalScriptExec++;
 					Msg("C1_streets_ambush\n");
 					Msg("Initiating Ambush\n");
 					local tempChargerLimit=2+1*nowPlayersinGame/4;
@@ -764,6 +776,7 @@ c7m3_port
 					}
 					Director.ResetMobTimer();
 					defineDirectorOptions( DirectorOptions );
+					Utils.ForcePanicEvent();
 				
 				}
 				default:
@@ -2739,9 +2752,10 @@ c7m3_port
 
 ::aScriptLogic <- function(execscriptName)			
 {
+Msg("................................................ aScriptLogic\n");
+Msg(".................................execscriptName: " + execscriptName + "\n");
 	switch (execscriptName)
 	{
-	//Scripts Names or Map Names Controlled by nowLocalScriptExec Times
 		case "sky_events_in_front":
 		{	
 			Msg( "sky_events_in_front\n" );
@@ -2764,7 +2778,75 @@ c7m3_port
 				RelaxMaxInterval = 4
 				RelaxMaxFlowTravel = 200
 			}
+			Director.ResetMobTimer();
 			defineDirectorOptions(DirectorOptions);
+			Utils.ForcePanicEvent();
+		}
+		break;
+		case "sky_events_in_any_where":
+		{	
+			Msg( "sky_events_in_any_where\n" );
+			Msg("Initiating Sky Panic Event\n");
+			DirectorOptions <-
+			{
+				// This turns off tanks and witches.
+				ProhibitBosses = true
+
+				PreferredMobDirection = SPAWN_ANYWHERE
+				MobSpawnMinTime = 4
+				MobSpawnMaxTime = 4
+				//MobMaxPending = 16
+				//MobMinSize = 16
+				//MobMaxSize = 16
+				SustainPeakMinTime = 3
+				SustainPeakMaxTime = 3
+				IntensityRelaxThreshold = 0.90
+				RelaxMinInterval = 4
+				RelaxMaxInterval = 4
+				RelaxMaxFlowTravel = 200
+			}
+			Director.ResetMobTimer();
+			defineDirectorOptions(DirectorOptions);
+			Utils.ForcePanicEvent();
+		}
+		break;
+		case "sky_events_silent":
+		{	
+			Msg( "sky_events_silent\n" );
+			Msg("Initiating Sky Panic Event\n");
+
+			DirectorOptions <-
+			{
+				// This turns off tanks and witches.
+				ProhibitBosses = true
+
+				PreferredMobDirection = SPAWN_IN_FRONT_OF_SURVIVORS
+				MobSpawnMinTime = 1
+				MobSpawnMaxTime = 2
+				//MobMaxPending = 20
+				//MobMinSize = 20
+				//MobMaxSize = 20
+				SustainPeakMinTime = 1
+				SustainPeakMaxTime = 3
+				IntensityRelaxThreshold = 0.90
+				RelaxMinInterval = 3
+				RelaxMaxInterval = 3
+				RelaxMaxFlowTravel = 200
+			}
+
+			Director.ResetMobTimer()
+			defineDirectorOptions(DirectorOptions);
+			Utils.ForcePanicEvent();
+		}
+		break;
+		case "sky_scavenge_cans_cvars":
+		{	
+			Msg( "sky_scavenge_cans_cvars\n" );
+			Msg("Initiating Sky Scavenge Item Cvars");
+
+			Convars.SetValue( "inferno_flame_lifetime", 2.5 )
+			Convars.SetValue( "inferno_max_range", 250 )
+			Convars.SetValue( "inferno_flame_spacing", 25 )
 		}
 		break;
 	}
