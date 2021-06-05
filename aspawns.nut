@@ -232,6 +232,7 @@
 	local currentMap = SessionState.MapName;
 	local tableToUse = {};
 	local tableFuncEntToUse = {};
+	local tableEntOutputsToUse = {};
 
 	switch (currentMap)
 	{
@@ -239,6 +240,7 @@
 		{						
 			tableToUse = mSTc1m1;
 			tableFuncEntToUse = mSFETc1m1;
+			tableEntOutputsToUse = mEOCTc1m1;
 			Msg("from amap found: " + currentMap + "\n");
 			break;
 		}
@@ -261,13 +263,14 @@
 				urban_pot_large_002		=	[371,2868,590,0,90,0,0,"pot"]
 				urban_pot_large_003		=	[-377,3111,480,0,90,0,0,"pot"]
 			}
+			tableEntOutputsToUse = mEOCTc1m2;
 			Msg("from amap found: " + currentMap + "\n");
 			break;
 		}
 		case "c1m3_mall":
 		case "c1m4_atrium":
 		case "c2m1_highway":
-{				
+		{
 			tableToUse =
 			{
 				garbagePile02_001		=	[-435,-1701.65,-1087,-0.612655,13.546,0.0171361,256,"garbagePile02"]
@@ -338,6 +341,7 @@
 				smoke_exhaust_009		=	[10438,7841,-483,-25.0147,249.561,-101.956,0,"exhaust01"]
 				smoke_exhaust_010		=	[10402.9,7856.61,-518.644,-25.0147,197.561,-101.956,0,"exhaust01"]
 			}
+			tableEntOutputsToUse = mEOCTc2m1;
 			Msg("from amap found: " + currentMap + "\n");
 			break;
 		}
@@ -575,11 +579,27 @@
 		local categoryName = tableFuncEntToUse[index][7];
 		local cmdinput1 = tableFuncEntToUse[index][8];
 		funcEntsSpawner(propPhysicsName, propPhysicsVector, propAngleVector, propSpawnFlag, categoryName, cmdinput1);
-	}
+	}	
+	foreach(index, item in tableEntOutputsToUse)
+	{
+		local entindexName = index;
+		local entrelay = Entities.FindByName( null, tableEntOutputsToUse[index][0] );
+		local entAction=tableEntOutputsToUse[index][1];
+		if ( entrelay )
+		{
+			switch (entAction)
+			{
+				case "AddOutput":
+					EntityOutputs.AddOutput( entrelay, tableEntOutputsToUse[index][2], tableEntOutputsToUse[index][3], tableEntOutputsToUse[index][4], tableEntOutputsToUse[index][5], tableEntOutputsToUse[index][6], tableEntOutputsToUse[index][7] );
+					break;
+				case "RemoveOutput":
+					EntityOutputs.RemoveOutput( entrelay, tableEntOutputsToUse[index][2], tableEntOutputsToUse[index][3], tableEntOutputsToUse[index][4], tableEntOutputsToUse[index][5], tableEntOutputsToUse[index][6], tableEntOutputsToUse[index][7] );
+					break;
+			}
+		}
+	}	
 	Msg("Executed: mapEntitiesSpawner function\n");
 }
-
-
 
 ::deadCenterMallGascanSpawn <- function(targetName, position, angle)
 {

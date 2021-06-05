@@ -171,26 +171,36 @@
 		nowFinaleStageEvent = 0
 		OnCustomFinaleStageChangeHook()
 	}
-	//if (nowPlayersinGame>8)
-	//{
-		Time4TimerWitch--;
-	//}
 	TimeTick4ConnectMsg--;		
 	TimeTick4WitchMsg--;
 	TimeTick4PanicMsg--;
 	TimeTick4BossMsg--;
 	TimeTick4HealMsg--;
 	TimeTick4BossDefeatedMsg--;
-	/*
-	if (Time4TimerWitch<=0)
-	{
-		SpawnWitch();
-		Time4TimerWitch=60-5*nowPlayersinGame;
-		TimeTick4WitchMsg=10;
-		nowSpawnedWitch++;
-	}
-	*/
 	portedAntiRushPlugin(arg);
+	
+	if (nowSpawnWitchTimer<0)
+	{
+		SpawnWitch(null);
+		local timeforwitch=180-5*nowPlayersinGame;
+		if (nowPlayersinGame>6)
+			timeforwitch=180-15*nowPlayersinGame;
+		else
+			if (nowPlayersinGame>3)
+				timeforwitch=180-9*nowPlayersinGame;
+		nowSpawnWitchTimer=timeforwitch;
+	}
+	
+	// local modtimerforwitch=0.0;
+	// modtimerforwitch=nowSpawnWitchTimer%(timeforwitch);
+	// local divtimerforwitch =nowSpawnWitchTimer/(timeforwitch);
+	// modtimerforwitch=nowSpawnWitchTimer%(timeforwitch);
+	// if (modtimerforwitch>0 && divtimerforwitch.tointeger()>0)
+	// {
+		// SpawnWitch(null);
+		// nowSpawnWitchTimer=0;
+	// }
+	//Timers.AddTimer(60-5*nowPlayersinGame, true, SpawnWitch);
 	
 	if(ClearEdicts)
 	{
@@ -209,8 +219,8 @@
 				{
 					DoEntFire( "!self", "kill", "", 0, null, z );
 				}
-			}		
-		}	
+			}
+		}
 	}
 
 	// Usado para clasificar//用于排序
@@ -223,18 +233,18 @@
 	
 	foreach( survivor in ::VSLib.EasyLogic.Players.Survivors() )
 	{
-		survivorcount++
-		nowPlayersIntensity=nowPlayersIntensity+survivor.GetIntensity()
-		nowPlayersTimeAveragedIntensity=nowPlayersTimeAveragedIntensity+survivor.GetTimeAveragedIntensity()
+		survivorcount++;
+		nowPlayersIntensity=nowPlayersIntensity+survivor.GetIntensity();
+		nowPlayersTimeAveragedIntensity=nowPlayersTimeAveragedIntensity+survivor.GetTimeAveragedIntensity();
 		if(survivor.IsBot())
-			continue;	
+			continue;
 		KillNum.insert(clientcount++,survivor.GetIndex());
 		if(!PlayerKillCout.rawin(survivor.GetIndex()))
 		{
 			PlayerKillCout[survivor.GetIndex()] <- 0;	
 			PlayerRandCout[survivor.GetIndex()] <- RandomInt(0,9);	
 		}
-	}	
+	}
 	//printl ("Número real de personas:" + clientcount + "\n");
 	// Actualiza los caracteres de visualización realmente necesarios. Evite quedarse
 	// Si la condición es i <KillNum.len () cuando el bot es expulsado. O si el jugador se va, es posible que el elemento de la pantalla no se borre.
@@ -371,7 +381,7 @@
 	{
 		local distanceaux = flowlist[posSurvivor]-flowlist[i];//flow - lastFlow; inverted
 		if ((distanceaux>maximoparaRushTP)&&nowflSpeedAhead)
-			speedlist[posSurvivor]=speedlist[posSurvivor]-(1.0/(flowlist.len()-1));//speed - 0.5/2 = 1-0.25=0.75
+			speedlist[posSurvivor]=speedlist[posSurvivor]-(1.5/(flowlist.len()-1));//speed - 0.5/2 = 1-0.25=0.75
 	}
 	if (( (developer() > 0) || (DEBUG == 1 && DEBUGSPEED == 1 ) ))
 	{
@@ -418,7 +428,7 @@
 		else speedlist[i]=1.0;
 		player.SetNetProp("m_flLaggedMovementValue", speedlist[i] );
 	}
-	else	
+	else
 	if (posSurvivor==flowlist.len()-1)
 	{
 		local distance = flowlist[posSurvivor]-flowlist[posSurvivor+1];//lastFlow - flow;
@@ -817,13 +827,13 @@
 			{
 				ClientPrint(null, 3, "[AR] calculateSpeedAR");
 			}
-			if ((nowflSpeedBehind||nowflSpeedAhead))
-			{
+			//if ((nowflSpeedBehind||nowflSpeedAhead))
+			//{
 				for( local i = 0; i < countflow-1; i++ )//len es tamaño completo no es -1
 				{				 
 					calculateSpeedAR(i);			
 				}
-			}
+			//}
 			
 		}
 		
@@ -842,7 +852,7 @@
 	//if(thisMap in cMSF)
 	if(thisMap in eMTVT)
 	{
-		Timers.AddTimer(5, false, mapEntitiesSpawner,params);
+		Timers.AddTimer(9, false, mapEntitiesSpawner,params);
 	}
 	Msg("Executed: spawnForMapSpecificData function\n");
 }
@@ -1354,7 +1364,19 @@
 
 ::setTimerFlag <- function (flag)
 {
+	Msg("setTimerFlag\n");
 	flag = !flag;
 }
 
+
+::setTimerIncrement <- function (parmNumber)
+{
+	parmNumber = parmNumber+1;
+}
+
+
+::setTimerIncrementWT <- function (args)
+{	
+	nowSpawnWitchTimer--;
+}
 Msg("Loaded: aTFuncs.nut\n");

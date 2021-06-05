@@ -26,6 +26,10 @@ IncludeScript ("debug.nut");
 	::speedlist <-[];
 	::flowlist <-[];
 	::countflow<- 0;
+	
+	::timerIndex1<- 0;
+	::timerIndex2<- 0;
+	::timerIndex3<- 0;
 }
 
 if ( (developer() > 0) || (DEBUG == 1))

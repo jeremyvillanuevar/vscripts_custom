@@ -18,7 +18,7 @@
 	c1m2_streets			=	["clsd",0,0,0,00,0,0,"small",1.1]
 	c1m3_mall				=	["clsd",0,0,0,00,0,0.25,"medium",1]
 	c1m4_atrium				=	["clsd",0,0,0,14,1,0.25,"large",1.3]
-	c2m1_highway			=	["open",1,0,0,00,0,0.25,"medium",1.1]
+	c2m1_highway			=	["open",1,0,0,00,0,0.25,"medium",1]
 	c2m2_fairgrounds		=	["open",1,1,0,00,0,0.25,"small",1]
 	c2m3_coaster			=	["clsd",1,0,0,00,0,0.25,"large",1.1]
 	c2m4_barns				=	["clsd",1,0,1,00,0,0.25,"large",1.1]
@@ -56,7 +56,7 @@
 	c10m4_mainstreet		=	["open",1,0,0,00,0,0.25,"large",1]
 	c10m5_houseboat			=	["clsd",1,0,0,00,1,0.25,"large",1]
 	c11m1_greenhouse		=	["clsd",1,0,0,00,0,0.25,"large",1]
-	c11m2_offices			=	["clsd",1,0,0,00,0,0.25,"large",1]
+	c11m2_offices			=	["clsd",1,0,0,00,0,0.25,"large",0.8]
 	c11m3_garage			=	["clsd",1,0,0,00,0,0.25,"large",1]
 	c11m4_terminal			=	["clsd",1,0,0,00,0,0.25,"large",1]
 	c11m5_runway			=	["clsd",1,0,0,00,1,0.25,"large",1]
@@ -105,13 +105,14 @@
 	::nowFinaleStageEvent <- 0
 	::nowFirstPlayerinGame <- 0
 	::nowSpawnedTankRusher <- false
-	::nowSpawnedWitch <- 0
 	::nowStartConnectionsnum <- 0
 	::nowStartConnections <-  []
 	::nowPlayerEvent <- ""
 	::nowPlayerJoined <- ""
 	::nowPlayerLeft <- ""
+	::nowSafeDoorReached <- 0
 	::nowMatchEnded <- 0
+	::nowSpawnWitchTimer <- 9999;
 	//ShowPlayerState now
 	::PlayerKillCout <- {}; 
 	::PlayerRandCout <- {}; 
@@ -126,7 +127,6 @@
 	::removed_common_spawns <- false;
 	::ClearEdicts<- false;
 	::Time4Connections <- 54;
-	::Time4TimerWitch <- 60;
 	::Time4TimerRusher <- 0;
 	::Time4Tick <- 0;
 	::TimeTick4Rescue <- 0;
@@ -353,6 +353,27 @@
 	sky_elevator_button_model = [2263,5695,2516,0,266,0,260,"prop_dynamic","models/props_equipment/elevator_buttons.mdl"]
 }
 
+//Entities Outputs Changers Table c1m1
+//cmdinput1
+::mEOCTc1m1 <-
+{	
+	idx1			=	["relay_top_button","AddOutput","OnTrigger", "customtimer1", "Enable", "", 0.0, -1]
+	idx2			=	["relay_top_button","AddOutput","OnTrigger", "customtimer2", "Enable", "", 0.0, -1]
+	idx3			=	["relay_elevator_reached_bottom","AddOutput","OnTrigger", "customtimer1", "Disable", "", 10.0, -1]
+	idx4			=	["relay_elevator_reached_bottom","AddOutput","OnTrigger", "customtimer2", "Disable", "", 10.0, -1]
+}
+
+::mEOCTc1m2 <-
+{	
+	idx1			=	["tanker_destroy_relay","AddOutput","OnTrigger", "worldspawn", "RunScriptCode", "closeARRange()", 0, -1 ]
+}
+
+::mEOCTc2m1 <-
+{
+	idx1			=	["silver_planecrash_trigger","AddOutput","OnTrigger", "sky_visual_trigger", "kill", "", 0.1, -1 ]
+	idx2			=	["silver_planecrash_trigger","AddOutput","OnTrigger", "sky_air_crash_relay", "Trigger", "", 0, -1 ]
+	idx3			=	["silver_planecrash_trigger","AddOutput","OnTrigger", "sky_air_horde_relay", "Trigger", "", 14.5, -1 ]
+}
 //Spawn Scavenge Gas Cans Table c1m4
 ::mSSGCTc1m4 <-
 {

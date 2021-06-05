@@ -161,14 +161,14 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 					{
 						Msg("mod the buttonelevRelaytop\n");		
 						local entbuttonelevRelaytop = ::VSLib.Entity(buttonelevRelaytop);
+						//entbuttonelevRelaytop.AddOutput("OnTrigger", "customtimer1", "Enable", "", 0.0, -1 );
+						//entbuttonelevRelaytop.AddOutput("OnTrigger", "customtimer2", "Enable", "", 0.0, -1 );	
 						//AddOutput( output, target, input, parameter = "", delay = 0, timesToFire = -1 )
 						//<output name> <targetname>:<inputname>:<parameter>:<delay>:<max times to fire, 1 means once and -1 means infinite>
 						//"OnHealthChange" "!self,AddOutput,targetname prop9001"
 						//OutputName TargetName:Color:255 255 255:0:-1
 						//"OnMapSpawn" "team_round_timer_red,AddOutput,OnFinished game_round_win:RoundWin::0:-1,0,-1"
 						//DELAY SIEMPRE ES FLOAT
-						entbuttonelevRelaytop.AddOutput("OnTrigger", "customtimer1", "Enable", "", 0.0, -1 );
-						entbuttonelevRelaytop.AddOutput("OnTrigger", "customtimer2", "Enable", "", 0.0, -1 );	
 						//DoEntFire("!self", "AddOutput", "OnTrigger customtimer1:Enable::0:-1", 0.0, null, entbuttonelevRelaytop);
 						//DoEntFire("!self", "AddOutput", "OnTrigger customtimer2:Enable::0:-1", 0.0, null, entbuttonelevRelaytop);
 						//ALTERNATIVA
@@ -179,10 +179,10 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 					{
 						Msg("mod the buttonelevRelaybot\n");		
 						local entbuttonelevRelaybot = ::VSLib.Entity(buttonelevRelaybot);
-						entbuttonelevRelaybot.AddOutput("OnTrigger", "customtimer1", "Disable", "", 10.0, -1 )
-						entbuttonelevRelaybot.AddOutput("OnTrigger", "customtimer2", "Disable", "", 10.0, -1 )
 						//entbuttonelevRelaybot.RemoveOutput("OnTrigger", "customtimer1", "Disable", "");
 						//entbuttonelevRelaybot.RemoveOutput("OnTrigger", "customtimer2", "Disable", "");		
+						//entbuttonelevRelaybot.AddOutput("OnTrigger", "customtimer1", "Disable", "", 10.0, -1 )
+						//entbuttonelevRelaybot.AddOutput("OnTrigger", "customtimer2", "Disable", "", 10.0, -1 )
 						//DoEntFire("!self", "AddOutput", "OnTrigger customtimer1:Disable::0:-1", 0.0, null, entbuttonelevRelaybot);
 						//DoEntFire("!self", "AddOutput", "OnTrigger customtimer2:Disable::0:-1", 0.0, null, entbuttonelevRelaybot);
 					}
@@ -241,8 +241,6 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 		case "c1m2_streets":
 		//c1_3_trafficmessage_frequency
 		//c1m2_reserved_wanderers
-		//c1_streets_ambush 1
-		//c1_gunshop_quiet 2
 		{			
 			switch (execscriptName)
 			{
@@ -251,10 +249,12 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 					Msg("C1_gunshop_quiet\n");
 					nowCrescendoStarted=1;
 					nowAntiRushAddRange=1000;
+					nowflSpeedAhead <- false;
+					nowflSpeedBehind <- false;
 					mSHMfM=1.5;
-					local id_ExplodeTanker = Entities.FindByName( null, "tanker_destroy_relay" );
-					local ent_logic_relay_ExplodeTanker = ::VSLib.Entity(id_ExplodeTanker);
-					ent_logic_relay_ExplodeTanker.AddOutput("OnTrigger", "worldspawn", "RunScriptCode", "closeARRange()", 0, -1 );
+					//local id_ExplodeTanker = Entities.FindByName( null, "tanker_destroy_relay" );
+					//local ent_logic_relay_ExplodeTanker = ::VSLib.Entity(id_ExplodeTanker);
+					//ent_logic_relay_ExplodeTanker.AddOutput("OnTrigger", "worldspawn", "RunScriptCode", "closeARRange()", 0, -1 );
 					
 					DirectorOptions <-
 					{
@@ -725,6 +725,7 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 					Director.ResetMobTimer()
 					
 				}
+				setBalanceDirectorOptions(null);
 
 				//-----------------------------------------------------
 
@@ -919,6 +920,7 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 					}
 
 				}				
+				setBalanceDirectorOptions(null);
 			}
 			break;
 		}
@@ -976,6 +978,7 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 					nowFinaleStageType=type
 					nowFinaleStageEvent=1
 				}
+				setBalanceDirectorOptions(null);
 			}
 			break;
 		}
@@ -1074,6 +1077,7 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 					nowFinaleStageType=type
 					nowFinaleStageEvent=1
 				}
+				setBalanceDirectorOptions(null);
 				/*
 				*/
 			}		
@@ -1640,6 +1644,7 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 				{
 					SharedOptions.ProhibitBosses = false
 				}
+				setBalanceDirectorOptions(null);
 
 
 			}
@@ -1932,6 +1937,7 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 
 					MapScript.DirectorOptions.EscapeSpawnTanks <- true
 				}
+				setBalanceDirectorOptions(null);
 			}
 			break;
 		}
@@ -2016,6 +2022,7 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 					if ( type == 2 )
 						EntFire( "pilot", "SpeakResponseConcept", "hospital_radio_intransit" );
 				}
+				setBalanceDirectorOptions(null);
 			}
 			break;
 		}
@@ -2107,6 +2114,7 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 					nowFinaleStageType=type
 					nowFinaleStageEvent=1
 				}
+				setBalanceDirectorOptions(null);
 			}
 			break;
 		}
@@ -2226,6 +2234,7 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 					if ( type == 2 )
 						EntFire( "orator_boat_radio", "SpeakResponseConcept", "boat_radio_intransit" );
 				}
+				setBalanceDirectorOptions(null);
 				
 				
 			}
@@ -2313,6 +2322,8 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 					if ( type == 2 )
 						EntFire( "orator_plane_radio", "SpeakResponseConcept", "plane_radio_intransit" );
 				}
+				
+				setBalanceDirectorOptions(null);
 			}
 			break;
 		}
@@ -2403,6 +2414,7 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 					if ( type == 2 )
 						EntFire( "orator_farm_radio", "SpeakResponseConcept", "farm_radio_intransit" );
 				}
+				setBalanceDirectorOptions(null);
 			}
 			break;
 		}
@@ -2741,6 +2753,8 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 						Msg( "Progress was " + defvalue + ", now: " + ScavengeCansPoured + " poured / " + ScavengeCansNeeded + " needed = " + progress + "\n" );
 					return progress;
 				}
+				
+				setBalanceDirectorOptions(null);
 
 			}
 			break;
@@ -2852,9 +2866,9 @@ Msg(".................................execscriptName: " + execscriptName + "\n")
 	}
 }
 //LOADING FILE
-local execscriptName=g_MapName
+local tmpexecscriptName=g_MapName
 if (nowexecScriptName!="")
-	execscriptName=nowexecScriptName
-Msg(".................................execScriptName: " + execscriptName + "\n");
-aMapLogic(execscriptName);
+	tmpexecscriptName=nowexecScriptName
+Msg(".................................tmpexecscriptName: " + tmpexecscriptName + "\n");
+aMapLogic(tmpexecscriptName);
 Msg("Loaded: amap.nut\n");

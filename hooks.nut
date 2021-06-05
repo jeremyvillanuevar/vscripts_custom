@@ -156,6 +156,7 @@ function Notifications::OnEnterSaferoom::pasarSafeRoom ( client, params )
 	{
 		player.ShowHint("Cuando entran el 75%, cierra y se tpearán!",0.8);
 		setBalanceDirectorOptions(params);
+		nowSafeDoorReached=1;
 	}
 	//if (player.IsHuman())
 	//	cmd_nb_rush_player_command(player.GetIndex());	
@@ -165,12 +166,19 @@ function Notifications::OnEnterSaferoom::pasarSafeRoom ( client, params )
 function Notifications::OnSurvivorsLeftStartArea::Inicio()
 {			
 	Msg("OnSurvivorsLeftStartArea"+"\n");
-	if (nowPlayersinGame>4)
+	local timeforwitch=120-5*nowPlayersinGame;
+	if (nowPlayersinGame>6)
+		timeforwitch=120-15*nowPlayersinGame;
+	else
+		if (nowPlayersinGame>3)
+			timeforwitch=120-9*nowPlayersinGame;
+	if (nowPlayersinGame>2)
 	{	
-		SpawnWitch(null);		
+		SpawnWitch(null);
 	}
-	Timers.AddTimer(60-5*nowPlayersinGame, true, SpawnWitch);
-	Timers.AddTimer(18.0, true, setBalanceDirectorOptions);
+	nowSpawnWitchTimer=timeforwitch;
+	timerIndex2=Timers.AddTimer(1.0, true, setTimerIncrementWT);
+	timerIndex3=Timers.AddTimer(27.0, true, setBalanceDirectorOptions);
 }
 
 
@@ -183,7 +191,7 @@ function OnGameEvent_round_start_post_nav(params)
 	initializeGameMode();
 	initializeDifficulty();
 	establishMapType();
-	Timers.AddTimer(1.0, true, NamesUpdate, params);
+	timerIndex1=Timers.AddTimer(1.0, true, NamesUpdate, params);
 	mountedBarrierRandomizer(params);
 	hurtKills();
 	spawnForMapSpecificData(params);
@@ -290,7 +298,7 @@ function Notifications::OnSurvivorsDead::MissionLost()
 	
 function Notifications::OnChargerCarryVictim::pruebaCharger( entity, victim, params)
 {
-	Utils.SlowTime(0.5)
+	Utils.SlowTime(0.4)
 }
 	
 function Notifications::OnDeath::PlayerDeath( victim, attacker, params)
@@ -641,9 +649,9 @@ function Notifications::OnHealSuccess::completaCuracion ( healee, healer, health
 function Notifications::OnPanicEventFinished::Finalizado()
 {
 	ClientPrint(null, 3, BLUE+"YEAH! Ustedes derrotaron la horda!!");
-		survivorsParticleHead();		
-		survivorsYellCelebration();
-		survivorsYellCelebration();
+	survivorsParticleHead();		
+	survivorsYellCelebration();
+	survivorsYellCelebration();
 }
 
 
@@ -672,10 +680,11 @@ function Notifications::OnRescueVehicleLeaving::outTheDoor(count, params)
 {
 	if (alreadyPlayed == 0)
 	{
-		Timers.RemoveTimer(NamesUpdate);
-		Timers.RemoveTimer(setBalanceDirectorOptions);
-		Timers.RemoveTimer(SpawnWitch);
-		Timers.RemoveTimer(ShowHUDTicker)
+		Timers.RemoveTimer(timerIndex1);
+		Timers.RemoveTimer(timerIndex2);
+		Timers.RemoveTimer(timerIndex3);
+		//Timers.RemoveTimer(SpawnWitch);
+		//Timers.RemoveTimer(ShowHUDTicker)
 		//Utils.SayToAllDel("You have been playing... ");
 		//Timers.AddTimer(1, false, messageCompleteGame, params);		
 		Utils.SlowTime(1.75, 2.0, 1.0, 1.5, false);
@@ -689,10 +698,11 @@ function Notifications::OnVersusMatchFinished::thatGameWas(winners, params)
 {
 	if (alreadyPlayed == 0)
 	{
-		Timers.RemoveTimer(NamesUpdate);
-		Timers.RemoveTimer(setBalanceDirectorOptions);
-		Timers.RemoveTimer(SpawnWitch);
-		Timers.RemoveTimer(ShowHUDTicker)
+		Timers.RemoveTimer(timerIndex1);
+		Timers.RemoveTimer(timerIndex2);
+		Timers.RemoveTimer(timerIndex3);
+		//Timers.RemoveTimer(SpawnWitch);
+		//Timers.RemoveTimer(ShowHUDTicker)
 		//Utils.SayToAllDel("You have been playing... ");
 		//Timers.AddTimer(1, false, messageCompleteGame, params);
 	}
