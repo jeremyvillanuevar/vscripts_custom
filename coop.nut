@@ -17,10 +17,15 @@ IncludeScript ("debug.nut");
 	::nowLocalScriptExec <- 0
 	::nowinScriptfromaMap <- false;
 	::nowWanderingPermit <- true;
+	//Teleport the one ahead
 	::nowflTeleportRusher <- true;
+	//Teleport the one behind
 	::nowflTeleportSlacker <- true;
+	//Slows the one ahead
 	::nowflSpeedAhead <- true;
+	//Speeds the one behind
 	::nowflSpeedBehind <- true;
+	//Teleport Tanks to the one Ahead
 	::nowflTankAhead <- true;
 	::survivorlist <-[];
 	::speedlist <-[];
