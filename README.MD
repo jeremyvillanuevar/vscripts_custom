@@ -1,4 +1,4 @@
-BIBLIA DEL VScript
+Manual Maestro DEL VScript
 El Lenguaje VScript se maneja por scopes (alcances).
 
 Los Scopes para el scripting son:
